@@ -1,0 +1,42 @@
+# ---- Java ----
+*.class
+*.log
+*.ctxt
+hs_err_pid*
+replay_pid*
+
+# ---- Maven ----
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# ---- Gradle ----
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- IntelliJ IDEA ----
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ---- Eclipse (if ever opened there) ----
+.settings/
+.project
+.classpath
+
+# ---- OS-specific ----
+.DS_Store
+Thumbs.db
+
+# ---- Logs & temp ----
+*.log
+*.tmp
+*.swp
