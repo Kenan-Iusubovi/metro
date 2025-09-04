@@ -1,93 +1,149 @@
 package ticket;
 
-import people.passenger.Passenger;
-import route.Route;
+import payment.PaymentMethodE;
+import station.Station;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Ticket {
 
-    private UUID ticketNumber;
 
-    private Route route;
+    private static long idCounter = 0;
 
-    private double price;
+    private long id;
 
-    private LocalDateTime validFrom;
+    private long lineCode;
 
-    private LocalDateTime validUntil;
+    private Station origin;
 
-    private TicketStatusE ticketStatus;
+    private Station destination;
 
-    private Passenger passenger;
+    private BigDecimal price;
 
-    public Ticket(UUID ticketNumber, Route route, double price,
-                  LocalDateTime validFrom, LocalDateTime validUntil,
-                  TicketStatusE ticketStatus, Passenger passenger) {
-        this.ticketNumber = ticketNumber;
-        this.route = route;
-        this.price = price;
-        this.validFrom = validFrom;
-        this.validUntil = validUntil;
-        this.ticketStatus = ticketStatus;
-        this.passenger = passenger;
+    private LocalDateTime issuedAt;
+
+    private PaymentMethodE paymentMethod;
+
+    private TicketStatusE status;
+
+    public Ticket(long lineCode, Station origin, Station destination,
+                  BigDecimal price, LocalDateTime issuedAt,
+                  PaymentMethodE paymentMethod, TicketStatusE status) {
+
+        this.id = ++idCounter;
+        setLineCode(lineCode);
+        setOrigin(origin);
+        setDestination(destination);
+        setPrice(price);
+        setIssuedAt(issuedAt);
+        setPaymentMethod(paymentMethod);
+        setStatus(status);
+    }
+
+    public boolean isValidForEntry() {
+
+        return status == TicketStatusE.ACTIVE;
+    }
+
+    public boolean useForEntry() {
+
+        if (!isValidForEntry()) return false;
+
+        this.status = TicketStatusE.USED;
+        return true;
+    }
+
+    public boolean cancel() {
+
+        if (status != TicketStatusE.ACTIVE) {
+
+            throw new IllegalArgumentException("The ticket should be " +
+                    "Active to Cancel it!");
+        }
+        this.status = TicketStatusE.CANCELLED;
+        return true;
+    }
+
+    public long getId() {
+        return id;
     }
 
 
-    public UUID getTicketNumber() {
-        return ticketNumber;
+    public long getLineCode() {
+
+        return lineCode;
     }
 
-    public void setTicketNumber(UUID ticketNumber) {
-        this.ticketNumber = ticketNumber;
+    public void setLineCode(long lineCode) {
+
+        if (lineCode <= 0) throw new IllegalArgumentException("lineCode");
+        this.lineCode = lineCode;
     }
 
-    public Route getRoute() {
-        return route;
+    public Station getOrigin() {
+
+        return origin;
     }
 
-    public void setRoute(Route route) {
-        this.route = route;
+    public void setOrigin(Station origin) {
+
+        if (origin == null) throw new IllegalArgumentException("origin");
+        this.origin = origin;
     }
 
-    public double getPrice() {
+    public Station getDestination() {
+
+        return destination;
+    }
+
+    public void setDestination(Station destination) {
+
+        if (destination == null) throw new IllegalArgumentException("destination");
+        this.destination = destination;
+    }
+
+    public BigDecimal getPrice() {
+
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
+
+        if (price == null || price.signum() < 0) throw new IllegalArgumentException("price");
         this.price = price;
     }
 
-    public LocalDateTime getValidFrom() {
-        return validFrom;
+    public LocalDateTime getIssuedAt() {
+
+        return issuedAt;
     }
 
-    public void setValidFrom(LocalDateTime validFrom) {
-        this.validFrom = validFrom;
+    public void setIssuedAt(LocalDateTime issuedAt) {
+
+        if (issuedAt == null) throw new IllegalArgumentException("issuedAt");
+        this.issuedAt = issuedAt;
     }
 
-    public LocalDateTime getValidUntil() {
-        return validUntil;
+    public PaymentMethodE getPaymentMethod() {
+
+        return paymentMethod;
     }
 
-    public void setValidUntil(LocalDateTime validUntil) {
-        this.validUntil = validUntil;
+    public void setPaymentMethod(PaymentMethodE paymentMethod) {
+
+        if (paymentMethod == null) throw new IllegalArgumentException("paymentMethod");
+        this.paymentMethod = paymentMethod;
     }
 
-    public TicketStatusE getTicketStatus() {
-        return ticketStatus;
+    public TicketStatusE getStatus() {
+
+        return status;
     }
 
-    public void setTicketStatus(TicketStatusE ticketStatus) {
-        this.ticketStatus = ticketStatus;
-    }
+    public void setStatus(TicketStatusE status) {
 
-    public Passenger getPassenger() {
-        return passenger;
-    }
-
-    public void setPassenger(Passenger passenger) {
-        this.passenger = passenger;
+        if (status == null) throw new IllegalArgumentException("status");
+        this.status = status;
     }
 }

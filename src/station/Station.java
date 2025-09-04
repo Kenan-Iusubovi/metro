@@ -12,9 +12,9 @@ public class Station {
 
     private String name;
 
-    private List<Turnstile> turnstiles;
+    private Turnstile[] turnstiles;
 
-    public Station(long code, String name, List<Turnstile> turnstiles) {
+    public Station(long code, String name) {
 
         this.id = ++idCounter;
         this.code = code;
@@ -23,6 +23,7 @@ public class Station {
     }
 
     public long getId() {
+
         return id;
     }
 
