@@ -15,5 +15,7 @@ public class PaymentService {
 
         System.out.println(text);
 
+        System.out.println();
+
     }
 }

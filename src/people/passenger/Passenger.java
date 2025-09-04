@@ -1,9 +1,7 @@
 package people.passenger;
 
 import ticket.Ticket;
-
-import java.util.ArrayList;
-import java.util.List;
+import utils.ArrayUtils;
 
 public class Passenger {
 
@@ -21,7 +19,7 @@ public class Passenger {
 
     private PassengerCategoryE passengerCategory;
 
-    private List<Ticket> tickets;
+    private Ticket[] tickets;
 
     public Passenger(String firstname, String surname, String email,
                      String phoneNumber, PassengerCategoryE passengerCategory) {
@@ -32,7 +30,7 @@ public class Passenger {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.passengerCategory = passengerCategory;
-        this.tickets = new ArrayList<>();
+        this.tickets = (Ticket[]) ArrayUtils.create(tickets);
     }
 
     public long getId() {
@@ -83,11 +81,8 @@ public class Passenger {
         this.passengerCategory = passengerCategory;
     }
 
-    public List<Ticket> getTickets() {
+    public Ticket[] getTickets() {
         return tickets;
     }
 
-    public void setTickets(List<Ticket> tickets) {
-        this.tickets = tickets;
-    }
 }
