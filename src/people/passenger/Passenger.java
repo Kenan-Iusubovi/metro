@@ -26,17 +26,6 @@ public class Passenger {
     public Passenger(String firstname, String surname, String email,
                      String phoneNumber, PassengerCategoryE passengerCategory) {
 
-        if (firstname == null || firstname.isBlank()){
-            throw new IllegalArgumentException("Firstname can't be empty!");
-        }
-        if (surname == null || surname.isBlank()){
-            throw new IllegalArgumentException("Surname can't be empty!");
-        }
-        if ((email == null || email.isBlank()) && (phoneNumber == null || phoneNumber.isBlank())){
-            throw new IllegalArgumentException("Providing contact information email" +
-                    " either phone number is obligated !");
-        }
-
         this.id = ++idCounter;
         this.firstname = firstname;
         this.surname = surname;
@@ -50,26 +39,23 @@ public class Passenger {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getFirstname() {
         return firstname;
     }
 
     public void setFirstname(String firstname) {
-        if (firstname == null || firstname.isBlank()){
-            throw new IllegalArgumentException("Firstname can't be empty!");
-        }
         this.firstname = firstname;
     }
 
     public String getSurname() {
-
         return surname;
     }
 
     public void setSurname(String surname) {
-        if (surname == null || surname.isBlank()){
-            throw new IllegalArgumentException("Surname can't be empty!");
-        }
         this.surname = surname;
     }
 
@@ -78,9 +64,6 @@ public class Passenger {
     }
 
     public void setEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email can't be empty!");
-        }
         this.email = email;
     }
 
@@ -89,9 +72,6 @@ public class Passenger {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        if(phoneNumber == null || phoneNumber.isBlank()) {
-            throw new IllegalArgumentException("Phone number can't be empty !");
-        }
         this.phoneNumber = phoneNumber;
     }
 
@@ -107,10 +87,7 @@ public class Passenger {
         return tickets;
     }
 
-    public void setTicket(Ticket ticket) {
-        if (ticket == null){
-            System.out.println("Ticket can't be empty");
-        }
-        this.tickets.add(ticket);
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
     }
 }

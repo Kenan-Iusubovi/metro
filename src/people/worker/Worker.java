@@ -21,19 +21,6 @@ public class Worker {
     public Worker(String firstname, String surname, String licenseNumber,
                   int yearsOfExperience, WorkerProffessionE proffession) {
 
-        if (firstname == null || firstname.isBlank()){
-            throw new IllegalArgumentException("Firstname can't be empty!");
-        }
-        if (surname == null || surname.isBlank()){
-            throw new IllegalArgumentException("Surname can't be empty!");
-        }
-        if (licenseNumber == null || licenseNumber.isBlank()){
-            throw new IllegalArgumentException("License number can't be empty!");
-        }
-        if (yearsOfExperience < 0 ){
-            throw new IllegalArgumentException("Experience can't be negative!");
-        }
-
         this.id = ++idCounter;
         this.firstname = firstname;
         this.surname = surname;
@@ -47,14 +34,15 @@ public class Worker {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getFirstname() {
         return firstname;
     }
 
     public void setFirstname(String firstname) {
-        if (firstname == null || firstname.isBlank()){
-            throw new IllegalArgumentException("Firstname can't be empty!");
-        }
         this.firstname = firstname;
     }
 
@@ -63,32 +51,7 @@ public class Worker {
     }
 
     public void setSurname(String surname) {
-        if (surname == null || surname.isBlank()){
-            throw new IllegalArgumentException("Surname can't be empty!");
-        }
         this.surname = surname;
-    }
-
-    public String getLicenseNumber() {
-        return licenseNumber;
-    }
-
-    public void setLicenseNumber(String licenseNumber) {
-        if (licenseNumber == null || licenseNumber.isBlank()){
-            throw new IllegalArgumentException("License number can't be empty!");
-        }
-        this.licenseNumber = licenseNumber;
-    }
-
-    public int getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-
-    public void setYearsOfExperience(int yearsOfExperience) {
-        if (yearsOfExperience < 0 ){
-            throw new IllegalArgumentException("Experience can't be negative!");
-        }
-        this.yearsOfExperience = yearsOfExperience;
     }
 
     public WorkerProffessionE getProffession() {
@@ -99,14 +62,27 @@ public class Worker {
         this.proffession = proffession;
     }
 
+    public String getLicenseNumber() {
+        return licenseNumber;
+    }
+
+    public void setLicenseNumber(String licenseNumber) {
+        this.licenseNumber = licenseNumber;
+    }
+
+    public int getYearsOfExperience() {
+        return yearsOfExperience;
+    }
+
+    public void setYearsOfExperience(int yearsOfExperience) {
+        this.yearsOfExperience = yearsOfExperience;
+    }
+
     public boolean isWorking() {
         return isWorking;
     }
 
-    public void startWorking() {
-        isWorking = true;
-    }
-    public void stopWorking() {
-        isWorking = false;
+    public void setWorking(boolean working) {
+        isWorking = working;
     }
 }
