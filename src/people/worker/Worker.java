@@ -1,6 +1,6 @@
-package people.personal;
+package people.worker;
 
-public class Driver {
+public class Worker {
 
     private static long idCounter = 0;
 
@@ -10,14 +10,16 @@ public class Driver {
 
     private String surname;
 
+    private WorkerProffessionE proffession;
+
     private String licenseNumber;
 
     private int yearsOfExperience;
 
     private boolean isWorking;
 
-    public Driver(String firstname, String surname, String licenseNumber,
-                  int yearsOfExperience) {
+    public Worker(String firstname, String surname, String licenseNumber,
+                  int yearsOfExperience, WorkerProffessionE proffession) {
 
         if (firstname == null || firstname.isBlank()){
             throw new IllegalArgumentException("Firstname can't be empty!");
@@ -37,6 +39,7 @@ public class Driver {
         this.surname = surname;
         this.licenseNumber = licenseNumber;
         this.yearsOfExperience = yearsOfExperience;
+        this.proffession = proffession;
         this.isWorking = false;
     }
 
@@ -86,6 +89,14 @@ public class Driver {
             throw new IllegalArgumentException("Experience can't be negative!");
         }
         this.yearsOfExperience = yearsOfExperience;
+    }
+
+    public WorkerProffessionE getProffession() {
+        return proffession;
+    }
+
+    public void setProffession(WorkerProffessionE proffession) {
+        this.proffession = proffession;
     }
 
     public boolean isWorking() {

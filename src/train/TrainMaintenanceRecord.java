@@ -1,7 +1,5 @@
 package train;
 
-import people.personal.Mechanic;
-
 import java.time.LocalDateTime;
 
 public class TrainMaintenanceRecord {

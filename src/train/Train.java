@@ -1,6 +1,6 @@
 package train;
 
-import people.personal.Driver;
+import people.worker.Worker;
 import route.Line;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class Train {
 
     private List<Carriage> carriages;
 
-    private Driver driver;
+    private Worker worker;
 
     private TrainStatusE trainStatus;
 
