@@ -4,7 +4,6 @@ import ticket.Ticket;
 
 public class Turnstile {
 
-
     private static long idCounter = 0;
 
     private long id;

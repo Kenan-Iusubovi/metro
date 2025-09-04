@@ -3,8 +3,6 @@ package route;
 import station.Station;
 import train.Train;
 
-import java.util.List;
-
 public class Line {
 
     private static long idCounter = 0;
@@ -15,79 +13,63 @@ public class Line {
 
     private String name;
 
-    private List<Station> stations;
-
-    private List<Train> assignedTrains;
-
-    private boolean isActive;
-
     private String color;
 
-    public Line(long code, String name, List<Station> stations,
-                List<Train> assignedTrains, boolean isActive, String color) {
+    private boolean active;
+
+    private Station[] stations;
+
+    private Train[] trains;
+
+    public Line(long code, String name, String color,
+                Station[] stations, Train[] trains) {
         this.id = ++idCounter;
-        this.code = code;
-        this.name = name;
-        this.stations = stations;
-        this.assignedTrains = assignedTrains;
-        this.isActive = isActive;
-        this.color = color;
+        setCode(code);
+        setName(name);
+        setColor(color);
+        setStations(stations);
+        setTrains(trains);
+        setActive(true);
     }
 
+    public boolean hasStation(Station s) {
 
-    public long getId() {
-        return id;
+        if (s == null) return false;
+        for (int i = 0; i < stations.length; i++) {
+            if (stations[i] != null && stations[i].getCode() == s.getCode()) return true;
+        }
+        return false;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public int inServiceTrainCount() {
+
+        int c = 0;
+        for (int i = 0; i < trains.length; i++)
+            if (trains[i] != null && trains[i].) c++;
+        return c;
     }
 
-    public long getCode() {
-        return code;
-    }
+    public void activate() { this.active = true; }
+    public void deactivate() { this.active = false; }
 
-    public void setCode(long code) {
-        this.code = code;
-    }
+    public long getId() { return id; }
+    public void setId(long id) { if (id <= 0) throw new IllegalArgumentException("id"); this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public long getCode() { return code; }
+    public void setCode(long code) { if (code <= 0) throw new IllegalArgumentException("code"); this.code = code; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { if (name == null || name.trim().isEmpty()) throw new IllegalArgumentException("name"); this.name = name; }
 
-    public List<Station> getStations() {
-        return stations;
-    }
+    public String getColor() { return color; }
+    public void setColor(String color) { if (color == null || color.trim().isEmpty()) throw new IllegalArgumentException("color"); this.color = color; }
 
-    public void setStations(List<Station> stations) {
-        this.stations = stations;
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
-    public List<Train> getAssignedTrains() {
-        return assignedTrains;
-    }
+    public Station[] getStations() { return stations; }
+    public void setStations(Station[] stations) { if (stations == null) throw new IllegalArgumentException("stations"); this.stations = stations; }
 
-    public void setAssignedTrains(List<Train> assignedTrains) {
-        this.assignedTrains = assignedTrains;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
+    public Train[] getTrains() { return trains; }
+    public void setTrains(Train[] trains) { if (trains == null) throw new IllegalArgumentException("trains"); this.trains = trains; }
 }

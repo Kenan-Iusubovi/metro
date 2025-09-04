@@ -17,35 +17,50 @@ public class Passenger {
 
     private String phoneNumber;
 
-    private PassengerCategoryE passengerCategory;
+    private PassengerCategoryE category;
 
     private Ticket[] tickets;
 
-    public Passenger(String firstname, String surname, String email,
-                     String phoneNumber, PassengerCategoryE passengerCategory) {
+    public Passenger(String firstname, String surname,
+                     String email, String phoneNumber,
+                     PassengerCategoryE category) {
 
         this.id = ++idCounter;
-        this.firstname = firstname;
-        this.surname = surname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.passengerCategory = passengerCategory;
-        this.tickets = (Ticket[]) ArrayUtils.create(tickets);
+        setFirstname(firstname);
+        setSurname(surname);
+        setEmail(email);
+        setPhoneNumber(phoneNumber);
+        setCategory(category);
+        this.tickets = new Ticket[0];
+    }
+
+    public void addTicket(Ticket t) {
+
+        Object[] tmp = ArrayUtils.add(this.tickets, t);
+        Ticket[] out = new Ticket[tmp.length];
+        for (int i = 0; i < tmp.length; i++) out[i] = (Ticket) tmp[i];
+        this.tickets = out;
+    }
+
+    public void removeTicket(Ticket t) {
+
+        Object[] tmp = ArrayUtils.delete(this.tickets, t);
+        Ticket[] out = new Ticket[tmp.length];
+        for (int i = 0; i < tmp.length; i++) out[i] = (Ticket) tmp[i];
+        this.tickets = out;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getFirstname() {
         return firstname;
     }
 
     public void setFirstname(String firstname) {
+        if (firstname == null || firstname.trim().isEmpty()) throw new IllegalArgumentException("firstname");
         this.firstname = firstname;
     }
 
@@ -54,6 +69,7 @@ public class Passenger {
     }
 
     public void setSurname(String surname) {
+        if (surname == null || surname.trim().isEmpty()) throw new IllegalArgumentException("surname");
         this.surname = surname;
     }
 
@@ -62,6 +78,7 @@ public class Passenger {
     }
 
     public void setEmail(String email) {
+        if (email == null || email.trim().isEmpty()) throw new IllegalArgumentException("email");
         this.email = email;
     }
 
@@ -70,19 +87,25 @@ public class Passenger {
     }
 
     public void setPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) throw new IllegalArgumentException("phoneNumber");
         this.phoneNumber = phoneNumber;
     }
 
-    public PassengerCategoryE getPassengerCategory() {
-        return passengerCategory;
+    public PassengerCategoryE getCategory() {
+        return category;
     }
 
-    public void setPassengerCategory(PassengerCategoryE passengerCategory) {
-        this.passengerCategory = passengerCategory;
+    public void setCategory(PassengerCategoryE category) {
+        if (category == null) throw new IllegalArgumentException("category");
+        this.category = category;
     }
 
     public Ticket[] getTickets() {
         return tickets;
     }
 
+    public void setTickets(Ticket[] tickets) {
+        if (tickets == null) throw new IllegalArgumentException("tickets");
+        this.tickets = tickets;
+    }
 }
