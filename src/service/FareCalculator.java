@@ -1,4 +1,4 @@
-package metro;
+package service;
 
 public class FareCalculator {
 }

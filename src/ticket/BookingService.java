@@ -1,4 +1,4 @@
-package metro;
+package ticket;
 
 public class BookingService {
 }
