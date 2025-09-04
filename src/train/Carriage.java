@@ -6,71 +6,93 @@ public class Carriage {
 
     private long id;
 
-    private int carriageNumber;
+    private String type;
 
-    private int maxSeats;
+    private byte doorCount;
 
-    private int maxStanding;
+    private short productionYear;
 
-    private int occupiedSeats;
+    private int seats;
 
-    private int occupiedStanding;
+    private boolean hasAC;
 
-    public Carriage(int carriageNumber, int maxSeats,
-                    int maxStanding, int occupiedSeats, int occupiedStanding) {
+
+    public Carriage(String type, byte doorCount,
+                    short productionYear, int seats,
+                    boolean hasAC) {
+
         this.id = ++idCounter;
-        this.carriageNumber = carriageNumber;
-        this.maxSeats = maxSeats;
-        this.maxStanding = maxStanding;
-        this.occupiedSeats = occupiedSeats;
-        this.occupiedStanding = occupiedStanding;
+        setType(type);
+        setDoorCount(doorCount);
+        setProductionYear(productionYear);
+        setSeats(seats);
+        setHasAC(hasAC);
     }
 
     public long getId() {
+
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getType() {
+
+        return type;
     }
 
-    public int getCarriageNumber() {
-        return carriageNumber;
+    public void setType(String type) {
+
+        if (type == null || type.isBlank())
+            throw new IllegalArgumentException("type");
+
+        this.type = type;
     }
 
-    public void setCarriageNumber(int carriageNumber) {
-        this.carriageNumber = carriageNumber;
+    public byte getDoorCount() {
+
+        return doorCount;
     }
 
-    public int getMaxSeats() {
-        return maxSeats;
+    public void setDoorCount(byte doorCount) {
+
+        if (doorCount <= 0)
+            throw new IllegalArgumentException("doorCount");
+
+        this.doorCount = doorCount;
     }
 
-    public void setMaxSeats(int maxSeats) {
-        this.maxSeats = maxSeats;
+    public short getProductionYear() {
+
+        return productionYear;
     }
 
-    public int getMaxStanding() {
-        return maxStanding;
+    public void setProductionYear(short productionYear) {
+
+        if (productionYear <= 0)
+            throw new IllegalArgumentException("productionYear");
+
+        this.productionYear = productionYear;
     }
 
-    public void setMaxStanding(int maxStanding) {
-        this.maxStanding = maxStanding;
+    public int getSeats() {
+
+        return seats;
     }
 
-    public int getOccupiedSeats() {
-        return occupiedSeats;
+    public void setSeats(int seats) {
+
+        if (seats < 0)
+            throw new IllegalArgumentException("seats");
+
+        this.seats = seats;
     }
 
-    public void setOccupiedSeats(int occupiedSeats) {
-        this.occupiedSeats = occupiedSeats;
+    public boolean isHasAC() {
+
+        return hasAC;
     }
 
-    public int getOccupiedStanding() {
-        return occupiedStanding;
-    }
+    public void setHasAC(boolean hasAC) {
 
-    public void setOccupiedStanding(int occupiedStanding) {
-        this.occupiedStanding = occupiedStanding;
+        this.hasAC = hasAC;
     }
 }

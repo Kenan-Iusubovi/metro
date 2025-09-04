@@ -1,9 +1,6 @@
 package train;
 
-import people.worker.Worker;
-import route.Line;
-
-import java.util.List;
+import utils.ArrayUtils;
 
 public class Train {
 
@@ -11,71 +8,163 @@ public class Train {
 
     private long id;
 
-    private long number;
+    private String code;
 
-    private Line line;
+    private int capacity;
 
-    private List<Carriage> carriages;
+    private double maxSpeed;
 
-    private Worker worker;
+    private boolean inService;
 
-    private TrainStatusE trainStatus;
+    private TrainStatusE status;
 
-    public Train(long number, Line line, List<Carriage> carriages,
-                 Worker worker, TrainStatusE trainStatus) {
+    private Carriage[] carriages;
+
+    private int onboardCount;
+
+    private byte temperature;
+
+    public Train(String code, int capacity,
+                 double maxSpeed, boolean inService,
+                 TrainStatusE status, byte temperature) {
+
         this.id = ++idCounter;
-        this.number = number;
-        this.line = line;
-        this.carriages = carriages;
-        this.worker = worker;
-        this.trainStatus = trainStatus;
+        setCode(code);
+        setCapacity(capacity);
+        setMaxSpeed(maxSpeed);
+        setInService(inService);
+        setStatus(status);
+        setTemperature(temperature);
+        this.onboardCount = 0;
+        this.carriages = new Carriage[0];
+    }
+
+    public boolean board(int count) {
+
+        if (count <= 0) return false;
+        if (!inService) return false;
+        if (onboardCount + count > capacity) return false;
+        onboardCount += count;
+        return true;
+    }
+
+    public boolean alight(int count) {
+
+        if (count <= 0) return false;
+        if (count > onboardCount) count = onboardCount;
+        onboardCount -= count;
+        return true;
+    }
+
+    public boolean isFull() {
+
+        return onboardCount >= capacity;
     }
 
     public long getId() {
+
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getCode() {
+
+        return code;
     }
 
-    public long getNumber() {
-        return number;
+    public void setCode(String code) {
+
+        if (code == null || code.isBlank())
+            throw new IllegalArgumentException("code");
+
+        this.code = code;
     }
 
-    public void setNumber(long number) {
-        this.number = number;
+    public int getCapacity() {
+
+        return capacity;
     }
 
-    public Line getLine() {
-        return line;
+    public void setCapacity(int capacity) {
+
+        if (capacity <= 0)
+            throw new IllegalArgumentException("capacity");
+
+        this.capacity = capacity;
     }
 
-    public void setLine(Line line) {
-        this.line = line;
+    public double getMaxSpeed() {
+
+        return maxSpeed;
     }
 
-    public List<Carriage> getCarriages() {
+    public void setMaxSpeed(double maxSpeed) {
+
+        if (maxSpeed <= 0)
+            throw new IllegalArgumentException("maxSpeed");
+
+        this.maxSpeed = maxSpeed;
+    }
+
+    public boolean isInService() {
+
+        return inService;
+    }
+
+    public void setInService(boolean inService) {
+
+        this.inService = inService;
+    }
+
+    public TrainStatusE getStatus() {
+
+        return status;
+    }
+
+    public void setStatus(TrainStatusE status) {
+
+        if (status == null)
+            throw new IllegalArgumentException("status");
+
+        this.status = status;
+
+    }
+
+    public Carriage[] getCarriages() {
+
         return carriages;
     }
 
-    public void setCarriages(List<Carriage> carriages) {
-        this.carriages = carriages;
+    public void addCarriage(Carriage carriage) {
+        this.carriages = (Carriage[]) ArrayUtils.add(this.carriages, carriage);
     }
 
-    public Worker getWorker() {
-        return worker;
+    public void removeCarriage(Carriage carriage) {
+        this.carriages = (Carriage[]) ArrayUtils.delete(this.carriages, carriage);
     }
 
-    public void setWorker(Worker worker) {
-        this.worker = worker;
+    public int getOnboardCount() {
+
+        return onboardCount;
     }
 
-    public TrainStatusE getTrainStatus() {
-        return trainStatus;
+    public void setOnboardCount(int onboardCount) {
+
+        if (onboardCount < 0 || onboardCount > capacity)
+            throw new IllegalArgumentException("onboardCount");
+
+        this.onboardCount = onboardCount;
     }
 
-    public void setTrainStatus(TrainStatusE trainStatus) {
-        this.trainStatus = trainStatus;
+    public byte getTemperature() {
+
+        return temperature;
+    }
+
+    public void setTemperature(byte temperature) {
+
+        if (temperature < 16 || temperature > 32)
+            throw new IllegalArgumentException("temperature");
+
+        this.temperature = temperature;
     }
 }

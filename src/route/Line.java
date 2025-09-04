@@ -2,6 +2,7 @@ package route;
 
 import station.Station;
 import train.Train;
+import utils.ArrayUtils;
 
 public class Line {
 
@@ -21,15 +22,15 @@ public class Line {
 
     private Train[] trains;
 
-    public Line(long code, String name, String color,
-                Station[] stations, Train[] trains) {
+    public Line(long code, String name, String color) {
+
         this.id = ++idCounter;
         setCode(code);
         setName(name);
         setColor(color);
-        setStations(stations);
-        setTrains(trains);
         setActive(true);
+        this.stations = new Station[0];
+        this.trains = new Train[0];
     }
 
     public boolean hasStation(Station s) {
@@ -44,32 +45,99 @@ public class Line {
     public int inServiceTrainCount() {
 
         int c = 0;
-        for (int i = 0; i < trains.length; i++)
-            if (trains[i] != null && trains[i].) c++;
+        for (int i = 0; i < trains.length; i++) if (trains[i] != null && trains[i].isInService()) c++;
         return c;
     }
 
-    public void activate() { this.active = true; }
-    public void deactivate() { this.active = false; }
+    public void activate() {
 
-    public long getId() { return id; }
-    public void setId(long id) { if (id <= 0) throw new IllegalArgumentException("id"); this.id = id; }
+        this.active = true;
+    }
 
-    public long getCode() { return code; }
-    public void setCode(long code) { if (code <= 0) throw new IllegalArgumentException("code"); this.code = code; }
+    public void deactivate() {
 
-    public String getName() { return name; }
-    public void setName(String name) { if (name == null || name.trim().isEmpty()) throw new IllegalArgumentException("name"); this.name = name; }
+        this.active = false;
+    }
 
-    public String getColor() { return color; }
-    public void setColor(String color) { if (color == null || color.trim().isEmpty()) throw new IllegalArgumentException("color"); this.color = color; }
+    public long getId() {
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+        return id;
+    }
 
-    public Station[] getStations() { return stations; }
-    public void setStations(Station[] stations) { if (stations == null) throw new IllegalArgumentException("stations"); this.stations = stations; }
+    public long getCode() {
 
-    public Train[] getTrains() { return trains; }
-    public void setTrains(Train[] trains) { if (trains == null) throw new IllegalArgumentException("trains"); this.trains = trains; }
+        return code;
+    }
+
+    public void setCode(long code) {
+
+        if (code <= 0)
+            throw new IllegalArgumentException("code");
+
+        this.code = code;
+    }
+
+    public String getName() {
+
+        return name;
+    }
+
+    public void setName(String name) {
+
+        if (name == null || name.isBlank())
+            throw new IllegalArgumentException("name");
+
+        this.name = name;
+    }
+
+    public String getColor() {
+
+        return color;
+    }
+
+    public void setColor(String color) {
+
+        if (color == null || color.isBlank())
+            throw new IllegalArgumentException("color");
+
+        this.color = color;
+    }
+
+    public boolean isActive() {
+
+        return active;
+    }
+
+    public void setActive(boolean active) {
+
+        this.active = active;
+    }
+
+    public Station[] getStations() {
+
+        return stations;
+    }
+
+    public void addStation(Station station) {
+
+        this.stations = (Station[]) ArrayUtils.add(this.stations, station);
+    }
+
+    public void removeStation(Station station) {
+
+        this.stations = (Station[]) ArrayUtils.delete(this.stations, station);
+    }
+
+    public Train[] getTrains() {
+
+        return trains;
+    }
+
+    public void addTrain(Train t) {
+        this.trains = (Train[]) ArrayUtils.add(this.trains, t);
+    }
+
+    public void removeTrain(Train t) {
+        this.trains = (Train[]) ArrayUtils.delete(this.trains, t);
+    }
 }

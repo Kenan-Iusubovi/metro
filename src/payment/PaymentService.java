@@ -58,7 +58,9 @@ public class PaymentService {
 
     public void setTimestamps(LocalDateTime[] timestamps) {
 
-        if (timestamps == null) throw new IllegalArgumentException("timestamps");
+        if (timestamps == null)
+            throw new IllegalArgumentException("timestamps");
+
         this.timestamps = timestamps;
     }
 
@@ -69,7 +71,9 @@ public class PaymentService {
 
     public void setTexts(String[] texts) {
 
-        if (texts == null) throw new IllegalArgumentException("texts");
+        if (texts == null)
+            throw new IllegalArgumentException("texts");
+
         this.texts = texts;
     }
 
@@ -80,7 +84,9 @@ public class PaymentService {
 
     public void setSize(int size) {
 
-        if (size < 0 || size > MAX_RECORDS) throw new IllegalArgumentException("size");
+        if (size < 0 || size > MAX_RECORDS)
+            throw new IllegalArgumentException("size");
+
         this.size = size;
     }
 }

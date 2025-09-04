@@ -23,6 +23,7 @@ public class Turnstile {
     }
 
     public long getId() {
+
         return id;
     }
 
@@ -33,7 +34,7 @@ public class Turnstile {
 
     public void setCode(String code) {
 
-        if (code == null || code.trim().isEmpty()) throw new IllegalArgumentException("code");
+        if (code == null || code.isBlank()) throw new IllegalArgumentException("code");
         this.code = code;
     }
 
@@ -81,20 +82,22 @@ public class Turnstile {
             System.out.println("No ticket presented.");
             return false;
         }
-        if (ticket.getStatus() == null) {
-            System.out.println("Ticket has no status.");
+        if (!ticket.isValidForEntry()) {
+            System.out.println("Ticket " + ticket.getId() + " is not valid for entry.");
             return false;
         }
-
+        ticket.useForEntry();
         System.out.println("Ticket " + ticket.getId() + " accepted at " + code);
         return true;
     }
 
     public void setActive(boolean active) {
+
         this.active = active;
     }
 
     public void setClosed(boolean closed) {
+
         this.closed = closed;
     }
 }

@@ -34,60 +34,59 @@ public class Passenger {
         this.tickets = new Ticket[0];
     }
 
-    public void addTicket(Ticket t) {
-
-        Object[] tmp = ArrayUtils.add(this.tickets, t);
-        Ticket[] out = new Ticket[tmp.length];
-        for (int i = 0; i < tmp.length; i++) out[i] = (Ticket) tmp[i];
-        this.tickets = out;
-    }
-
-    public void removeTicket(Ticket t) {
-
-        Object[] tmp = ArrayUtils.delete(this.tickets, t);
-        Ticket[] out = new Ticket[tmp.length];
-        for (int i = 0; i < tmp.length; i++) out[i] = (Ticket) tmp[i];
-        this.tickets = out;
-    }
 
     public long getId() {
+
         return id;
     }
 
-
     public String getFirstname() {
+
         return firstname;
     }
 
     public void setFirstname(String firstname) {
-        if (firstname == null || firstname.trim().isEmpty()) throw new IllegalArgumentException("firstname");
+
+        if (firstname == null || firstname.isEmpty())
+            throw new IllegalArgumentException("firstname");
+
         this.firstname = firstname;
     }
 
     public String getSurname() {
+
         return surname;
     }
 
     public void setSurname(String surname) {
-        if (surname == null || surname.trim().isEmpty()) throw new IllegalArgumentException("surname");
+
+        if (surname == null || surname.isEmpty())
+            throw new IllegalArgumentException("surname");
+
         this.surname = surname;
     }
 
     public String getEmail() {
+
         return email;
     }
 
     public void setEmail(String email) {
-        if (email == null || email.trim().isEmpty()) throw new IllegalArgumentException("email");
+        
+        if (email == null || email.isEmpty()) 
+            throw new IllegalArgumentException("email");
+        
         this.email = email;
     }
 
     public String getPhoneNumber() {
+        
         return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) throw new IllegalArgumentException("phoneNumber");
+        
+        if (phoneNumber == null || phoneNumber.isEmpty()) throw new IllegalArgumentException("phoneNumber");
         this.phoneNumber = phoneNumber;
     }
 
@@ -104,8 +103,12 @@ public class Passenger {
         return tickets;
     }
 
-    public void setTickets(Ticket[] tickets) {
-        if (tickets == null) throw new IllegalArgumentException("tickets");
-        this.tickets = tickets;
+    public void addTicket(Ticket t) {
+        this.tickets = (Ticket[]) ArrayUtils.add(this.tickets, t);
     }
+
+    public void removeTicket(Ticket t) {
+        this.tickets = (Ticket[]) ArrayUtils.delete(this.tickets, t);
+    }
+
 }

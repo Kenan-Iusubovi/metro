@@ -27,17 +27,17 @@ public class Ticket {
     private TicketStatusE status;
 
     public Ticket(long lineCode, Station origin, Station destination,
-                  BigDecimal price, LocalDateTime issuedAt,
-                  PaymentMethodE paymentMethod, TicketStatusE status) {
+                  BigDecimal price,
+                  PaymentMethodE paymentMethod) {
 
         this.id = ++idCounter;
         setLineCode(lineCode);
         setOrigin(origin);
         setDestination(destination);
         setPrice(price);
-        setIssuedAt(issuedAt);
         setPaymentMethod(paymentMethod);
-        setStatus(status);
+        this.issuedAt = LocalDateTime.now();
+        this.status = TicketStatusE.ACTIVE;
     }
 
     public boolean isValidForEntry() {
@@ -116,12 +116,6 @@ public class Ticket {
     public LocalDateTime getIssuedAt() {
 
         return issuedAt;
-    }
-
-    public void setIssuedAt(LocalDateTime issuedAt) {
-
-        if (issuedAt == null) throw new IllegalArgumentException("issuedAt");
-        this.issuedAt = issuedAt;
     }
 
     public PaymentMethodE getPaymentMethod() {

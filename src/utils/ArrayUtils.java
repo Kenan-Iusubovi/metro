@@ -2,36 +2,15 @@ package utils;
 
 public final class ArrayUtils {
 
-    private static final int DEFAULT_GROW_BY = 5;
-
-
     private ArrayUtils() {
-    }
-
-
-    public static Object[] create (Object[] array){
-
-       return new Object[DEFAULT_GROW_BY];
-    }
-
-    private static Object[] resize (Object[] oldArray){
-
-        if (oldArray == null){
-            throw new IllegalArgumentException("Source array can't be null");
-        }
-        Object[] resizedArray = new Object[oldArray.length + DEFAULT_GROW_BY];
-
-        for (int i = 0; i < oldArray.length; i++){
-
-            resizedArray[i] = oldArray[i];
-        }
-
-        return resizedArray;
     }
 
     public static Object[] add(Object[] array, Object element) {
         if (array == null) {
             throw new IllegalArgumentException("Array can't be null");
+        }
+        if (element == null) {
+            throw new IllegalArgumentException("Element can't be null");
         }
 
         for (int i = 0; i < array.length; i++) {
@@ -41,9 +20,18 @@ public final class ArrayUtils {
             }
         }
 
-        Object[] resizedArray = resize(array);
-        resizedArray[array.length] = element;
-        return resizedArray;
+        int newSize = array.length + 1;
+        Object[] newArray = (Object[]) java.lang.reflect.Array.newInstance(
+                array.getClass().getComponentType(),
+                newSize
+        );
+
+        for (int i = 0; i < array.length; i++) {
+            newArray[i] = array[i];
+        }
+
+        newArray[array.length] = element;
+        return newArray;
     }
 
     public static Object[] delete(Object[] array, Object element) {
@@ -66,12 +54,17 @@ public final class ArrayUtils {
             return array;
         }
 
-        for (int i = index; i < array.length - 1; i++) {
-            array[i] = array[i + 1];
+        Object[] newArray = (Object[]) java.lang.reflect.Array.newInstance(
+                array.getClass().getComponentType(),
+                array.length - 1
+        );
+
+        for (int i = 0, j = 0; i < array.length; i++) {
+            if (i != index) {
+                newArray[j++] = array[i];
+            }
         }
-        array[array.length - 1] = null;
 
-        return array;
+        return newArray;
     }
-
 }
