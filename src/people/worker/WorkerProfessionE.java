@@ -1,6 +1,6 @@
 package people.worker;
 
-public enum WorkerProffessionE {
+public enum WorkerProfessionE {
 
     DRIVER,
     MECHANIC

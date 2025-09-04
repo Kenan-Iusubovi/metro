@@ -10,7 +10,7 @@ public class Worker {
 
     private String surname;
 
-    private WorkerProffessionE proffession;
+    private WorkerProfessionE profession;
 
     private String licenseNumber;
 
@@ -19,14 +19,14 @@ public class Worker {
     private boolean isWorking;
 
     public Worker(String firstname, String surname, String licenseNumber,
-                  int yearsOfExperience, WorkerProffessionE proffession) {
+                  int yearsOfExperience, WorkerProfessionE profession) {
 
         this.id = ++idCounter;
         this.firstname = firstname;
         this.surname = surname;
         this.licenseNumber = licenseNumber;
         this.yearsOfExperience = yearsOfExperience;
-        this.proffession = proffession;
+        this.profession = profession;
         this.isWorking = false;
     }
 
@@ -54,12 +54,12 @@ public class Worker {
         this.surname = surname;
     }
 
-    public WorkerProffessionE getProffession() {
-        return proffession;
+    public WorkerProfessionE getProfession() {
+        return profession;
     }
 
-    public void setProffession(WorkerProffessionE proffession) {
-        this.proffession = proffession;
+    public void setProfession(WorkerProfessionE profession) {
+        this.profession = profession;
     }
 
     public String getLicenseNumber() {
