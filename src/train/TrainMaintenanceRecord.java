@@ -1,7 +1,5 @@
 package train;
 
-import people.worker.Worker;
-
 import java.time.LocalDateTime;
 
 public class TrainMaintenanceRecord {
@@ -12,69 +10,96 @@ public class TrainMaintenanceRecord {
 
     private Train train;
 
-    private LocalDateTime maintenanceDateTime;
+    private LocalDateTime time;
 
     private String description;
 
-    private double cost;
+    private boolean critical;
 
-    private Worker mechanic;
+    private float severityScore;
 
-    public TrainMaintenanceRecord(Train train, LocalDateTime maintenanceDateTime,
-                                  String description, double cost, Worker mechanic) {
+    public TrainMaintenanceRecord(Train train, LocalDateTime time,
+                                  String description, boolean critical,
+                                  float severityScore) {
+
         this.id = ++idCounter;
-        this.train = train;
-        this.maintenanceDateTime = maintenanceDateTime;
-        this.description = description;
-        this.cost = cost;
-        this.mechanic = mechanic;
+        setTrain(train);
+        setTime(time);
+        setDescription(description);
+        setCritical(critical);
+        setSeverityScore(severityScore);
     }
 
     public long getId() {
+
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public Train getTrain() {
+
         return train;
     }
 
     public void setTrain(Train train) {
+
+        if (train == null)
+            throw new IllegalArgumentException("train");
+
         this.train = train;
     }
 
-    public LocalDateTime getMaintenanceDateTime() {
-        return maintenanceDateTime;
+    public LocalDateTime getTime() {
+
+        return time;
     }
 
-    public void setMaintenanceDateTime(LocalDateTime maintenanceDateTime) {
-        this.maintenanceDateTime = maintenanceDateTime;
+    public void setTime(LocalDateTime time) {
+
+        if (time == null)
+            throw new IllegalArgumentException("time");
+
+        this.time = time;
     }
 
     public String getDescription() {
+
         return description;
     }
 
     public void setDescription(String description) {
+
+        if (description == null || description.isBlank())
+            throw new IllegalArgumentException("description");
+
         this.description = description;
     }
 
-    public double getCost() {
-        return cost;
+    public boolean isCritical() {
+
+        return critical;
     }
 
-    public void setCost(double cost) {
-        this.cost = cost;
+    public void setCritical(boolean critical) {
+
+        this.critical = critical;
     }
 
-    public Worker getMechanic() {
-        return mechanic;
+    public float getSeverityScore() {
+
+        return severityScore;
     }
 
-    public void setMechanic(Worker mechanic) {
-        this.mechanic = mechanic;
+    public void setSeverityScore(float severityScore) {
+
+        if (severityScore < 0f || severityScore > 10f)
+            throw new IllegalArgumentException("severityScore");
+
+        this.severityScore = severityScore;
     }
+
+    public boolean isSevere() {
+
+        return critical && severityScore > 6.5f;
+    }
+
 }
