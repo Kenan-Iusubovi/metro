@@ -42,7 +42,7 @@ public class BookingService {
         Station[] path = new Station[]{origin, destination};
         Route route = new Route(path);
         BigDecimal price = fareCalculator.calculate(route);
-        metro.getPaymentService().processPayment(price, method);
+        metro.ge.processPayment(price, method);
         Ticket ticket = new Ticket(lineCode, origin,
                 destination, price, method);
         passenger.addTicket(ticket);
