@@ -35,7 +35,7 @@ public class Passenger {
 
     public void setFirstname(String firstname) {
         if (firstname == null || firstname.isEmpty()) {
-            throw new IllegalArgumentException("Firstname can't be empty.");
+            throw new IllegalArgumentException("Firstname can't be null or empty.");
         }
         this.firstname = firstname;
     }
@@ -46,7 +46,7 @@ public class Passenger {
 
     public void setSurname(String surname) {
         if (surname == null || surname.isEmpty()) {
-            throw new IllegalArgumentException("Surname can't be empty.");
+            throw new IllegalArgumentException("Surname can't be null or empty.");
         }
         this.surname = surname;
     }
@@ -57,7 +57,7 @@ public class Passenger {
 
     public void setEmail(String email) {
         if (email == null || email.isEmpty()){
-            throw new IllegalArgumentException("Email can't be empty.");
+            throw new IllegalArgumentException("Email can't be null or empty.");
         }
         this.email = email;
     }

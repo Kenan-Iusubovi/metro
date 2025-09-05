@@ -27,7 +27,6 @@ public class Train {
     public Train(String code, int capacity,
                  double maxSpeed, boolean inService,
                  TrainStatus status, byte temperature) {
-
         this.id = ++idCounter;
         setCode(code);
         setCapacity(capacity);

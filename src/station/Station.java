@@ -25,7 +25,6 @@ public class Station {
 
     public Station(String name, long code, boolean accessible,
                    byte platformCount, LocalDate builtOn) {
-
         this.id = ++idCounter;
         setName(name);
         setCode(code);

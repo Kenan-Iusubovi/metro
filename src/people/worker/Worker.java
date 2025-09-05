@@ -15,7 +15,6 @@ public class Worker {
     public Worker(String firstname, String surname,
                   String licenseNumber, int yearsOfExperience,
                   WorkerProfession profession, char grade) {
-
         this.id = ++idCounter;
         setFirstname(firstname);
         setSurname(surname);
@@ -37,7 +36,7 @@ public class Worker {
 
     public void setFirstname(String firstname) {
         if (firstname == null || firstname.isBlank()) {
-            throw new IllegalArgumentException("Firstname can't be empty.");
+            throw new IllegalArgumentException("Firstname can't be null or empty.");
         }
         this.firstname = firstname;
     }
@@ -48,7 +47,7 @@ public class Worker {
 
     public void setSurname(String surname) {
         if (surname == null || surname.isBlank()) {
-            throw new IllegalArgumentException("Surname can't be empty.");
+            throw new IllegalArgumentException("Surname can't be null or empty.");
         }
         this.surname = surname;
     }
@@ -70,7 +69,7 @@ public class Worker {
 
     public void setLicenseNumber(String licenseNumber) {
         if (licenseNumber == null || licenseNumber.isBlank()) {
-            throw new IllegalArgumentException("License number can't be empty.");
+            throw new IllegalArgumentException("License number can't be null or empty.");
         }
         this.licenseNumber = licenseNumber;
     }

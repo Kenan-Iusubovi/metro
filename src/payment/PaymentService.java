@@ -18,20 +18,20 @@ public class PaymentService {
 
     public void processPayment(BigDecimal amount, PaymentMethod method) {
         if (amount == null || amount.signum() < 0) {
-            throw new IllegalArgumentException("amount");
+            throw new IllegalArgumentException("Amount can't be negative.");
         }
         if (method == null){
-            throw new IllegalArgumentException("method");
+            throw new IllegalArgumentException("Payment Method can't be null.");
         }
         record("PAY " + amount + " " + method);
     }
 
     public void refund(BigDecimal amount, PaymentMethod method) {
         if (amount == null || amount.signum() <= 0){
-            throw new IllegalArgumentException("amount");
+            throw new IllegalArgumentException("Amount can't be negative.");
         }
         if (method == null){
-            throw new IllegalArgumentException("method");
+            throw new IllegalArgumentException("Payment method can't be null.");
         }
         record("REFUND " + amount + " " + method);
     }
@@ -59,7 +59,7 @@ public class PaymentService {
 
     public void setTimestamps(LocalDateTime[] timestamps) {
         if (timestamps == null) {
-            throw new IllegalArgumentException("timestamps");
+            throw new IllegalArgumentException("Timestamp can't be null.");
         }
         this.timestamps = timestamps;
     }
@@ -70,7 +70,7 @@ public class PaymentService {
 
     public void setTexts(String[] texts) {
         if (texts == null) {
-            throw new IllegalArgumentException("texts");
+            throw new IllegalArgumentException("Texts can't be null.");
         }
         this.texts = texts;
     }
@@ -81,7 +81,7 @@ public class PaymentService {
 
     public void setSize(int size) {
         if (size < 0 || size > MAX_RECORDS) {
-            throw new IllegalArgumentException("size");
+            throw new IllegalArgumentException("Size must be between 0 and " + MAX_RECORDS+".");
         }
         this.size = size;
     }
