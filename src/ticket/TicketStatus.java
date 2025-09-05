@@ -1,6 +1,6 @@
 package ticket;
 
-public enum TicketStatusE {
+public enum TicketStatus {
 
     ACTIVE,
     USED,

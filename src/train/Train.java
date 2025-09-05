@@ -16,7 +16,7 @@ public class Train {
 
     private boolean inService;
 
-    private TrainStatusE status;
+    private TrainStatus status;
 
     private Carriage[] carriages;
 
@@ -26,7 +26,7 @@ public class Train {
 
     public Train(String code, int capacity,
                  double maxSpeed, boolean inService,
-                 TrainStatusE status, byte temperature) {
+                 TrainStatus status, byte temperature) {
 
         this.id = ++idCounter;
         setCode(code);
@@ -115,12 +115,12 @@ public class Train {
         this.inService = inService;
     }
 
-    public TrainStatusE getStatus() {
+    public TrainStatus getStatus() {
 
         return status;
     }
 
-    public void setStatus(TrainStatusE status) {
+    public void setStatus(TrainStatus status) {
 
         if (status == null)
             throw new IllegalArgumentException("status");

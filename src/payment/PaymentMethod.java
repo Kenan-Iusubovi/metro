@@ -1,6 +1,6 @@
 package payment;
 
-public enum PaymentMethodE {
+public enum PaymentMethod {
 
     CREDIT_CARD,
     DEBIT_CARD,

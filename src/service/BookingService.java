@@ -1,6 +1,6 @@
 package service;
 
-import payment.PaymentMethodE;
+import payment.PaymentMethod;
 import people.passenger.Passenger;
 import route.Line;
 import route.Route;
@@ -28,7 +28,7 @@ public class BookingService {
 
     public Ticket book(Metro metro, Passenger passenger,
                        long lineCode, Station origin, Station destination,
-                       PaymentMethodE method) {
+                       PaymentMethod method) {
         if (metro == null || passenger == null || origin == null ||
                 destination == null || method == null)
             throw new IllegalArgumentException("args");
@@ -65,7 +65,7 @@ public class BookingService {
         return ticket;
     }
 
-    public void cancelTicket(Passenger passenger, Ticket ticket, PaymentMethodE method) {
+    public void cancelTicket(Passenger passenger, Ticket ticket, PaymentMethod method) {
 
         if (ticket == null || passenger == null)
             throw new IllegalArgumentException("Ticket or passenger not provided");

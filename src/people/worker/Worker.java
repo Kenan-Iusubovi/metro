@@ -10,7 +10,7 @@ public class Worker {
 
     private String surname;
 
-    private WorkerProfessionE profession;
+    private WorkerProfession profession;
 
     private String licenseNumber;
 
@@ -22,7 +22,7 @@ public class Worker {
 
     public Worker(String firstname, String surname,
                   String licenseNumber, int yearsOfExperience,
-                  WorkerProfessionE profession, char grade) {
+                  WorkerProfession profession, char grade) {
 
         this.id = ++idCounter;
         setFirstname(firstname);
@@ -65,12 +65,12 @@ public class Worker {
         this.surname = surname;
     }
 
-    public WorkerProfessionE getProfession() {
+    public WorkerProfession getProfession() {
 
         return profession;
     }
 
-    public void setProfession(WorkerProfessionE profession) {
+    public void setProfession(WorkerProfession profession) {
 
         if (profession == null)
             throw new IllegalArgumentException("profession");

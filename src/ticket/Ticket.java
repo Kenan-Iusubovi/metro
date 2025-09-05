@@ -1,6 +1,6 @@
 package ticket;
 
-import payment.PaymentMethodE;
+import payment.PaymentMethod;
 import station.Station;
 
 import java.math.BigDecimal;
@@ -22,13 +22,13 @@ public class Ticket {
 
     private LocalDateTime issuedAt;
 
-    private PaymentMethodE paymentMethod;
+    private PaymentMethod paymentMethod;
 
-    private TicketStatusE status;
+    private TicketStatus status;
 
     public Ticket(long lineCode, Station origin, Station destination,
                   BigDecimal price,
-                  PaymentMethodE paymentMethod) {
+                  PaymentMethod paymentMethod) {
 
         this.id = ++idCounter;
         setLineCode(lineCode);
@@ -37,30 +37,30 @@ public class Ticket {
         setPrice(price);
         setPaymentMethod(paymentMethod);
         this.issuedAt = LocalDateTime.now();
-        this.status = TicketStatusE.ACTIVE;
+        this.status = TicketStatus.ACTIVE;
     }
 
     public boolean isValidForEntry() {
 
-        return status == TicketStatusE.ACTIVE;
+        return status == TicketStatus.ACTIVE;
     }
 
     public boolean useForEntry() {
 
         if (!isValidForEntry()) return false;
 
-        this.status = TicketStatusE.USED;
+        this.status = TicketStatus.USED;
         return true;
     }
 
     public boolean cancel() {
 
-        if (status != TicketStatusE.ACTIVE) {
+        if (status != TicketStatus.ACTIVE) {
 
             throw new IllegalArgumentException("The ticket should be " +
                     "Active to Cancel it!");
         }
-        this.status = TicketStatusE.CANCELLED;
+        this.status = TicketStatus.CANCELLED;
         return true;
     }
 
@@ -118,23 +118,23 @@ public class Ticket {
         return issuedAt;
     }
 
-    public PaymentMethodE getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
 
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethodE paymentMethod) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
 
         if (paymentMethod == null) throw new IllegalArgumentException("paymentMethod");
         this.paymentMethod = paymentMethod;
     }
 
-    public TicketStatusE getStatus() {
+    public TicketStatus getStatus() {
 
         return status;
     }
 
-    public void setStatus(TicketStatusE status) {
+    public void setStatus(TicketStatus status) {
 
         if (status == null) throw new IllegalArgumentException("status");
         this.status = status;

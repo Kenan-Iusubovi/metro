@@ -17,13 +17,13 @@ public class Passenger {
 
     private String phoneNumber;
 
-    private PassengerCategoryE category;
+    private PassengerCategory category;
 
     private Ticket[] tickets;
 
     public Passenger(String firstname, String surname,
                      String email, String phoneNumber,
-                     PassengerCategoryE category) {
+                     PassengerCategory category) {
 
         this.id = ++idCounter;
         setFirstname(firstname);
@@ -90,11 +90,11 @@ public class Passenger {
         this.phoneNumber = phoneNumber;
     }
 
-    public PassengerCategoryE getCategory() {
+    public PassengerCategory getCategory() {
         return category;
     }
 
-    public void setCategory(PassengerCategoryE category) {
+    public void setCategory(PassengerCategory category) {
         if (category == null) throw new IllegalArgumentException("category");
         this.category = category;
     }

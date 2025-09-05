@@ -1,9 +1,9 @@
-import payment.PaymentMethodE;
+import payment.PaymentMethod;
 import payment.PaymentService;
 import people.passenger.Passenger;
-import people.passenger.PassengerCategoryE;
+import people.passenger.PassengerCategory;
 import people.worker.Worker;
-import people.worker.WorkerProfessionE;
+import people.worker.WorkerProfession;
 import route.Line;
 import route.Route;
 import route.Schedule;
@@ -14,7 +14,7 @@ import system.Metro;
 import train.Carriage;
 import train.Train;
 import train.TrainMaintenanceRecord;
-import train.TrainStatusE;
+import train.TrainStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,7 +48,7 @@ public class Main {
                 (short) 2018, 120, true);
 
         Train tbilisiTrain = new Train("TB-01", 300, 90.0,
-                true, TrainStatusE.ACTIVE, (byte) 24);
+                true, TrainStatus.ACTIVE, (byte) 24);
 
         tbilisiTrain.addCarriage(standardCarriage);
         Train[] tbilisiTrains = new Train[]{tbilisiTrain};
@@ -86,10 +86,10 @@ public class Main {
         Schedule[] tbilisiSchedules = new Schedule[]{tbilisiSchedule};
 
         Passenger ninoPassenger = new Passenger("Nino", "Beridze",
-                "nino@example.com", "+995555000001", PassengerCategoryE.ADULT);
+                "nino@example.com", "+995555000001", PassengerCategory.ADULT);
 
         Worker driverGiorgi = new Worker("Giorgi", "Kalandadze",
-                "DRV-TB-001", 6, WorkerProfessionE.DRIVER, 'A');
+                "DRV-TB-001", 6, WorkerProfession.DRIVER, 'A');
 
         Passenger[] tbilisiPassengers = new Passenger[]{ninoPassenger};
         Worker[] tbilisiWorkers = new Worker[]{driverGiorgi};
@@ -117,7 +117,7 @@ public class Main {
         BookingService bookingService = new BookingService();
 
         var ticket = bookingService.book(tbilisiMetro, ninoPassenger, 1L,
-                stationSquare, didube, PaymentMethodE.METRO_CARD);
+                stationSquare, didube, PaymentMethod.METRO_CARD);
 
         stationSquare.openAll();
         stationSquare.getTurnstiles()[0].pass(ticket);
