@@ -77,16 +77,27 @@ public class Route {
 
     public void addToPath(Station station) {
         if (station == null) {
-            throw new IllegalArgumentException("Station can't be null or empty.");
+            throw new IllegalArgumentException("Station can't be null.");
         }
-        this.path = (Station[]) ArrayUtils.add(this.path, station);
+        if (path == null || path.length < 2) {
+            throw new IllegalStateException("Path must be initialized and have " +
+                    "at least origin and destination.");
+        }
+        int destIdx = path.length - 1;
+        Station[] newPath = new Station[path.length + 1];
+        for (int i = 0; i < destIdx; i++) {
+            newPath[i] = path[i];
+        }
+        newPath[destIdx] = station;
+        newPath[destIdx + 1] = path[destIdx];
+        this.path = newPath;
     }
 
+
     public void removeFromPath(Station station) {
-
-        if (station == null)
-            throw new IllegalArgumentException("station");
-
+        if (station == null){
+            throw new IllegalArgumentException("Station can't be null.");
+        }
         this.path = (Station[]) ArrayUtils.delete(this.path, station);
     }
 }
