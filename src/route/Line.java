@@ -15,7 +15,7 @@ public class Line {
     private Station[] stations;
     private Train[] trains;
 
-    public Line(Long code, String name, String color) {
+    public Line(long code, String name, String color) {
         this.id = ++idCounter;
         setCode(code);
         setName(name);
@@ -63,9 +63,9 @@ public class Line {
         return code;
     }
 
-    public void setCode(Long code) {
-        if (code == null || code <= 0) {
-            throw new IllegalArgumentException("Code can't be null or negative.");
+    public void setCode(long code) {
+        if (code <= 0) {
+            throw new IllegalArgumentException("Code can't be negative.");
         }
         this.code = code;
     }
