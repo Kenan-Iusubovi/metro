@@ -42,15 +42,13 @@ public class EmailService {
     }
 
     public String getSenderName() {
-
         return senderName;
     }
 
     public void setSenderName(String senderName) {
-
-        if (senderName == null || senderName.isBlank())
-            throw new IllegalArgumentException("senderName");
-
+        if (senderName == null || senderName.isBlank()) {
+            throw new IllegalArgumentException("Sender name can't be null or empty.");
+        }
         this.senderName = senderName;
     }
 }
