@@ -14,7 +14,8 @@ public class Passenger {
     private PassengerCategory category;
     private Ticket[] tickets;
 
-    public Passenger(String firstname, String surname, String email, String phoneNumber, PassengerCategory category) {
+    public Passenger(String firstname, String surname, String email,
+                     String phoneNumber, PassengerCategory category) {
         this.id = ++idCounter;
         setFirstname(firstname);
         setSurname(surname);
