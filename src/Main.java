@@ -5,7 +5,6 @@ import people.passenger.PassengerCategory;
 import people.worker.Worker;
 import people.worker.WorkerProfession;
 import route.Line;
-import route.Route;
 import route.Schedule;
 import service.BookingService;
 import station.Station;
@@ -108,11 +107,7 @@ public class Main {
 
         Metro tbilisiMetro = new Metro(
                 "Tbilisi",
-                LocalDate.of(1966, 1, 11),
-                LocalDateTime.now(),
-                tbilisiStations, tbilisiTrains, tbilisiLines, tbilisiRoutes, tbilisiSchedules,
-                tbilisiPassengers, tbilisiWorkers, additionalTurnstiles, maintenanceRecords, tbilisiPaymentService
-        );
+                LocalDate.of(1966, 1, 11));
 
         BookingService bookingService = new BookingService();
 

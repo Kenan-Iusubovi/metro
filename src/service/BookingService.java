@@ -3,7 +3,7 @@ package service;
 import payment.PaymentMethod;
 import people.passenger.Passenger;
 import route.Line;
-import route.Route;
+import route.Schedule;
 import station.Station;
 import system.Metro;
 import ticket.Ticket;
@@ -41,8 +41,8 @@ public class BookingService {
         }
         Station[] path = new Station[]{origin, destination};
         Route route = new Route(path);
-        BigDecimal price = fareCalculator.calculate(route);
-        metro.ge.processPayment(price, method);
+        BigDecimal price = fareCalculator.calculateTicketPrice(route);
+        metro.processPayment(price, method);
         Ticket ticket = new Ticket(lineCode, origin,
                 destination, price, method);
         passenger.addTicket(ticket);
@@ -66,10 +66,10 @@ public class BookingService {
     }
 
     private Line findLine(Metro metro, Long lineCode) {
-        Line[] lines = metro.getLines();
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i] != null && lines[i].getCode() == lineCode) {
-                return lines[i];
+        Schedule[] schedules = metro.getSchedules();
+        for (int i = 0; i < schedules.length; i++) {
+            if (schedules[i].getLine() != null && schedules[i].getLine().getCode() == lineCode) {
+                return schedules[i].getLine();
             }
         }
         return null;

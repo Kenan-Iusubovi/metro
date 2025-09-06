@@ -1,6 +1,7 @@
 package system;
 
 import route.Line;
+import route.Schedule;
 import station.Station;
 import utils.ArrayUtils;
 import java.time.LocalDate;
@@ -12,15 +13,16 @@ public class Metro {
     public static final String SYSTEM_VENDOR = "Metro network";
     private Long id;
     private String city;
-    private LocalDate launchedOn;
-    private LocalDateTime createdAt;
-    private Line[] lines;
+    private LocalDateTime launchedOn;
+    private LocalDate createdAt;
+    private Schedule[] schedules;
 
-    public Metro(String city) {
+    public Metro(String city, LocalDate createdAt) {
         this.id = ++idCounter;
         setCity(city);
-        this.createdAt = LocalDateTime.now();
-        this.lines = new Line[0];
+        this.createdAt = createdAt;
+        this.launchedOn = LocalDateTime.now();
+        this.schedules = new Schedule[0];
     }
 
     public static void greet() {
@@ -72,28 +74,29 @@ public class Metro {
         if (line == null) {
             throw new IllegalArgumentException("Line must not be null");
         }
-        this.lines = (Line[]) ArrayUtils.add(this.lines, line);
+
+        this.schedules = (Line[]) ArrayUtils.add(this.schedules, line);
     }
 
     public void removeLine(Line line) {
-        this.lines = (Line[]) ArrayUtils.delete(this.lines, line);
+        this.schedules = (Line[]) ArrayUtils.delete(this.schedules, line);
     }
 
     public Station[] getStations() {
-        if (lines == null || lines.length == 0) {
+        if (schedules == null || schedules.length == 0) {
             return new Station[0];
         }
         int total = 0;
-        for (int i = 0; i < lines.length; i++) {
-            Station[] s = lines[i] != null ? lines[i].getStations() : null;
+        for (int i = 0; i < schedules.length; i++) {
+            Station[] s = schedules[i] != null ? schedules[i].getLine().getStations() : null;
             if (s != null) {
                 total += s.length;
             }
         }
         Station[] result = new Station[total];
         int idx = 0;
-        for (int i = 0; i < lines.length; i++) {
-            Station[] s = lines[i] != null ? lines[i].getStations() : null;
+        for (int i = 0; i < schedules.length; i++) {
+            Station[] s = schedules[i] != null ? schedules[i].getLine().getStations() : null;
             if (s != null) {
                 for (int j = 0; j < s.length; j++) {
                     result[idx++] = s[j];
@@ -118,29 +121,22 @@ public class Metro {
         this.city = city;
     }
 
-    public LocalDate getLaunchedOn() {
+    public LocalDateTime getLaunchedOn() {
         return launchedOn;
     }
 
-    public void setLaunchedOn(LocalDate launchedOn) {
-        if (launchedOn == null) {
-            throw new IllegalArgumentException("Launch date is required");
-        }
-        this.launchedOn = launchedOn;
-    }
-
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         if (createdAt == null) {
             throw new IllegalArgumentException("Creation time is required");
         }
         this.createdAt = createdAt;
     }
 
-    public Line[] getLines() {
-        return lines;
+    public Schedule[] getSchedules() {
+        return schedules;
     }
 }
