@@ -7,14 +7,14 @@ public class Turnstile {
     private static long idCounter = 0;
     private Long id;
     private String code;
-    private boolean active;
-    private boolean closed;
+    private boolean isActive;
+    private boolean isClosed;
 
-    public Turnstile(String code, boolean active, boolean closed) {
+    public Turnstile(String code, boolean active) {
         this.id = ++idCounter;
         setCode(code);
         setActive(active);
-        setClosed(closed);
+        close();
     }
 
     public long getId() {
@@ -33,56 +33,53 @@ public class Turnstile {
     }
 
     public boolean isActive() {
-        return active;
+        return isActive;
     }
 
     public void activate() {
-        this.active = true;
+        this.isActive = true;
     }
 
     public void deactivate() {
-        this.active = false;
+        this.isActive = false;
     }
 
     public boolean isClosed() {
-        return closed;
+        return isClosed;
     }
 
     public void open() {
-        this.closed = false;
+        this.isClosed = false;
+        System.out.println("Turnstile with code" + code + " opened.");
     }
 
     public void close() {
-        this.closed = true;
+        this.isClosed = true;
     }
 
-    public boolean pass(Ticket ticket) {
-        if (!active) {
-            System.out.println("Turnstile " + code + " is deactivated.");
-            return false;
-        }
-        if (closed) {
-            System.out.println("Turnstile " + code + " is closed.");
-            return false;
+    public void pass(Ticket ticket) {
+        if (!isActive) {
+            throw new RuntimeException("Turnstile " + code + " is deactivated.");
         }
         if (ticket == null) {
-            System.out.println("No ticket presented.");
-            return false;
+            throw new RuntimeException("No ticket presented.");
         }
-        if (!ticket.isValidForEntry()) {
-            System.out.println("Ticket " + ticket.getId() + " is not valid for entry.");
-            return false;
+        if (ticket.useForEntry()){
+            System.out.println("Ticket " + ticket.getCode() + " accepted at turnstile " + code);
+            open();
+            System.out.println("Passenger goes throw.");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("Passenger goes inside the station.");
+            close();
+            System.out.println("Turnstile " + code + " is closed!");
         }
-        ticket.useForEntry();
-        System.out.println("Ticket " + ticket.getId() + " accepted at turnstile" + code);
-        return true;
     }
 
     public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public void setClosed(boolean closed) {
-        this.closed = closed;
+        this.isActive = active;
     }
 }

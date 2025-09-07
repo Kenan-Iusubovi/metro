@@ -9,7 +9,7 @@ public class Worker {
     private WorkerProfession profession;
     private String licenseNumber;
     private int yearsOfExperience;
-    private boolean working;
+    private boolean isWorking;
     private char grade;
 
     public Worker(String firstname, String surname,
@@ -21,7 +21,7 @@ public class Worker {
         setLicenseNumber(licenseNumber);
         setYearsOfExperience(yearsOfExperience);
         setProfession(profession);
-        setWorking(false);
+        this.isWorking = false;
         setGrade(grade);
     }
 
@@ -86,11 +86,17 @@ public class Worker {
     }
 
     public boolean isWorking() {
-        return working;
+        return isWorking;
     }
 
-    public void setWorking(boolean working) {
-        this.working = working;
+    public void startWorking() {
+        this.isWorking = true;
+        System.out.println(this.profession + " started the work");
+    }
+
+    public void stopWorking(){
+        this.isWorking = false;
+        System.out.println(this.profession + " stoped the work");
     }
 
     public char getGrade() {

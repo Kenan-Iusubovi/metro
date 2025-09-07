@@ -1,11 +1,17 @@
 package system;
 
-import route.Line;
+import payment.PaymentService;
+import people.passenger.Passenger;
 import route.Schedule;
+import service.FareCalculator;
 import station.Station;
+import ticket.Ticket;
+import train.Train;
 import utils.ArrayUtils;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Metro {
 
@@ -16,6 +22,9 @@ public class Metro {
     private LocalDateTime launchedOn;
     private LocalDate createdAt;
     private Schedule[] schedules;
+    private PaymentService paymentService;
+    private LocalTime serviceStartAt;
+    private LocalTime serviceEndAt;
 
     public Metro(String city, LocalDate createdAt) {
         this.id = ++idCounter;
@@ -25,8 +34,21 @@ public class Metro {
         this.schedules = new Schedule[0];
     }
 
-    public static void greet() {
+    public Metro(String city, LocalDate createdAt, Schedule schedule) {
+        this.id = ++idCounter;
+        setCity(city);
+        this.createdAt = createdAt;
+        this.launchedOn = LocalDateTime.now();
+        setSchedules(schedules);
+    }
+
+    public static void setUp() {
         System.out.println("Welcome to " + SYSTEM_VENDOR);
+        FareCalculator.setBaseCost(2.50);
+        FareCalculator.setChildDiscountPercentage(100);
+        FareCalculator.setDisableDiscountPercentage(100);
+        FareCalculator.setSeniorDiscountPercentage(75);
+        FareCalculator.setStudentDiscountPercentage(50);
     }
 
     public Station findStationByName(String name) {
@@ -68,18 +90,6 @@ public class Metro {
                 all[i].closeAll();
             }
         }
-    }
-
-    public void addLine(Line line) {
-        if (line == null) {
-            throw new IllegalArgumentException("Line must not be null");
-        }
-
-        this.schedules = (Line[]) ArrayUtils.add(this.schedules, line);
-    }
-
-    public void removeLine(Line line) {
-        this.schedules = (Line[]) ArrayUtils.delete(this.schedules, line);
     }
 
     public Station[] getStations() {
@@ -138,5 +148,95 @@ public class Metro {
 
     public Schedule[] getSchedules() {
         return schedules;
+    }
+
+    public void addSchedule(Schedule schedule){
+        if (schedule == null){
+            throw new IllegalArgumentException("Schedule can't be null.");
+        }
+        this.schedules = (Schedule[]) ArrayUtils.add(this.schedules,schedule);
+    }
+
+    private void setSchedules(Schedule[] schedules){
+        if (schedules == null){
+            throw new IllegalArgumentException("Schedules can't be null.");
+        }
+        if (schedules.length < 1){
+            throw new IllegalArgumentException("Add at least 1 schedule.");
+        }
+        this.schedules = new Schedule[0];
+        for (Schedule s : schedules){
+            addSchedule(s);
+        }
+    }
+
+    public LocalTime getServiceEndAt() {
+        return serviceEndAt;
+    }
+
+    public void setServiceEndAt(LocalTime serviceEndAt) {
+        if (serviceEndAt == null){
+            throw new IllegalArgumentException("Metro service start time can't be null.");
+        }
+        this.serviceEndAt = serviceEndAt;
+    }
+
+    public LocalTime getServiceStartAt() {
+        return serviceStartAt;
+    }
+
+    public void setServiceStartAt(LocalTime serviceStartAt) {
+        if (serviceStartAt == null){
+            throw new IllegalArgumentException("Metro service start time can't be null.");
+        }
+        this.serviceStartAt = serviceStartAt;
+    }
+
+    public PaymentService getPaymentService() {
+        return paymentService;
+    }
+
+    public void setPaymentService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
+    public void enterMetro(Passenger passenger, Ticket ticket,
+                           Station onboardingStation, Station destinationStation){
+        if (passenger == null){
+            throw new IllegalArgumentException("Passenger can't be null and enter the station!");
+        }
+        if (ticket == null){
+            throw new IllegalArgumentException("You can't enter without ticket. " +
+                    "Ticket can.t be null.");
+        }
+        if (onboardingStation == null){
+            throw new IllegalArgumentException("Onboarding station can't be null.");
+        }
+        if (destinationStation == null){
+            throw new IllegalArgumentException("Destination station can't be null.");
+        }
+        LocalTime departureTime = null;
+        for (Schedule s : schedules){
+            station.Station[] stations = s.getLine().getStations();
+            for (Station st : stations){
+                if (st.equals(onboardingStation)){
+                    departureTime = s.nextDeparture(st);
+                    if (departureTime != null){
+                        st.enterStation(passenger,ticket);
+                        Train train = s.getTrainByDepartureTime(st,departureTime);
+                        Station destination = train.enterTheTrain(departureTime,passenger,
+                                s.getLine(),destinationStation);
+                        System.out.println(passenger.getFirstname() + passenger.getSurname() +
+                                " arrived at destination station " + destination.getName());
+                        System.out.println("Thank you for using our metro system hope its " +
+                                "working well Bogdan ;) :)");
+                        return;
+                    }
+                }
+            }
+        }
+        if (departureTime == null){
+            throw new RuntimeException("Couldn't find the departure time near to enter time!");
+        }
     }
 }

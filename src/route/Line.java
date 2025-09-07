@@ -25,6 +25,17 @@ public class Line {
         this.trains = new Train[0];
     }
 
+    public Line(long code, String name, String color, Station[] stations) {
+        this.id = ++idCounter;
+        setCode(code);
+        setName(name);
+        setColor(color);
+        setActive(true);
+        this.stations = new Station[0];
+        this.trains = new Train[0];
+        setStations(stations);
+    }
+
     public boolean hasStation(Station station) {
         if (station == null){
             return false;
@@ -35,16 +46,6 @@ public class Line {
             }
         }
         return false;
-    }
-
-    public int inServiceTrainCount() {
-        int count = 0;
-        for (int i = 0; i < trains.length; i++){
-            if (trains[i] != null && trains[i].isInService()){
-                count++;
-            }
-        }
-        return count;
     }
 
     public void activate() {
@@ -116,6 +117,18 @@ public class Line {
             throw new IllegalArgumentException("Station can't be null.");
         }
         this.stations = (Station[]) ArrayUtils.delete(this.stations, station);
+    }
+
+    private void setStations(Station[] stations){
+        if (stations == null) {
+            throw new IllegalArgumentException("Stations can't be null");
+        }
+        if (stations.length < 2){
+            throw new IllegalArgumentException("To make a line should add minimum 2 stations.");
+        }
+        for (Station s : stations){
+            addStation(s);
+        }
     }
 
     public Train[] getTrains() {

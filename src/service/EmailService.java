@@ -1,5 +1,7 @@
 package service;
 
+import java.util.UUID;
+
 public class EmailService {
 
     private String senderName = "noreply@metro.com";
@@ -19,13 +21,12 @@ public class EmailService {
         System.out.println();
     }
 
-    public void sendTicketPurchaseSuccess(String to, String passengerName, long ticketId, String lineName, String price) {
+    public void sendTicketPurchaseSuccess(String to, String passengerName, UUID ticketId, String price) {
         String subject = "🎟 Ticket Purchase Success";
         String body =
                 "Hello " + passengerName + ",\n\n" +
                         "Your ticket has been successfully purchased.\n" +
                         "Ticket ID : " + ticketId + "\n" +
-                        "Line      : " + lineName + "\n" +
                         "Price     : " + price + "\n\n" +
                         "Thank you for choosing our metro system!";
         send(to, subject, body);

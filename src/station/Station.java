@@ -1,8 +1,13 @@
 package station;
 
+import people.passenger.Passenger;
+import ticket.Ticket;
 import utils.ArrayUtils;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Random;
 
 
 public class Station {
@@ -15,6 +20,8 @@ public class Station {
     private byte platformCount;
     private LocalDate builtOn;
     private Turnstile[] turnstiles;
+    private boolean isInterchange;
+    private Station interchangeStation;
 
     public Station(String name, long code, boolean accessible,
                    byte platformCount, LocalDate builtOn) {
@@ -25,6 +32,26 @@ public class Station {
         setPlatformCount(platformCount);
         setBuiltOn(builtOn);
         this.turnstiles = new Turnstile[0];
+    }
+
+    public Station(String name, long code, byte platformCount, LocalDate builtOn) {
+        this.id = ++idCounter;
+        setName(name);
+        setCode(code);
+        setPlatformCount(platformCount);
+        this.accessible = false;
+        setBuiltOn(builtOn);
+    }
+
+    public Station(String name, long code, byte platformCount,
+                   LocalDate builtOn, Turnstile[] turnstiles) {
+        this.id = ++idCounter;
+        setName(name);
+        setCode(code);
+        setPlatformCount(platformCount);
+        this.accessible = false;
+        setBuiltOn(builtOn);
+        setTurnstiles(turnstiles);
     }
 
     public void openAll() {
@@ -144,10 +171,63 @@ public class Station {
         this.turnstiles = (Turnstile[]) ArrayUtils.add(this.turnstiles, turnstile);
     }
 
+    private void setTurnstiles(Turnstile[] turnstiles){
+        if (turnstiles == null) {
+            throw new IllegalArgumentException("Turnstiles can't be null");
+        }
+        if (turnstiles.length < 1){
+            throw new IllegalArgumentException("Add at least 1 turnstile.");
+        }
+        this.turnstiles = new Turnstile[0];
+        for (Turnstile t : turnstiles){
+            addTurnstile(t);
+        }
+    }
+
+    private boolean stationHasActiveTurnstile(){
+        for (Turnstile t : turnstiles){
+            if (t.isActive()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removeTurnstile(Turnstile turnstile) {
         if (turnstile == null){
             throw new IllegalArgumentException("Turnstile can't be null.");
         }
         this.turnstiles = (Turnstile[]) ArrayUtils.delete(this.turnstiles, turnstile);
+    }
+    public void enterStation(Passenger passenger, Ticket ticket){
+        System.out.println("Passenger " + passenger.getFirstname() + " " + passenger.getSurname() +
+                " entered station " + this.getName());
+        Random r = new Random();
+        int randomTurnstile = r.nextInt(0,turnstiles.length);
+        if (!stationHasActiveTurnstile()){
+            throw new RuntimeException("No active turnstile on this station.");
+        }
+        while (!turnstiles[randomTurnstile].isActive()){
+            randomTurnstile = r.nextInt(0, turnstiles.length);
+        }
+        turnstiles[randomTurnstile].pass(ticket);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return accessible == station.accessible && platformCount == station.platformCount
+                && isInterchange == station.isInterchange &&
+                Objects.equals(id, station.id) && Objects.equals(name, station.name) &&
+                Objects.equals(code, station.code) && Objects.equals(builtOn, station.builtOn)
+                && Objects.deepEquals(turnstiles, station.turnstiles) &&
+                Objects.equals(interchangeStation, station.interchangeStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, code, accessible, platformCount, builtOn,
+                Arrays.hashCode(turnstiles), isInterchange, interchangeStation);
     }
 }

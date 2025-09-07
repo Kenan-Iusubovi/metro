@@ -1,142 +1,81 @@
 package ticket;
 
 import payment.PaymentMethod;
-import station.Station;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Ticket {
 
     private static long idCounter = 0;
-
-    private long id;
-
-    private long lineCode;
-
-    private Station origin;
-
-    private Station destination;
-
+    private Long id;
+    private UUID code;
     private BigDecimal price;
-
     private LocalDateTime issuedAt;
-
     private PaymentMethod paymentMethod;
-
     private TicketStatus status;
 
-    public Ticket(long lineCode, Station origin, Station destination,
-                  BigDecimal price,
-                  PaymentMethod paymentMethod) {
+    public Ticket(BigDecimal price, PaymentMethod paymentMethod) {
 
         this.id = ++idCounter;
-        setLineCode(lineCode);
-        setOrigin(origin);
-        setDestination(destination);
-        setPrice(price);
+        this.code = UUID.randomUUID();
+        this.price = price;
         setPaymentMethod(paymentMethod);
         this.issuedAt = LocalDateTime.now();
         this.status = TicketStatus.ACTIVE;
     }
 
-    public boolean isValidForEntry() {
-
+    private boolean isValidForEntry() {
         return status == TicketStatus.ACTIVE;
     }
 
     public boolean useForEntry() {
-
-        if (!isValidForEntry()) return false;
-
+        if (!isValidForEntry()){
+            System.out.println("Unfortunately you ticket status is " + this.getStatus().toString());
+            return false;
+        }
         this.status = TicketStatus.USED;
         return true;
     }
 
-    public boolean cancel() {
-
+    public void cancel() {
         if (status != TicketStatus.ACTIVE) {
-
             throw new IllegalArgumentException("The ticket should be " +
                     "Active to Cancel it!");
         }
         this.status = TicketStatus.CANCELLED;
-        return true;
+        System.out.println("Ticket with number " + this.id + " was Successfully canceled.");
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-
-    public long getLineCode() {
-
-        return lineCode;
-    }
-
-    public void setLineCode(long lineCode) {
-
-        if (lineCode <= 0) throw new IllegalArgumentException("lineCode");
-        this.lineCode = lineCode;
-    }
-
-    public Station getOrigin() {
-
-        return origin;
-    }
-
-    public void setOrigin(Station origin) {
-
-        if (origin == null) throw new IllegalArgumentException("origin");
-        this.origin = origin;
-    }
-
-    public Station getDestination() {
-
-        return destination;
-    }
-
-    public void setDestination(Station destination) {
-
-        if (destination == null) throw new IllegalArgumentException("destination");
-        this.destination = destination;
+    public UUID getCode() {
+        return code;
     }
 
     public BigDecimal getPrice() {
-
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-
-        if (price == null || price.signum() < 0) throw new IllegalArgumentException("price");
-        this.price = price;
-    }
-
     public LocalDateTime getIssuedAt() {
-
         return issuedAt;
     }
 
     public PaymentMethod getPaymentMethod() {
-
         return paymentMethod;
     }
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
-
-        if (paymentMethod == null) throw new IllegalArgumentException("paymentMethod");
+        if (paymentMethod == null){
+            throw new IllegalArgumentException("Payment method can't be null.");
+        }
         this.paymentMethod = paymentMethod;
     }
 
     public TicketStatus getStatus() {
-
         return status;
-    }
-
-    public void setStatus(TicketStatus status) {
-
-        if (status == null) throw new IllegalArgumentException("status");
-        this.status = status;
     }
 }

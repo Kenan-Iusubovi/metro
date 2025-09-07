@@ -1,87 +1,60 @@
 package train;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class TrainMaintenanceRecord {
 
-    private static long idCounter = 0;
-
-    private long id;
-
-    private Train train;
-
-    private LocalDateTime time;
-
+    private UUID id;
+    private Carriage carriage;
+    private LocalDateTime maintenanceStartTime;
+    private LocalDateTime maintenanceEndTime;
     private String description;
-
-    private boolean critical;
-
     private float severityScore;
 
-    public TrainMaintenanceRecord(Train train, LocalDateTime time,
-                                  String description, boolean critical,
-                                  float severityScore) {
-
-        this.id = ++idCounter;
-        setTrain(train);
-        setTime(time);
-        setDescription(description);
-        setCritical(critical);
+    public TrainMaintenanceRecord(Carriage carriage,                                  float severityScore) {
+        this.id = UUID.randomUUID();
+        setCarriage(carriage);
+        this.maintenanceStartTime = LocalDateTime.now();
         setSeverityScore(severityScore);
     }
 
-    public long getId() {
-
+    public UUID getId() {
         return id;
     }
 
-    public Train getTrain() {
-
-        return train;
+    public Carriage getCarriage() {
+        return carriage;
     }
 
-    public void setTrain(Train train) {
-
-        if (train == null)
-            throw new IllegalArgumentException("train");
-
-        this.train = train;
+    public void setCarriage(Carriage carriage) {
+        if (carriage == null){
+            throw new IllegalArgumentException("Carriage on repair can't be null.");
+        }
+        this.carriage = carriage;
     }
 
-    public LocalDateTime getTime() {
-
-        return time;
+    public LocalDateTime getMaintenanceStartTime() {
+        return maintenanceStartTime;
     }
 
-    public void setTime(LocalDateTime time) {
+    public LocalDateTime getMaintenanceEndTime() {
+        return maintenanceEndTime;
+    }
 
-        if (time == null)
-            throw new IllegalArgumentException("time");
-
-        this.time = time;
+    public void setMaintenanceEndTime() {
+        this.maintenanceEndTime = LocalDateTime.now();
     }
 
     public String getDescription() {
-
         return description;
     }
 
     public void setDescription(String description) {
-
-        if (description == null || description.isBlank())
-            throw new IllegalArgumentException("description");
-
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Description cant be null or empty.");
+        }
         this.description = description;
-    }
-
-    public boolean isCritical() {
-
-        return critical;
-    }
-
-    public void setCritical(boolean critical) {
-
-        this.critical = critical;
     }
 
     public float getSeverityScore() {
@@ -90,16 +63,10 @@ public class TrainMaintenanceRecord {
     }
 
     public void setSeverityScore(float severityScore) {
-
-        if (severityScore < 0f || severityScore > 10f)
-            throw new IllegalArgumentException("severityScore");
-
+        if (severityScore < 0.0 || severityScore > 10.0) {
+            throw new IllegalArgumentException("Severity can be assign between 0.0 and 10.0");
+        }
         this.severityScore = severityScore;
-    }
-
-    public boolean isSevere() {
-
-        return critical && severityScore > 6.5f;
     }
 
 }

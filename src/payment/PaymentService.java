@@ -36,13 +36,6 @@ public class PaymentService {
         record("REFUND " + amount + " " + method);
     }
 
-    public void auditLine(String text) {
-        if (text == null){
-            text = "";
-        }
-        record("AUDIT " + text);
-    }
-
     private void record(String text) {
         if (size < MAX_RECORDS) {
             timestamps[size] = LocalDateTime.now();

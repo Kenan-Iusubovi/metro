@@ -1,6 +1,6 @@
 package train;
 
-public enum TrainStatus {
+public enum CarriageStatus {
 
     ACTIVE,
     IN_REPAIR,

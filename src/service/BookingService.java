@@ -2,9 +2,6 @@ package service;
 
 import payment.PaymentMethod;
 import people.passenger.Passenger;
-import route.Line;
-import route.Schedule;
-import station.Station;
 import system.Metro;
 import ticket.Ticket;
 import utils.ArrayUtils;
@@ -23,35 +20,29 @@ public class BookingService {
         this.fareCalculator = new FareCalculator();
     }
 
-    public Ticket book(Metro metro, Passenger passenger,
-                       long lineCode, Station origin, Station destination,
-                       PaymentMethod method) {
-        if (metro == null || passenger == null || origin == null ||
-                destination == null || method == null) {
-            throw new IllegalArgumentException("Metro, passenger, line code, station, destination," +
-                    "payment method can't be null or empty.");
+    private void checkConditions(Metro metro, Passenger passenger){
+        if (metro == null){
+            throw new IllegalArgumentException("Metro can't be null.");
         }
-        Line line = findLine(metro, lineCode);
-        if (line == null || !line.isActive()) {
-            throw new IllegalArgumentException("Line can't be null or inactive");
+        if (metro.getPaymentService() == null){
+            throw new IllegalArgumentException("Payment service can't be null.");
         }
-        if (!line.hasStation(origin) || !line.hasStation(destination)) {
-            throw new IllegalArgumentException("Path must be initialized and " +
-                    "have at least 2 stations.");
+        if (passenger == null){
+            throw new IllegalArgumentException("Passenger can't be null");
         }
-        Station[] path = new Station[]{origin, destination};
-        Route route = new Route(path);
-        BigDecimal price = fareCalculator.calculateTicketPrice(route);
-        metro.processPayment(price, method);
-        Ticket ticket = new Ticket(lineCode, origin,
-                destination, price, method);
+    }
+
+    public Ticket book(Metro metro, Passenger passenger, PaymentMethod method) {
+        checkConditions(metro,passenger);
+        BigDecimal price = fareCalculator.calculateTicketPrice(passenger.getCategory());
+        metro.getPaymentService().processPayment(price, method);
+        Ticket ticket = new Ticket(price, method);
         passenger.addTicket(ticket);
         this.issuedTickets = (Ticket[]) ArrayUtils.add(this.issuedTickets, ticket);
         emailService.sendTicketPurchaseSuccess(
                 passenger.getEmail(),
                 passenger.getFirstname() + " " + passenger.getSurname(),
-                ticket.getId(),
-                line.getName(),
+                ticket.getCode(),
                 price.toPlainString()
         );
         return ticket;
@@ -65,15 +56,6 @@ public class BookingService {
         passenger.removeTicket(ticket);
     }
 
-    private Line findLine(Metro metro, Long lineCode) {
-        Schedule[] schedules = metro.getSchedules();
-        for (int i = 0; i < schedules.length; i++) {
-            if (schedules[i].getLine() != null && schedules[i].getLine().getCode() == lineCode) {
-                return schedules[i].getLine();
-            }
-        }
-        return null;
-    }
 
     public Ticket[] getIssuedTickets() {
         return issuedTickets;
