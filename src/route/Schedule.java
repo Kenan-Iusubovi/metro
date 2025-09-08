@@ -9,6 +9,7 @@ import java.time.LocalTime;
 public class Schedule {
 
     private static long idCounter = 0;
+
     private Long id;
     private Line line;
     private LocalTime[][] departureTimes;
@@ -21,41 +22,41 @@ public class Schedule {
 
     private int stationIndex(Station station) {
         if (station == null) throw new IllegalArgumentException("Station can't be null.");
-        Station[] sts = line.getStations();
-        for (int i = 0; i < sts.length; i++) {
-            if (sts[i] != null && sts[i].getCode() == station.getCode()) {
+        Station[] stations = line.getStations();
+        for (int i = 0; i < stations.length; i++) {
+            if (stations[i] != null && stations[i].getCode() == station.getCode()) {
                 return i;
             }
         }
         return -1;
     }
 
-    public LocalTime nextDeparture(Station station) {
-        return nextDepartureAt(station, LocalTime.now());
-    }
-
-    public LocalTime nextDepartureAt(Station station, LocalTime at) {
-        if (at == null) throw new IllegalArgumentException("Time can't be null.");
-
-        int idx = stationIndex(station);
-        if (idx == -1) return null;
-
-        LocalTime[] times = departureTimes[idx];
-        if (times == null || times.length == 0) return null;
-
+    public LocalTime nextDepartureTime(Station station, LocalTime at) {
+        if (at == null){
+            throw new IllegalArgumentException("Time can't be null.");
+        }
+        int index = stationIndex(station);
+        if (index == -1) {
+            return null;
+        }
+        LocalTime[] times = departureTimes[index];
+        if (times == null || times.length == 0){
+            return null;
+        }
         LocalTime candidate = null;
         LocalTime earliest  = null;
 
         for (int i = 0; i < times.length; i++) {
-            LocalTime t = times[i];
-            if (t == null) continue;
-
-            if (earliest == null || t.isBefore(earliest)) {
-                earliest = t;
+            LocalTime time = times[i];
+            if (time == null){
+                continue;
             }
-            if (!t.isBefore(at)) {
-                if (candidate == null || t.isBefore(candidate)) {
-                    candidate = t;
+            if (earliest == null || time.isBefore(earliest)) {
+                earliest = time;
+            }
+            if (!time.isBefore(at)) {
+                if (candidate == null || time.isBefore(candidate)) {
+                    candidate = time;
                 }
             }
         }
@@ -92,24 +93,25 @@ public class Schedule {
         if (departureTimes.length != stations.length) {
             throw new IllegalArgumentException("DepartureTimes rows must match stations length.");
         }
-
         LocalTime[][] copy = new LocalTime[departureTimes.length][];
+
         for (int i = 0; i < departureTimes.length; i++) {
             LocalTime[] row = departureTimes[i];
             if (row == null) {
                 copy[i] = new LocalTime[0];
                 continue;
             }
-            LocalTime prev = null;
+            LocalTime previos = null;
+
             for (int k = 0; k < row.length; k++) {
-                LocalTime t = row[k];
-                if (t == null) {
+                LocalTime time = row[k];
+                if (time == null) {
                     throw new IllegalArgumentException("Null time at row " + i + ", col " + k);
                 }
-                if (prev != null && t.isBefore(prev)) {
+                if (previos != null && time.isBefore(previos)) {
                     throw new IllegalArgumentException("Times must be ascending at row " + i);
                 }
-                prev = t;
+                previos = time;
             }
             LocalTime[] rowCopy = new LocalTime[row.length];
             System.arraycopy(row, 0, rowCopy, 0, row.length);
@@ -119,18 +121,26 @@ public class Schedule {
     }
 
     public Train getTrainByDepartureTime(Station station, LocalTime departureTime) {
-        if (station == null) throw new IllegalArgumentException("Station can't be null.");
-        if (departureTime == null) throw new IllegalArgumentException("Departure time can't be null.");
-
+        if (station == null){
+            throw new IllegalArgumentException("Station can't be null.");
+        }
+        if (departureTime == null){
+            throw new IllegalArgumentException("Departure time can't be null.");
+        }
         int stationIndex = stationIndex(station);
-        if (stationIndex < 0) return null;
-
+        if (stationIndex < 0){
+            return null;
+        }
         LocalTime[] stationTimes = departureTimes[stationIndex];
-        if (stationTimes == null || stationTimes.length == 0) return null;
+
+        if (stationTimes == null || stationTimes.length == 0) {
+            return null;
+        }
 
         for (int i = 0; i < stationTimes.length; i++) {
-            LocalTime t = stationTimes[i];
-            if (t != null && t.equals(departureTime)) {
+            LocalTime time = stationTimes[i];
+
+            if (time != null && time.equals(departureTime)) {
                 Train[] trains = line.getTrains();
                 if (trains != null && trains.length > 0) {
                     return trains[i % trains.length];
@@ -148,15 +158,20 @@ public class Schedule {
                                             LocalTime lastAtOrigin,
                                             int headwayMin,
                                             int perStationOffsetMin) {
-            if (line == null) throw new IllegalArgumentException("Line can't be null.");
-            if (firstAtOrigin == null || lastAtOrigin == null)
+            if (line == null){
+                throw new IllegalArgumentException("Line can't be null.");
+            }
+            if (firstAtOrigin == null || lastAtOrigin == null){
                 throw new IllegalArgumentException("Times can't be null.");
-            if (headwayMin <= 0) throw new IllegalArgumentException("headwayMin must be > 0");
-            if (perStationOffsetMin < 0) perStationOffsetMin = 0;
-
+            }
+            if (headwayMin <= 0){
+                throw new IllegalArgumentException("headwayMin must be > 0");
+            }
+            if (perStationOffsetMin < 0){
+                perStationOffsetMin = 0;
+            }
             Station[] stations = line.getStations();
             LocalTime[][] departures = new LocalTime[stations.length][];
-
             int firstMin = firstAtOrigin.getHour() * 60 + firstAtOrigin.getMinute();
             int lastMin  =  lastAtOrigin.getHour()  * 60 +  lastAtOrigin.getMinute();
 
@@ -187,15 +202,20 @@ public class Schedule {
                                               int runMinBetweenStations,
                                               int dwellMidSec,
                                               int terminalTurnMin) {
-            if (line == null) throw new IllegalArgumentException("Line can't be null.");
-            if (metro.getServiceStartAt() == null || metro.getServiceEndAt() == null)
+            if (line == null){
+                throw new IllegalArgumentException("Line can't be null.");
+            }
+            if (metro.getServiceStartAt() == null || metro.getServiceEndAt() == null) {
                 throw new IllegalArgumentException("Times can't be null.");
-            if (trains <= 0) throw new IllegalArgumentException("trains must be > 0");
-            if (perStationOffsetMin < 0) perStationOffsetMin = 0;
-
+            }
+            if (trains <= 0) {
+                throw new IllegalArgumentException("trains must be > 0");
+            }
+            if (perStationOffsetMin < 0){
+                perStationOffsetMin = 0;
+            }
             int stationCount = (line.getStations() == null) ? 0 : line.getStations().length;
             double dwellMidMin = Math.ceil(Math.max(0, dwellMidSec) / 60.0);
-
             int headwayMin = headwayFromTrains(
                     stationCount,
                     Math.max(1, runMinBetweenStations),
@@ -217,16 +237,22 @@ public class Schedule {
             int intermediates = Math.max(0, stationCount - 2);
             double oneWay = segments * runMinBetweenStations + intermediates * dwellMidMin;
             double cycle  = 2 * oneWay + 2 * terminalTurnMin;
+
             return Math.max(1, (int) Math.ceil(cycle / trains));
         }
 
         public static void printTimetable(Line line, LocalTime[][] departures) {
             Station[] stations = (line == null) ? null : line.getStations();
-            if (stations == null || departures == null) return;
+
+            if (stations == null || departures == null){
+                return;
+            }
             for (int i = 0; i < stations.length; i++) {
                 String name = (stations[i] == null) ? ("<null-" + i + ">") : stations[i].getName();
                 System.out.print(name + ": ");
-                LocalTime[] row = (i < departures.length && departures[i] != null) ? departures[i] : new LocalTime[0];
+                LocalTime[] row = (i < departures.length &&
+                        departures[i] != null) ? departures[i] : new LocalTime[0];
+
                 for (int k = 0; k < row.length; k++) {
                     LocalTime t = row[k];
                     if (t != null) {

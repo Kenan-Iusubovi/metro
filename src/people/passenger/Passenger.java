@@ -6,6 +6,7 @@ import utils.ArrayUtils;
 public class Passenger {
 
     private static long idCounter = 0;
+
     private Long id;
     private String firstname;
     private String surname;

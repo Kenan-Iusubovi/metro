@@ -12,6 +12,7 @@ import java.time.LocalTime;
 public class Train {
 
     private static long idCounter = 0;
+
     private long id;
     private String code;
     private Carriage[] carriages;
@@ -112,8 +113,8 @@ public class Train {
             throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
         this.carriages = new Carriage[0];
-        for (Carriage c : carriages){
-            addCarriage(c);
+        for (Carriage carriage : carriages){
+            addCarriage(carriage);
         }
     }
 
@@ -156,8 +157,8 @@ public class Train {
 
     public int getDoorsAmount(){
         int doorCount = 0;
-        for (Carriage c : carriages){
-            doorCount += c.getDoorCount();
+        for (Carriage carriage : carriages){
+            doorCount += carriage.getDoorCount();
         }
         return doorCount;
     }
@@ -174,7 +175,7 @@ public class Train {
                     " you should assign driver for each train!");
         }
         Station[] stations = line.getStations();
-        for (int i = 1; i < stations.length; i++){
+        for (int i = 0; i < stations.length; i++){
             System.out.println("Station " + stations[i].getName());
             openDoors();
             if (stations[i].equals(destination)){

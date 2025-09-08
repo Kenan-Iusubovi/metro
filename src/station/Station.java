@@ -13,6 +13,7 @@ import java.util.Random;
 public class Station {
 
     private static long idCounter = 0;
+
     private Long id;
     private String name;
     private Long code;
@@ -20,7 +21,7 @@ public class Station {
     private byte platformCount;
     private LocalDate builtOn;
     private Turnstile[] turnstiles;
-    private boolean isInterchange;
+    private boolean iInterchange;
     private Station interchangeStation;
 
     public Station(String name, long code, boolean accessible,
@@ -179,14 +180,14 @@ public class Station {
             throw new IllegalArgumentException("Add at least 1 turnstile.");
         }
         this.turnstiles = new Turnstile[0];
-        for (Turnstile t : turnstiles){
-            addTurnstile(t);
+        for (Turnstile turnstile : turnstiles){
+            addTurnstile(turnstile);
         }
     }
 
     private boolean stationHasActiveTurnstile(){
-        for (Turnstile t : turnstiles){
-            if (t.isActive()){
+        for (Turnstile turnstile : turnstiles){
+            if (turnstile.isActive()){
                 return true;
             }
         }
@@ -218,7 +219,7 @@ public class Station {
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
         return accessible == station.accessible && platformCount == station.platformCount
-                && isInterchange == station.isInterchange &&
+                && iInterchange == station.iInterchange &&
                 Objects.equals(id, station.id) && Objects.equals(name, station.name) &&
                 Objects.equals(code, station.code) && Objects.equals(builtOn, station.builtOn)
                 && Objects.deepEquals(turnstiles, station.turnstiles) &&
@@ -228,6 +229,6 @@ public class Station {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, code, accessible, platformCount, builtOn,
-                Arrays.hashCode(turnstiles), isInterchange, interchangeStation);
+                Arrays.hashCode(turnstiles), iInterchange, interchangeStation);
     }
 }

@@ -5,10 +5,11 @@ import ticket.Ticket;
 public class Turnstile {
 
     private static long idCounter = 0;
+
     private Long id;
     private String code;
-    private boolean isActive;
-    private boolean isClosed;
+    private boolean active;
+    private boolean closed;
 
     public Turnstile(String code, boolean active) {
         this.id = ++idCounter;
@@ -33,32 +34,32 @@ public class Turnstile {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void activate() {
-        this.isActive = true;
+        this.active = true;
     }
 
     public void deactivate() {
-        this.isActive = false;
+        this.active = false;
     }
 
     public boolean isClosed() {
-        return isClosed;
+        return closed;
     }
 
     public void open() {
-        this.isClosed = false;
+        this.closed = false;
         System.out.println("Turnstile with code" + code + " opened.");
     }
 
     public void close() {
-        this.isClosed = true;
+        this.closed = true;
     }
 
     public void pass(Ticket ticket) {
-        if (!isActive) {
+        if (!active) {
             throw new RuntimeException("Turnstile " + code + " is deactivated.");
         }
         if (ticket == null) {
@@ -80,6 +81,6 @@ public class Turnstile {
     }
 
     public void setActive(boolean active) {
-        this.isActive = active;
+        this.active = active;
     }
 }

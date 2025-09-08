@@ -21,7 +21,8 @@ public class EmailService {
         System.out.println();
     }
 
-    public void sendTicketPurchaseSuccess(String to, String passengerName, UUID ticketId, String price) {
+    public void sendTicketPurchaseSuccess(String to, String passengerName,
+                                          UUID ticketId, String price) {
         String subject = "🎟 Ticket Purchase Success";
         String body =
                 "Hello " + passengerName + ",\n\n" +

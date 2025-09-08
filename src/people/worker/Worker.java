@@ -3,13 +3,14 @@ package people.worker;
 public class Worker {
 
     private static long idCounter = 0;
+
     private Long id;
     private String firstname;
     private String surname;
     private WorkerProfession profession;
     private String licenseNumber;
     private int yearsOfExperience;
-    private boolean isWorking;
+    private boolean working;
     private char grade;
 
     public Worker(String firstname, String surname,
@@ -21,12 +22,11 @@ public class Worker {
         setLicenseNumber(licenseNumber);
         setYearsOfExperience(yearsOfExperience);
         setProfession(profession);
-        this.isWorking = false;
+        this.working = false;
         setGrade(grade);
     }
 
     public long getId() {
-
         return id;
     }
 
@@ -86,17 +86,17 @@ public class Worker {
     }
 
     public boolean isWorking() {
-        return isWorking;
+        return working;
     }
 
     public void startWorking() {
-        this.isWorking = true;
+        this.working = true;
         System.out.println(this.profession + " started the work");
     }
 
     public void stopWorking(){
-        this.isWorking = false;
-        System.out.println(this.profession + " stoped the work");
+        this.working = false;
+        System.out.println(this.profession + " finished the work");
     }
 
     public char getGrade() {

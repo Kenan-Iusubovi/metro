@@ -9,6 +9,7 @@ import java.util.UUID;
 public class Ticket {
 
     private static long idCounter = 0;
+
     private Long id;
     private UUID code;
     private BigDecimal price;
@@ -17,7 +18,6 @@ public class Ticket {
     private TicketStatus status;
 
     public Ticket(BigDecimal price, PaymentMethod paymentMethod) {
-
         this.id = ++idCounter;
         this.code = UUID.randomUUID();
         this.price = price;

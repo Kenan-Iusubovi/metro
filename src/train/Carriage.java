@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class Carriage {
 
     private static long idCounter = 0;
+
     private long id;
     private byte doorCount;
     private short productionYear;

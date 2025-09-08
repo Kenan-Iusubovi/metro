@@ -17,6 +17,7 @@ public class Metro {
 
     private static long idCounter = 0;
     public static final String SYSTEM_VENDOR = "Metro network";
+
     private Long id;
     private String city;
     private LocalDateTime launchedOn;
@@ -165,8 +166,8 @@ public class Metro {
             throw new IllegalArgumentException("Add at least 1 schedule.");
         }
         this.schedules = new Schedule[0];
-        for (Schedule s : schedules){
-            addSchedule(s);
+        for (Schedule schedule : schedules){
+            addSchedule(schedule);
         }
     }
 
@@ -216,16 +217,21 @@ public class Metro {
             throw new IllegalArgumentException("Destination station can't be null.");
         }
         LocalTime departureTime = null;
-        for (Schedule s : schedules){
-            station.Station[] stations = s.getLine().getStations();
-            for (Station st : stations){
-                if (st.equals(onboardingStation)){
-                    departureTime = s.nextDeparture(st);
+
+        for (Schedule schedule : schedules){
+            station.Station[] stations = schedule.getLine().getStations();
+            for (Station station : stations){
+                if (station.equals(onboardingStation)){
+                    departureTime = schedule.nextDepartureTime(station,LocalTime.now());
                     if (departureTime != null){
-                        st.enterStation(passenger,ticket);
-                        Train train = s.getTrainByDepartureTime(st,departureTime);
+                        station.enterStation(passenger,ticket);
+
+                        Train train = schedule.getTrainByDepartureTime(station,departureTime);
+                        train.getDriver().startWorking();
                         Station destination = train.enterTheTrain(departureTime,passenger,
-                                s.getLine(),destinationStation);
+                                schedule.getLine(),destinationStation);
+
+                        train.getDriver().stopWorking();
                         System.out.println(passenger.getFirstname() + passenger.getSurname() +
                                 " arrived at destination station " + destination.getName());
                         System.out.println("Thank you for using our metro system hope its " +

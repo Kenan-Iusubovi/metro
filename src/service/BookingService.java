@@ -34,10 +34,13 @@ public class BookingService {
 
     public Ticket book(Metro metro, Passenger passenger, PaymentMethod method) {
         checkConditions(metro,passenger);
+
         BigDecimal price = fareCalculator.calculateTicketPrice(passenger.getCategory());
         metro.getPaymentService().processPayment(price, method);
+
         Ticket ticket = new Ticket(price, method);
         passenger.addTicket(ticket);
+
         this.issuedTickets = (Ticket[]) ArrayUtils.add(this.issuedTickets, ticket);
         emailService.sendTicketPurchaseSuccess(
                 passenger.getEmail(),

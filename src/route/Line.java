@@ -7,6 +7,7 @@ import utils.ArrayUtils;
 public class Line {
 
     private static long idCounter = 0;
+
     private Long id;
     private Long code;
     private String name;
@@ -126,8 +127,8 @@ public class Line {
         if (stations.length < 2){
             throw new IllegalArgumentException("To make a line should add minimum 2 stations.");
         }
-        for (Station s : stations){
-            addStation(s);
+        for (Station station : stations){
+            addStation(station);
         }
     }
 

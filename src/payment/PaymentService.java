@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public class PaymentService {
 
     private static final int MAX_RECORDS = 100;
+
     private LocalDateTime[] timestamps;
     private String[] texts;
     private int size;
