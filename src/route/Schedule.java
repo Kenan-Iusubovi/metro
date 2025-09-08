@@ -151,7 +151,7 @@ public class Schedule {
         return null;
     }
 
-    public static final class Generator {
+    public static final class ScheudeleGenerator {
 
         public static Schedule fixedHeadway(Line line,
                                             LocalTime firstAtOrigin,
@@ -170,6 +170,7 @@ public class Schedule {
             if (perStationOffsetMin < 0){
                 perStationOffsetMin = 0;
             }
+
             Station[] stations = line.getStations();
             LocalTime[][] departures = new LocalTime[stations.length][];
             int firstMin = firstAtOrigin.getHour() * 60 + firstAtOrigin.getMinute();

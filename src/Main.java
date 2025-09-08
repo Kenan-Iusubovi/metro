@@ -175,7 +175,7 @@ public class Main {
         tbilisiTrain1.assignDriver(driver);
         akhmeteliVarketiliLine.addTrain(tbilisiTrain1);
 
-        Schedule schedule = Schedule.Generator.fromTrainCount(
+        Schedule schedule = Schedule.ScheudeleGenerator.fromTrainCount(
                 akhmeteliVarketiliLine, tbilisiMetro,1,
                 2, 2, 30, 5
         );
