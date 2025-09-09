@@ -9,9 +9,9 @@ public abstract class Employee extends Human {
     private static long idCounter = 0;
 
     private Long id;
-    protected String licenseNumber;
-    protected int yearsOfExperience;
-    protected boolean working;
+    private String licenseNumber;
+    private int yearsOfExperience;
+    private boolean working;
 
     public Employee(String firstname, String surname,
                     String licenseNumber, int yearsOfExperience) {
@@ -37,28 +37,6 @@ public abstract class Employee extends Human {
 
     public long getId() {
         return id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        if (firstname == null || firstname.isBlank()) {
-            throw new IllegalArgumentException("Firstname can't be null or empty.");
-        }
-        this.firstname = firstname;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        if (surname == null || surname.isBlank()) {
-            throw new IllegalArgumentException("Surname can't be null or empty.");
-        }
-        this.surname = surname;
     }
 
     public String getLicenseNumber() {
@@ -87,6 +65,9 @@ public abstract class Employee extends Human {
         return working;
     }
 
+    protected void setWorking(boolean working){
+        this.working = working;
+    }
     protected abstract void startWorking();
 
     protected abstract void stopWorking();
@@ -106,6 +87,7 @@ public abstract class Employee extends Human {
     @Override
     public String toString() {
         return "Employee{%s %s, license=%s, experience=%d}"
-                .formatted(this.firstname, this.surname, this.licenseNumber, this.yearsOfExperience);
+                .formatted(getFirstname(), getSurname(),
+                        this.licenseNumber, this.yearsOfExperience);
     }
 }

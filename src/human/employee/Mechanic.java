@@ -14,14 +14,14 @@ public class Mechanic extends Employee {
     public Mechanic(String firstname, String surname, String licenseNumber, int yearsOfExperience) {
         super(firstname, surname, licenseNumber, yearsOfExperience);
         setDefaultRepairDescription();
-        this.working = false;
+        setWorking(false);
     }
 
     public Mechanic(String firstname, String surname,
                     String licenseNumber, int yearsOfExperience, Train train) {
         super(firstname, surname, licenseNumber, yearsOfExperience);
         setDefaultRepairDescription();
-        this.working = false;
+        setWorking(false);
         assignTrain(train);
     }
 
@@ -29,14 +29,14 @@ public class Mechanic extends Employee {
                     String licenseNumber, int yearsOfExperience) {
         super(firstname, surname, dateOfBirth, licenseNumber, yearsOfExperience);
         setDefaultRepairDescription();
-        this.working = false;
+        setWorking(false);
     }
 
     public Mechanic(String firstname, String surname, LocalDate dateOfBirth,
                     String licenseNumber, int yearsOfExperience, Train train) {
         super(firstname, surname, dateOfBirth, licenseNumber, yearsOfExperience);
         setDefaultRepairDescription();
-        this.working = false;
+        setWorking(false);
         assignTrain(train);
     }
 
@@ -45,17 +45,17 @@ public class Mechanic extends Employee {
         if (getAssignedTrain() == null) {
             throw new RuntimeException("Please first assign the train which should be repaired.");
         }
-        if (working) {
-            System.out.printf("Mechanic %s %s can't start a new repair, " +
-                            "still working on the old one.%n",
-                    getFirstname(), getSurname());
+        if (isWorking()) {
+            System.out.printf(
+                    "Mechanic %s %s can't start a new repair, still working on the old one.%n",
+                    getFirstname(), getSurname()
+            );
             return;
         }
-        this.working = true;
-        System.out.printf("Mechanic %s %s started repair.%n", this.firstname, this.surname);
+        setWorking(true);
+        System.out.printf("Mechanic %s %s started repair.%n", getFirstname(), getSurname());
 
-        this.activeRecord = new CarriageMaintenanceRecord(assignedTrain.getCarriages(),
-                this);
+        this.activeRecord = new CarriageMaintenanceRecord(assignedTrain.getCarriages(), this);
         this.activeRecord.openTicket(repairDescription);
 
         try {
@@ -67,7 +67,7 @@ public class Mechanic extends Employee {
 
     public void startWorking(String description) {
         if (description == null || description.isBlank()) {
-            throw new IllegalArgumentException("Description of repair can't be null. or empty");
+            throw new IllegalArgumentException("Description of repair can't be null or empty.");
         }
         this.repairDescription = description;
         startWorking();
@@ -75,7 +75,7 @@ public class Mechanic extends Employee {
 
     @Override
     public void stopWorking() {
-        if (!working) {
+        if (!isWorking()) {
             System.out.printf("Mechanic %s %s is not currently working.%n",
                     getFirstname(), getSurname());
             return;
@@ -87,7 +87,7 @@ public class Mechanic extends Employee {
         this.activeRecord = null;
         setDefaultRepairDescription();
         this.assignedTrain = null;
-        this.working = false;
+        setWorking(false);
     }
 
     public Train getAssignedTrain() {
@@ -96,20 +96,19 @@ public class Mechanic extends Employee {
 
     public void assignTrain(Train train) {
         if (train == null) {
-            throw new IllegalArgumentException("Train you want assign to" +
-                    " the Mechanic can't be null");
+            throw new IllegalArgumentException("Train you want to assign to the Mechanic can't be null.");
         }
         if (this.assignedTrain != null) {
-            System.out.printf("Mechanic %s %s with license number %s already has an " +
-                            "assigned train (code: %s).%n + Please stop working" +
-                            " to assign a new train.%n",
-                    getFirstname(), getSurname(),
-                    getLicenseNumber(), this.assignedTrain.getCode());
+            System.out.printf(
+                    "Mechanic %s %s with license number %s already has an assigned train (code: %s).%n" +
+                            "Please stop working to assign a new train.%n",
+                    getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
+            );
             return;
         }
         this.assignedTrain = train;
         System.out.printf("Mechanic %s %s was assigned to train with code %s.%n",
-                this.firstname, this.surname, train.getCode());
+                getFirstname(), getSurname(), train.getCode());
     }
 
     private void setDefaultRepairDescription() {

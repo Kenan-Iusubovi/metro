@@ -13,12 +13,12 @@ public class Station {
     private static long idCounter = 0;
 
     private Long id;
-    protected String name;
-    protected Long code;
-    protected boolean accessible;
-    protected byte platformCount;
-    protected LocalDate builtOn;
-    protected Turnstile[] turnstiles;
+    private String name;
+    private Long code;
+    private boolean accessible;
+    private byte platformCount;
+    private LocalDate builtOn;
+    private Turnstile[] turnstiles;
 
     public Station(String name, long code, boolean accessible,
                    byte platformCount, LocalDate builtOn) {
