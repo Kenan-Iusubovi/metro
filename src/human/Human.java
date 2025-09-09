@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 public abstract class Human {
 
-    protected String firstname;
-    protected String surname;
-    protected LocalDate dateOfBirth;
+    private String firstname;
+    private String surname;
+    private LocalDate dateOfBirth;
 
 
     public Human(String firstname, String surname) {

@@ -35,50 +35,53 @@ public class Driver extends Employee {
 
     public void assignTrain(Train train) {
         if (train == null) {
-            throw new IllegalArgumentException("Train you want to assign to the " +
-                    "driver can't be null.");
+            throw new IllegalArgumentException("Train you want to assign to the driver can't be null.");
         }
-        if (this.assignedTrain != null && this.working) {
+        if (this.assignedTrain != null && isWorking()) {
             System.out.printf(
                     "Driver %s %s (License: %s) is already driving train with code %s.%n" +
                             "Please stop working to assign a new train.%n",
-                    this.firstname, this.surname, this.licenseNumber, this.assignedTrain.getCode()
+                    getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
             );
             return;
         }
         this.assignedTrain = train;
         System.out.printf("Driver %s %s (License: %s) was assigned to train with code %s.%n",
-                this.firstname, this.surname, this.licenseNumber, train.getCode());
+                getFirstname(), getSurname(), getLicenseNumber(), train.getCode());
     }
 
     @Override
     public void startWorking() {
-        if (this.working) {
+        if (isWorking()) {
             System.out.printf("Driver %s %s is already on duty driving train %s.%n",
-                    this.firstname, this.surname, this.assignedTrain.getCode());
+                    getFirstname(), getSurname(),
+                    (assignedTrain != null ? assignedTrain.getCode() : "<none>"));
             return;
         }
         if (assignedTrain == null) {
             throw new IllegalStateException("No train assigned to driver.");
         }
-        this.working = true;
-        System.out.printf("Driver %s %s (License: %s) started the shift and is " +
-                        "now driving train %s.%n",
-                this.firstname, this.surname, this.licenseNumber, assignedTrain.getCode());
+        setWorking(true);
+        System.out.printf(
+                "Driver %s %s (License: %s) started the shift and is now driving train %s.%n",
+                getFirstname(), getSurname(), getLicenseNumber(), assignedTrain.getCode()
+        );
     }
 
     @Override
     public void stopWorking() {
-        if (!this.working) {
+        if (!isWorking()) {
             System.out.printf("Driver %s %s is not currently working.%n",
-                    this.firstname, this.surname);
+                    getFirstname(), getSurname());
             return;
         }
-        System.out.printf("Driver %s %s (License: %s) finished the " +
-                        "shift and stopped driving train %s.%n",
-                this.firstname, this.surname, this.licenseNumber, assignedTrain.getCode());
+        System.out.printf(
+                "Driver %s %s (License: %s) finished the shift and stopped driving train %s.%n",
+                getFirstname(), getSurname(), getLicenseNumber(),
+                (assignedTrain != null ? assignedTrain.getCode() : "<none>")
+        );
 
-        this.working = false;
+        setWorking(false);
         this.assignedTrain = null;
     }
 
@@ -98,12 +101,12 @@ public class Driver extends Employee {
     @Override
     public String toString() {
         return "Driver{" +
-                "licenseNumber='" + licenseNumber + '\'' +
-                ", yearsOfExperience=" + yearsOfExperience +
-                ", working=" + working +
-                ", firstname='" + firstname + '\'' +
-                ", surname='" + surname + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
+                "licenseNumber='" + getLicenseNumber() + '\'' +
+                ", yearsOfExperience=" + getYearsOfExperience() +
+                ", working=" + isWorking() +
+                ", firstname='" + getFirstname() + '\'' +
+                ", surname='" + getSurname() + '\'' +
+                ", dateOfBirth=" + getDateOfBirth() +
                 '}';
     }
 }
