@@ -51,7 +51,7 @@ public class Turnstile {
 
     public void open() {
         this.closed = false;
-        System.out.println("Turnstile with code" + code + " opened.");
+        System.out.printf("Turnstile with code%s opened.%n", code);
     }
 
     public void close() {
@@ -66,17 +66,17 @@ public class Turnstile {
             throw new RuntimeException("No ticket presented.");
         }
         if (ticket.useForEntry()){
-            System.out.println("Ticket " + ticket.getCode() + " accepted at turnstile " + code);
+            System.out.printf("Ticket %s accepted at turnstile %s%n", ticket.getCode(), code);
             open();
-            System.out.println("Passenger goes throw.");
+            System.out.printf("Passenger goes throw.%n");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Passenger goes inside the station.");
+            System.out.printf("Passenger goes inside the station.%n");
             close();
-            System.out.println("Turnstile " + code + " is closed!");
+            System.out.printf("Turnstile %s is closed!%n", code);
         }
     }
 

@@ -1,29 +1,38 @@
-package people.worker;
+package human.employee;
 
-public class Worker {
+import human.Human;
+
+import java.time.LocalDate;
+
+public abstract class Employee extends Human {
 
     private static long idCounter = 0;
 
     private Long id;
-    private String firstname;
-    private String surname;
-    private WorkerProfession profession;
-    private String licenseNumber;
-    private int yearsOfExperience;
-    private boolean working;
-    private char grade;
+    protected String licenseNumber;
+    protected int yearsOfExperience;
+    protected boolean working;
 
-    public Worker(String firstname, String surname,
-                  String licenseNumber, int yearsOfExperience,
-                  WorkerProfession profession, char grade) {
+    public Employee(String firstname, String surname,
+                    String licenseNumber, int yearsOfExperience) {
+        super(firstname, surname);
         this.id = ++idCounter;
         setFirstname(firstname);
         setSurname(surname);
         setLicenseNumber(licenseNumber);
         setYearsOfExperience(yearsOfExperience);
-        setProfession(profession);
         this.working = false;
-        setGrade(grade);
+    }
+
+    public Employee(String firstname, String surname, LocalDate dateOfBirth,
+                    String licenseNumber, int yearsOfExperience) {
+        super(firstname, surname,dateOfBirth);
+        this.id = ++idCounter;
+        setFirstname(firstname);
+        setSurname(surname);
+        setLicenseNumber(licenseNumber);
+        setYearsOfExperience(yearsOfExperience);
+        this.working = false;
     }
 
     public long getId() {
@@ -52,22 +61,11 @@ public class Worker {
         this.surname = surname;
     }
 
-    public WorkerProfession getProfession() {
-        return profession;
-    }
-
-    public void setProfession(WorkerProfession profession) {
-        if (profession == null) {
-            throw new IllegalArgumentException("Profession can't be null.");
-        }
-        this.profession = profession;
-    }
-
     public String getLicenseNumber() {
         return licenseNumber;
     }
 
-    public void setLicenseNumber(String licenseNumber) {
+    private void setLicenseNumber(String licenseNumber) {
         if (licenseNumber == null || licenseNumber.isBlank()) {
             throw new IllegalArgumentException("License number can't be null or empty.");
         }
@@ -89,21 +87,25 @@ public class Worker {
         return working;
     }
 
-    public void startWorking() {
-        this.working = true;
-        System.out.println(this.profession + " started the work");
+    protected abstract void startWorking();
+
+    protected abstract void stopWorking();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employee other)) return false;
+        return this.licenseNumber.equals(other.licenseNumber);
     }
 
-    public void stopWorking(){
-        this.working = false;
-        System.out.println(this.profession + " finished the work");
+    @Override
+    public int hashCode() {
+        return licenseNumber.hashCode();
     }
 
-    public char getGrade() {
-        return grade;
-    }
-
-    public void setGrade(char grade) {
-        this.grade = Character.toUpperCase(grade);
+    @Override
+    public String toString() {
+        return "Employee{%s %s, license=%s, experience=%d}"
+                .formatted(this.firstname, this.surname, this.licenseNumber, this.yearsOfExperience);
     }
 }

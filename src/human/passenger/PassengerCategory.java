@@ -1,4 +1,4 @@
-package people.passenger;
+package human.passenger;
 
 public enum PassengerCategory {
 

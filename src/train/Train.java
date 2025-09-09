@@ -1,8 +1,7 @@
 package train;
 
-import people.passenger.Passenger;
-import people.worker.Worker;
-import people.worker.WorkerProfession;
+import human.employee.Driver;
+import human.passenger.Passenger;
 import route.Line;
 import station.Station;
 import utils.ArrayUtils;
@@ -19,7 +18,7 @@ public class Train {
     private int onboardCount;
     private byte acTemperature;
     boolean isDoorsOpen;
-    private Worker driver;
+    private Driver driver;
 
     public Train(Carriage[] carriages) {
         this.id = ++idCounter;
@@ -35,36 +34,35 @@ public class Train {
     }
 
     private boolean board(Passenger passenger) {
-       openDoors();
+        openDoors();
         onboardCount++;
         if (onboardCount > getCapacity()){
-            System.err.println("The train is full");
+            System.err.printf("The train is full%n");
             onboardCount--;
             return false;
 
         }
-        System.out.println( passenger.getFirstname() + passenger.getSurname() +
-                " passenger just unboarded, " +
-                "total amount of passengers " + onboardCount);
+        System.out.printf("%s%s passenger just unboarded, total amount of passengers %d%n",
+                passenger.getFirstname(), passenger.getSurname(), onboardCount);
         return true;
     }
 
     private void alight(Passenger passenger) {
         closeDoors();
         onboardCount --;
-        System.out.println(passenger.getFirstname() + passenger.getSurname() +
-                "alight from train");
+        System.out.printf("%s%salight from train%n",
+                passenger.getFirstname(), passenger.getSurname());
         closeDoors();
     }
 
     private void openDoors(){
         isDoorsOpen = true;
-        System.out.println(getDoorsAmount() + " door's opened");
+        System.out.printf("%d door's opened%n", getDoorsAmount());
     }
 
     private void closeDoors(){
         isDoorsOpen = false;
-        System.out.println(getDoorsAmount() + " door's closed");
+        System.out.printf("%d door's closed%n", getDoorsAmount());
     }
 
     public boolean isFull() {
@@ -118,16 +116,13 @@ public class Train {
         }
     }
 
-    public Worker getDriver() {
+    public Driver getDriver() {
         return driver;
     }
 
-    public void assignDriver(Worker driver) {
+    public void assignDriver(Driver driver) {
         if (driver == null){
             throw new IllegalArgumentException("You can't assign null instead of driver");
-        }
-        if (!WorkerProfession.DRIVER.equals(driver.getProfession())){
-            throw new IllegalArgumentException("You can assign only drivers to drive a train");
         }
         this.driver = driver;
     }
@@ -163,7 +158,7 @@ public class Train {
         return doorCount;
     }
 
-    private Station go(Line line, Station destination){
+    private Station go(Line line, Station destination, Passenger passenger, boolean continueToTerminus){
         if (line == null){
             throw new IllegalArgumentException("Nowhere to go line is null.");
         }
@@ -171,37 +166,51 @@ public class Train {
             throw new IllegalArgumentException("Nowhere to go stations is null.");
         }
         if (driver == null){
-            throw new RuntimeException("To be able run metro system" +
-                    " you should assign driver for each train!");
+            throw new RuntimeException("To be able run metro system you should assign driver for each train!");
         }
+
         Station[] stations = line.getStations();
         for (int i = 0; i < stations.length; i++){
-            System.out.println("Station " + stations[i].getName());
+            System.out.printf("Station %s%n", stations[i].getName());
             openDoors();
-            if (stations[i].equals(destination)){
-                return stations[i];
+
+            if (passenger != null && stations[i].equals(destination)){
+                alight(passenger);
+                System.out.printf("%s %s arrived at destination station %s%n",
+                        passenger.getFirstname(), passenger.getSurname(), stations[i].getName());
+
+                if (!continueToTerminus) {
+                    return stations[i];
+                }
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+
+            if (i < stations.length - 1) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.printf("Caution door's is closing, next station is %s%n", stations[i + 1].getName());
+                closeDoors();
             }
-            System.out.println("Caution door's is closing," +
-                    " next station is " + stations[i+1].getName());
-            closeDoors();
         }
-        return null;
+        return stations[stations.length - 1];
     }
+
+
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
-                              Line line, Station destinationStation){
+                                 Line line, Station destinationStation){
         if (LocalTime.now().isBefore(departureTime)){
-            System.out.println(passenger.getFirstname() + " " + passenger.getSurname() +
-                    " is waiting for train at " + departureTime);
+            System.out.printf("%s %s is waiting for train at %s%n",
+                    passenger.getFirstname(), passenger.getSurname(), departureTime);
         }
-        System.out.println("Train is arrived.");
+        System.out.printf("Train is arrived.%n");
         board(passenger);
-        Station station = go(line, destinationStation);
-        alight(passenger);
-        return station;
+
+        go(line, destinationStation, passenger, true);
+
+        return destinationStation;
     }
+
+
 }

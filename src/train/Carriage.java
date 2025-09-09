@@ -12,6 +12,7 @@ public class Carriage {
     private int seatCapacity;
     private int standingCapacity;
     private CarriageStatus carriageStatus;
+    private float severityScore;
 
     public Carriage(byte doorCount, short productionYear, int seats) {
         this.id = ++idCounter;
@@ -19,6 +20,7 @@ public class Carriage {
         setProductionYear(productionYear);
         setSeatCapacity(seats);
         setCarriageStatus(CarriageStatus.ACTIVE);
+        this.severityScore = 10;
     }
 
     public Carriage(byte doorCount, short productionYear,
@@ -28,6 +30,7 @@ public class Carriage {
         setProductionYear(productionYear);
         setSeatCapacity(seats);
         setCarriageStatus(carriageStatus);
+        this.severityScore = 10;
     }
 
     public long getId() {
@@ -96,5 +99,13 @@ public class Carriage {
 
     public int getCarriageTotalCapacity(){
         return seatCapacity + standingCapacity;
+    }
+
+    public float getSeverityScore() {
+        return severityScore;
+    }
+
+    public void setSeverityScore(float severityScore) {
+        this.severityScore = severityScore;
     }
 }
