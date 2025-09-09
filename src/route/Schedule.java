@@ -32,7 +32,7 @@ public class Schedule {
     }
 
     public LocalTime nextDepartureTime(Station station, LocalTime at) {
-        if (at == null){
+        if (at == null) {
             throw new IllegalArgumentException("Time can't be null.");
         }
         int index = stationIndex(station);
@@ -40,15 +40,15 @@ public class Schedule {
             return null;
         }
         LocalTime[] times = departureTimes[index];
-        if (times == null || times.length == 0){
+        if (times == null || times.length == 0) {
             return null;
         }
         LocalTime candidate = null;
-        LocalTime earliest  = null;
+        LocalTime earliest = null;
 
         for (int i = 0; i < times.length; i++) {
             LocalTime time = times[i];
-            if (time == null){
+            if (time == null) {
                 continue;
             }
             if (earliest == null || time.isBefore(earliest)) {
@@ -121,14 +121,14 @@ public class Schedule {
     }
 
     public Train getTrainByDepartureTime(Station station, LocalTime departureTime) {
-        if (station == null){
+        if (station == null) {
             throw new IllegalArgumentException("Station can't be null.");
         }
-        if (departureTime == null){
+        if (departureTime == null) {
             throw new IllegalArgumentException("Departure time can't be null.");
         }
         int stationIndex = stationIndex(station);
-        if (stationIndex < 0){
+        if (stationIndex < 0) {
             return null;
         }
         LocalTime[] stationTimes = departureTimes[stationIndex];
@@ -158,23 +158,23 @@ public class Schedule {
                                             LocalTime lastAtOrigin,
                                             int headwayMin,
                                             int perStationOffsetMin) {
-            if (line == null){
+            if (line == null) {
                 throw new IllegalArgumentException("Line can't be null.");
             }
-            if (firstAtOrigin == null || lastAtOrigin == null){
+            if (firstAtOrigin == null || lastAtOrigin == null) {
                 throw new IllegalArgumentException("Times can't be null.");
             }
-            if (headwayMin <= 0){
+            if (headwayMin <= 0) {
                 throw new IllegalArgumentException("headwayMin must be > 0");
             }
-            if (perStationOffsetMin < 0){
+            if (perStationOffsetMin < 0) {
                 perStationOffsetMin = 0;
             }
 
             Station[] stations = line.getStations();
             LocalTime[][] departures = new LocalTime[stations.length][];
             int firstMin = firstAtOrigin.getHour() * 60 + firstAtOrigin.getMinute();
-            int lastMin  =  lastAtOrigin.getHour()  * 60 +  lastAtOrigin.getMinute();
+            int lastMin = lastAtOrigin.getHour() * 60 + lastAtOrigin.getMinute();
 
             for (int i = 0; i < stations.length; i++) {
                 if (stations[i] == null) {
@@ -203,7 +203,7 @@ public class Schedule {
                                               int runMinBetweenStations,
                                               int dwellMidSec,
                                               int terminalTurnMin) {
-            if (line == null){
+            if (line == null) {
                 throw new IllegalArgumentException("Line can't be null.");
             }
             if (metro.getServiceStartAt() == null || metro.getServiceEndAt() == null) {
@@ -212,7 +212,7 @@ public class Schedule {
             if (trains <= 0) {
                 throw new IllegalArgumentException("trains must be > 0");
             }
-            if (perStationOffsetMin < 0){
+            if (perStationOffsetMin < 0) {
                 perStationOffsetMin = 0;
             }
             int stationCount = (line.getStations() == null) ? 0 : line.getStations().length;
@@ -237,7 +237,7 @@ public class Schedule {
             int segments = stationCount - 1;
             int intermediates = Math.max(0, stationCount - 2);
             double oneWay = segments * runMinBetweenStations + intermediates * dwellMidMin;
-            double cycle  = 2 * oneWay + 2 * terminalTurnMin;
+            double cycle = 2 * oneWay + 2 * terminalTurnMin;
 
             return Math.max(1, (int) Math.ceil(cycle / trains));
         }
@@ -245,12 +245,12 @@ public class Schedule {
         public static void printTimetable(Line line, LocalTime[][] departures) {
             Station[] stations = (line == null) ? null : line.getStations();
 
-            if (stations == null || departures == null){
+            if (stations == null || departures == null) {
                 return;
             }
             for (int i = 0; i < stations.length; i++) {
                 String name = (stations[i] == null) ? ("<null-" + i + ">") : stations[i].getName();
-                System.out.print(name + ": ");
+                System.out.printf("%s: ", name);
                 LocalTime[] row = (i < departures.length &&
                         departures[i] != null) ? departures[i] : new LocalTime[0];
 
@@ -259,10 +259,10 @@ public class Schedule {
                     if (t != null) {
                         String hh = (t.getHour() < 10 ? "0" : "") + t.getHour();
                         String mm = (t.getMinute() < 10 ? "0" : "") + t.getMinute();
-                        System.out.print(hh + ":" + mm + (k < row.length - 1 ? ", " : ""));
+                        System.out.printf("%s:%s%s", hh, mm, (k < row.length - 1 ? ", " : ""));
                     }
                 }
-                System.out.println();
+                System.out.printf("%n");
             }
         }
     }

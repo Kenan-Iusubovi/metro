@@ -1,19 +1,20 @@
+import human.employee.Driver;
+import human.employee.Mechanic;
+import human.passenger.Passenger;
+import human.passenger.PassengerCategory;
 import payment.PaymentMethod;
 import payment.PaymentService;
-import people.passenger.Passenger;
-import people.passenger.PassengerCategory;
-import people.worker.Worker;
-import people.worker.WorkerProfession;
 import route.Line;
 import route.Schedule;
 import service.BookingService;
+import station.InterchangeStation;
 import station.Station;
 import station.Turnstile;
 import system.Metro;
 import ticket.Ticket;
 import train.Carriage;
-import train.Train;
 import train.CarriageStatus;
+import train.Train;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -115,6 +116,66 @@ public class Main {
                 new Turnstile("ARA-T3", false)
         };
 
+        Turnstile[] stationSquare2Turnstiles = {
+                new Turnstile("SSQ2-T1", true),
+                new Turnstile("SSQ2-T2", true),
+                new Turnstile("SSQ2-T3", false)
+        };
+
+        Turnstile[] tsereteliTurnstiles = {
+                new Turnstile("TSE-T1", true),
+                new Turnstile("TSE-T2", false)
+        };
+
+        Turnstile[] technicalUniversityTurnstiles = {
+                new Turnstile("TUN-T1", true),
+                new Turnstile("TUN-T2", true)
+        };
+
+        Turnstile[] medicalUniversityTurnstiles = {
+                new Turnstile("MED-T1", true),
+                new Turnstile("MED-T2", false)
+        };
+
+        Turnstile[] delisiTurnstiles = {
+                new Turnstile("DEL-T1", true),
+                new Turnstile("DEL-T2", false)
+        };
+
+        Turnstile[] vazhaPshavelaTurnstiles = {
+                new Turnstile("VAZ-T1", true),
+                new Turnstile("VAZ-T2", true),
+                new Turnstile("VAZ-T3", false)
+        };
+
+        Turnstile[] stateUniversityTurnstiles = {
+                new Turnstile("UNI-T1", true),
+                new Turnstile("UNI-T2", false)
+        };
+
+        Station[] saburtaloStations = {
+                new InterchangeStation("Station Square2", 2001L, (byte) 2,
+                        LocalDate.of(1979, 1, 1), stationSquare2Turnstiles),
+                new Station("Tsereteli",              2002L, (byte) 2,
+                        LocalDate.of(1979, 1, 1), tsereteliTurnstiles),
+                new Station("Technical University",   2003L, (byte) 2,
+                        LocalDate.of(1979, 1, 1), technicalUniversityTurnstiles),
+                new Station("Medical University",     2004L, (byte) 2,
+                        LocalDate.of(2004, 1, 1), medicalUniversityTurnstiles),
+                new Station("Delisi",                 2005L, (byte) 2,
+                        LocalDate.of(1979, 1, 1), delisiTurnstiles),
+                new Station("Vazha-Pshavela",         2006L, (byte) 2,
+                        LocalDate.of(2000, 1, 1), vazhaPshavelaTurnstiles),
+                new Station("State University",       2007L, (byte) 2,
+                        LocalDate.of(2017, 1, 1), stateUniversityTurnstiles)
+        };
+
+
+
+        Line saburtaloLine = new Line(
+                7842, "Saburtalo", "GREEN", saburtaloStations
+        );
+
         Station[] akhmeteliVarketiliStations = {
                 new Station("Akhmeteli Theatre", 1000L, (byte) 2,
                         LocalDate.of(1989, 1, 1), akhmeteliTurnstiles),
@@ -130,7 +191,7 @@ public class Main {
                         LocalDate.of(1966, 1, 1), gotsiridzeTurnstiles),
                 new Station("Nadzaladevi",       1011L, (byte) 2,
                         LocalDate.of(1966, 1, 1), nadzaladeviTurnstiles),
-                new Station("Station Square",    1001L, (byte) 2,
+                new InterchangeStation("Station Square1",    1001L, (byte) 2,
                         LocalDate.of(1975, 1, 1), stationSquareTurnstiles),
                 new Station("Marjanishvili",     1002L, (byte) 2,
                         LocalDate.of(1966, 1, 1), marjanishviliTurnstiles),
@@ -150,9 +211,16 @@ public class Main {
                         LocalDate.of(1981, 1, 1), varketiliTurnstiles)
         };
 
+
         Line akhmeteliVarketiliLine = new Line(
                 5698, "Akhmeteli-Varketili", "RED", akhmeteliVarketiliStations
         );
+
+        InterchangeStation stationSquare1 = (InterchangeStation) akhmeteliVarketiliStations[7];
+        InterchangeStation stationSquare2 = (InterchangeStation) saburtaloStations[0];
+
+        stationSquare1.addTransferStation(stationSquare2);
+        stationSquare2.addTransferStation(stationSquare1);
 
         Carriage[] carriages = {
                 new Carriage((byte) 4, (short) 2010, 40, CarriageStatus.ACTIVE),
@@ -169,10 +237,14 @@ public class Main {
                 new Carriage((byte) 4, (short) 2021, 52, CarriageStatus.ACTIVE)
         };
 
-        Worker driver = new Worker("Levan", "Kiknavelidze",
-                "DRV-1234", 7, WorkerProfession.DRIVER, 'A');
+        Driver driver = new Driver("Levan", "Kiknavelidze",
+                "DRV-1234", 7);
+
         Train tbilisiTrain1 = new Train("TB1", carriages);
+
         tbilisiTrain1.assignDriver(driver);
+        driver.assignTrain(tbilisiTrain1);
+
         akhmeteliVarketiliLine.addTrain(tbilisiTrain1);
 
         Schedule schedule = Schedule.ScheudeleGenerator.fromTrainCount(
@@ -191,9 +263,16 @@ public class Main {
         tbilisiMetro.enterMetro(
                 ninoPassenger, ticket,
                 akhmeteliVarketiliLine.getStations()[0],
-                akhmeteliVarketiliLine.getStations()[15]
+                akhmeteliVarketiliLine.getStations()[10]
         );
 
+        Mechanic mechanic = new Mechanic("Jason", "Stethem",
+                "SCJ-0569",25, tbilisiTrain1);
 
+        mechanic.startWorking();
+        mechanic.stopWorking();
+
+        System.out.println("Thank you for using our metro system hope its " +
+                "working well Bogdan ;) :)");
     }
 }

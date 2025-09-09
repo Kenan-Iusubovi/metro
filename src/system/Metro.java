@@ -1,7 +1,7 @@
 package system;
 
 import payment.PaymentService;
-import people.passenger.Passenger;
+import human.passenger.Passenger;
 import route.Schedule;
 import service.FareCalculator;
 import station.Station;
@@ -35,12 +35,12 @@ public class Metro {
         this.schedules = new Schedule[0];
     }
 
-    public Metro(String city, LocalDate createdAt, Schedule schedule) {
+    public Metro(String city, LocalDate createdAt, Schedule[] schedule) {
         this.id = ++idCounter;
         setCity(city);
         this.createdAt = createdAt;
         this.launchedOn = LocalDateTime.now();
-        setSchedules(schedules);
+        setSchedules(schedule);
     }
 
     public static void setUp() {
@@ -228,14 +228,8 @@ public class Metro {
 
                         Train train = schedule.getTrainByDepartureTime(station,departureTime);
                         train.getDriver().startWorking();
-                        Station destination = train.enterTheTrain(departureTime,passenger,
+                        train.enterTheTrain(departureTime,passenger,
                                 schedule.getLine(),destinationStation);
-
-                        train.getDriver().stopWorking();
-                        System.out.println(passenger.getFirstname() + passenger.getSurname() +
-                                " arrived at destination station " + destination.getName());
-                        System.out.println("Thank you for using our metro system hope its " +
-                                "working well Bogdan ;) :)");
                         return;
                     }
                 }

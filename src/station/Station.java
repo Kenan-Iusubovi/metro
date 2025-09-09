@@ -1,12 +1,10 @@
 package station;
 
-import people.passenger.Passenger;
+import human.passenger.Passenger;
 import ticket.Ticket;
 import utils.ArrayUtils;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Random;
 
 
@@ -15,14 +13,12 @@ public class Station {
     private static long idCounter = 0;
 
     private Long id;
-    private String name;
-    private Long code;
-    private boolean accessible;
-    private byte platformCount;
-    private LocalDate builtOn;
-    private Turnstile[] turnstiles;
-    private boolean iInterchange;
-    private Station interchangeStation;
+    protected String name;
+    protected Long code;
+    protected boolean accessible;
+    protected byte platformCount;
+    protected LocalDate builtOn;
+    protected Turnstile[] turnstiles;
 
     public Station(String name, long code, boolean accessible,
                    byte platformCount, LocalDate builtOn) {
@@ -201,8 +197,8 @@ public class Station {
         this.turnstiles = (Turnstile[]) ArrayUtils.delete(this.turnstiles, turnstile);
     }
     public void enterStation(Passenger passenger, Ticket ticket){
-        System.out.println("Passenger " + passenger.getFirstname() + " " + passenger.getSurname() +
-                " entered station " + this.getName());
+        System.out.printf("Passenger %s %s entered station %s%n",
+                passenger.getFirstname(), passenger.getSurname(), this.getName());
         Random r = new Random();
         int randomTurnstile = r.nextInt(0,turnstiles.length);
         if (!stationHasActiveTurnstile()){
@@ -216,19 +212,18 @@ public class Station {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Station station = (Station) o;
-        return accessible == station.accessible && platformCount == station.platformCount
-                && iInterchange == station.iInterchange &&
-                Objects.equals(id, station.id) && Objects.equals(name, station.name) &&
-                Objects.equals(code, station.code) && Objects.equals(builtOn, station.builtOn)
-                && Objects.deepEquals(turnstiles, station.turnstiles) &&
-                Objects.equals(interchangeStation, station.interchangeStation);
+        if (this == o) return true;
+        if (!(o instanceof Station other)) return false;
+        return this.code == other.getCode();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, accessible, platformCount, builtOn,
-                Arrays.hashCode(turnstiles), iInterchange, interchangeStation);
+        return Long.hashCode(code);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{name='%s', code=%d}".formatted(name, code);
     }
 }

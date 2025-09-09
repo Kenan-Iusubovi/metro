@@ -78,4 +78,22 @@ public class Ticket {
     public TicketStatus getStatus() {
         return status;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Ticket other)) return false;
+        return code.equals(other.getCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return code.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{id=%d, code=%s, status=%s}".formatted(id, code, status);
+    }
+
 }

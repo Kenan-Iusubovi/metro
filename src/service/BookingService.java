@@ -1,7 +1,7 @@
 package service;
 
 import payment.PaymentMethod;
-import people.passenger.Passenger;
+import human.passenger.Passenger;
 import system.Metro;
 import ticket.Ticket;
 import utils.ArrayUtils;

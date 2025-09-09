@@ -1,6 +1,6 @@
 package service;
 
-import people.passenger.PassengerCategory;
+import human.passenger.PassengerCategory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
