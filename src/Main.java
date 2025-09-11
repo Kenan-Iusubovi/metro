@@ -1,20 +1,21 @@
-import human.employee.Driver;
-import human.employee.Mechanic;
-import human.passenger.Passenger;
-import human.passenger.PassengerCategory;
-import payment.PaymentMethod;
-import payment.PaymentService;
-import route.Line;
-import route.Schedule;
-import service.BookingService;
-import station.InterchangeStation;
-import station.Station;
-import station.Turnstile;
-import system.Metro;
-import ticket.Ticket;
-import train.Carriage;
-import train.CarriageStatus;
-import train.Train;
+import application.port.BookingService;
+import application.service.BookingServiceImpl;
+import application.service.payment.PaymentMethod;
+import application.service.payment.PaymentServiceImpl;
+import domain.people.employee.Driver;
+import domain.people.employee.Mechanic;
+import domain.people.passenger.Passenger;
+import domain.people.passenger.PassengerCategory;
+import domain.route.Line;
+import domain.route.Schedule;
+import domain.station.InterchangeStation;
+import domain.station.Station;
+import domain.station.Turnstile;
+import domain.system.Metro;
+import domain.ticket.Ticket;
+import domain.train.Carriage;
+import domain.train.CarriageStatus;
+import domain.train.Train;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,10 +24,11 @@ public class Main {
     public static void main(String[] args) {
 
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
-        tbilisiMetro.setPaymentService(new PaymentService());
+        tbilisiMetro.setPaymentService(new PaymentServiceImpl());
         tbilisiMetro.setServiceStartAt(LocalTime.of(8,30));
         tbilisiMetro.setServiceEndAt(LocalTime.of(11,59));
-        BookingService bookingService = new BookingService();
+
+        BookingService bookingService = new BookingServiceImpl();
 
         Turnstile[] akhmeteliTurnstiles = {
                 new Turnstile("AKH-T1", true),
