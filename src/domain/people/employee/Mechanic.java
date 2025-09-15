@@ -1,8 +1,8 @@
 package domain.people.employee;
 
-import domain.train.Train;
-import domain.train.CarriageMaintenanceRecord;
 
+import domain.train.CarriageMaintenanceRecord;
+import domain.train.Train;
 import java.time.LocalDate;
 
 public class Mechanic extends Employee {
@@ -43,7 +43,7 @@ public class Mechanic extends Employee {
     @Override
     public void startWorking() {
         if (getAssignedTrain() == null) {
-            throw new RuntimeException("Please first assign the domain.train which should be repaired.");
+            throw new RuntimeException("Please first assign the train which should be repaired.");
         }
         if (isWorking()) {
             System.out.printf(
@@ -55,7 +55,8 @@ public class Mechanic extends Employee {
         setWorking(true);
         System.out.printf("Mechanic %s %s started repair.%n", getFirstname(), getSurname());
 
-        this.activeRecord = new CarriageMaintenanceRecord(assignedTrain.getCarriages(), this);
+        this.activeRecord = new CarriageMaintenanceRecord(assignedTrain.getCarriages(),
+                this);
         this.activeRecord.openTicket(repairDescription);
 
         try {
@@ -100,14 +101,14 @@ public class Mechanic extends Employee {
         }
         if (this.assignedTrain != null) {
             System.out.printf(
-                    "Mechanic %s %s with license number %s already has an assigned domain.train (code: %s).%n" +
-                            "Please stop working to assign a new domain.train.%n",
+                    "Mechanic %s %s with license number %s already has an assigned train (code: %s).%n" +
+                            "Please stop working to assign a new train.%n",
                     getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
             );
             return;
         }
         this.assignedTrain = train;
-        System.out.printf("Mechanic %s %s was assigned to domain.train with code %s.%n",
+        System.out.printf("Mechanic %s %s was assigned to train with code %s.%n",
                 getFirstname(), getSurname(), train.getCode());
     }
 

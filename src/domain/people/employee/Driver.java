@@ -1,7 +1,7 @@
 package domain.people.employee;
 
-import domain.train.Train;
 
+import domain.train.Train;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -40,31 +40,31 @@ public class Driver extends Employee {
         }
         if (this.assignedTrain != null && isWorking()) {
             System.out.printf(
-                    "Driver %s %s (License: %s) is already driving domain.train with code %s.%n" +
-                            "Please stop working to assign a new domain.train.%n",
+                    "Driver %s %s (License: %s) is already driving train with code %s.%n" +
+                            "Please stop working to assign a new train.%n",
                     getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
             );
             return;
         }
         this.assignedTrain = train;
-        System.out.printf("Driver %s %s (License: %s) was assigned to domain.train with code %s.%n",
+        System.out.printf("Driver %s %s (License: %s) was assigned to train with code %s.%n",
                 getFirstname(), getSurname(), getLicenseNumber(), train.getCode());
     }
 
     @Override
     public void startWorking() {
         if (isWorking()) {
-            System.out.printf("Driver %s %s is already on duty driving domain.train %s.%n",
+            System.out.printf("Driver %s %s is already on duty driving train %s.%n",
                     getFirstname(), getSurname(),
                     (assignedTrain != null ? assignedTrain.getCode() : "<none>"));
             return;
         }
         if (assignedTrain == null) {
-            throw new IllegalStateException("No domain.train assigned to driver.");
+            throw new IllegalStateException("No train assigned to driver.");
         }
         setWorking(true);
         System.out.printf(
-                "Driver %s %s (License: %s) started the shift and is now driving domain.train %s.%n",
+                "Driver %s %s (License: %s) started the shift and is now driving train %s.%n",
                 getFirstname(), getSurname(), getLicenseNumber(), assignedTrain.getCode()
         );
     }
@@ -77,7 +77,7 @@ public class Driver extends Employee {
             return;
         }
         System.out.printf(
-                "Driver %s %s (License: %s) finished the shift and stopped driving domain.train %s.%n",
+                "Driver %s %s (License: %s) finished the shift and stopped driving train %s.%n",
                 getFirstname(), getSurname(), getLicenseNumber(),
                 (assignedTrain != null ? assignedTrain.getCode() : "<none>")
         );

@@ -1,86 +1,87 @@
 package application.service.payment;
 
+import application.exception.PaymentFailedException;
 import application.port.PaymentService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class PaymentServiceImpl implements PaymentService {
 
     private static final int MAX_RECORDS = 100;
 
-    private LocalDateTime[] timestamps;
-    private String[] texts;
-    private int size;
-
-    public PaymentServiceImpl() {
-        this.timestamps = new LocalDateTime[MAX_RECORDS];
-        this.texts = new String[MAX_RECORDS];
-        this.size = 0;
-    }
+    private final LocalDateTime[] timestamps = new LocalDateTime[MAX_RECORDS];
+    private final String[] texts = new String[MAX_RECORDS];
+    private int size = 0;
+    private long writeIndex = 0;
 
     @Override
-    public void processPayment(BigDecimal amount, PaymentMethod method) {
-        if (amount == null || amount.signum() < 0) {
-            throw new IllegalArgumentException("Amount can't be negative.");
+    public void processPayment(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
+        if (amount == null || amount.signum() <= 0) {
+            throw new PaymentFailedException("Amount must be > 0.");
         }
-        if (method == null){
-            throw new IllegalArgumentException("Payment Method can't be null.");
+        if (method == null) {
+            throw new PaymentFailedException("Payment method must not be null.");
         }
         record("PAY " + amount + " " + method);
     }
 
     @Override
-    public void refund(BigDecimal amount, PaymentMethod method) {
-        if (amount == null || amount.signum() <= 0){
-            throw new IllegalArgumentException("Amount can't be negative.");
+    public void refund(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
+        if (amount == null || amount.signum() <= 0) {
+            throw new PaymentFailedException("Amount must be > 0.");
         }
-        if (method == null){
-            throw new IllegalArgumentException("Payment method can't be null.");
+        if (method == null) {
+            throw new PaymentFailedException("Payment method must not be null.");
         }
         record("REFUND " + amount + " " + method);
     }
 
     private void record(String text) {
-        if (size < MAX_RECORDS) {
-            timestamps[size] = LocalDateTime.now();
-            texts[size] = text;
-            size++;
-        }
-        System.out.println(text);
-        System.out.println();
+        int idx = (int) (writeIndex % MAX_RECORDS);
+        timestamps[idx] = LocalDateTime.now();
+        texts[idx] = text;
+        writeIndex++;
+        if (size < MAX_RECORDS) size++;
+        System.out.println("[" + timestamps[idx] + "] " + text + "\n");
     }
 
     public LocalDateTime[] getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(LocalDateTime[] timestamps) {
-        if (timestamps == null) {
-            throw new IllegalArgumentException("Timestamp can't be null.");
+        LocalDateTime[] out = new LocalDateTime[size];
+        for (int i = 0; i < size; i++) {
+            int src = (int) ((writeIndex - 1 - i + MAX_RECORDS) % MAX_RECORDS);
+            out[i] = timestamps[src];
         }
-        this.timestamps = timestamps;
+        return out;
     }
 
     public String[] getTexts() {
-        return texts;
-    }
-
-    public void setTexts(String[] texts) {
-        if (texts == null) {
-            throw new IllegalArgumentException("Texts can't be null.");
+        String[] out = new String[size];
+        for (int i = 0; i < size; i++) {
+            int src = (int) ((writeIndex - 1 - i + MAX_RECORDS) % MAX_RECORDS);
+            out[i] = texts[src];
         }
-        this.texts = texts;
+        return out;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        if (size < 0 || size > MAX_RECORDS) {
-            throw new IllegalArgumentException("Size must be between 0 and " + MAX_RECORDS+".");
+    public void setHistory(LocalDateTime[] newTimestamps, String[] newTexts) throws PaymentFailedException {
+        if (newTimestamps == null || newTexts == null) {
+            throw new PaymentFailedException("History arrays must not be null.");
         }
-        this.size = size;
+        if (newTimestamps.length != newTexts.length) {
+            throw new PaymentFailedException("History arrays must have the same length.");
+        }
+        if (newTimestamps.length > MAX_RECORDS) {
+            throw new PaymentFailedException("History length must be <= " + MAX_RECORDS + ".");
+        }
+        Arrays.fill(timestamps, null);
+        Arrays.fill(texts, null);
+        for (int i = 0; i < newTimestamps.length; i++) {
+            timestamps[i] = newTimestamps[i];
+            texts[i] = newTexts[i];
+        }
+        size = newTimestamps.length;
+        writeIndex = size;
     }
 }

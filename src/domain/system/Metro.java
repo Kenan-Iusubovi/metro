@@ -151,22 +151,22 @@ public class Metro {
         return schedules;
     }
 
-    public void addSchedule(Schedule schedule){
-        if (schedule == null){
+    public void addSchedule(Schedule schedule) {
+        if (schedule == null) {
             throw new IllegalArgumentException("Schedule can't be null.");
         }
-        this.schedules = (Schedule[]) ArrayUtils.add(this.schedules,schedule);
+        this.schedules = (Schedule[]) ArrayUtils.add(this.schedules, schedule);
     }
 
-    private void setSchedules(Schedule[] schedules){
-        if (schedules == null){
+    private void setSchedules(Schedule[] schedules) {
+        if (schedules == null) {
             throw new IllegalArgumentException("Schedules can't be null.");
         }
-        if (schedules.length < 1){
+        if (schedules.length < 1) {
             throw new IllegalArgumentException("Add at least 1 schedule.");
         }
         this.schedules = new Schedule[0];
-        for (Schedule schedule : schedules){
+        for (Schedule schedule : schedules) {
             addSchedule(schedule);
         }
     }
@@ -176,7 +176,7 @@ public class Metro {
     }
 
     public void setServiceEndAt(LocalTime serviceEndAt) {
-        if (serviceEndAt == null){
+        if (serviceEndAt == null) {
             throw new IllegalArgumentException("Metro application.service start time can't be null.");
         }
         this.serviceEndAt = serviceEndAt;
@@ -187,7 +187,7 @@ public class Metro {
     }
 
     public void setServiceStartAt(LocalTime serviceStartAt) {
-        if (serviceStartAt == null){
+        if (serviceStartAt == null) {
             throw new IllegalArgumentException("Metro application.service start time can't be null.");
         }
         this.serviceStartAt = serviceStartAt;
@@ -202,40 +202,40 @@ public class Metro {
     }
 
     public void enterMetro(Passenger passenger, Ticket ticket,
-                           Station onboardingStation, Station destinationStation){
-        if (passenger == null){
-            throw new IllegalArgumentException("Passenger can't be null and enter the domain.station!");
+                           Station onboardingStation, Station destinationStation) {
+        if (passenger == null) {
+            throw new IllegalArgumentException("Passenger can't be null and enter the station!");
         }
-        if (ticket == null){
+        if (ticket == null) {
             throw new IllegalArgumentException("You can't enter without domain.ticket. " +
                     "Ticket can.t be null.");
         }
-        if (onboardingStation == null){
-            throw new IllegalArgumentException("Onboarding domain.station can't be null.");
+        if (onboardingStation == null) {
+            throw new IllegalArgumentException("Onboarding station can't be null.");
         }
-        if (destinationStation == null){
-            throw new IllegalArgumentException("Destination domain.station can't be null.");
+        if (destinationStation == null) {
+            throw new IllegalArgumentException("Destination station can't be null.");
         }
         LocalTime departureTime = null;
 
-        for (Schedule schedule : schedules){
-            domain.station.Station[] stations = schedule.getLine().getStations();
-            for (Station station : stations){
-                if (station.equals(onboardingStation)){
-                    departureTime = schedule.nextDepartureTime(station,LocalTime.now());
-                    if (departureTime != null){
-                        station.enterStation(passenger,ticket);
+        for (Schedule schedule : schedules) {
+            Station[] stations = schedule.getLine().getStations();
+            for (Station station : stations) {
+                if (station.equals(onboardingStation)) {
+                    departureTime = schedule.nextDepartureTime(station, LocalTime.now());
+                    if (departureTime != null) {
+                        station.enterStation(passenger, ticket);
 
-                        Train train = schedule.getTrainByDepartureTime(station,departureTime);
+                        Train train = schedule.getTrainByDepartureTime(station, departureTime);
                         train.getDriver().startWorking();
-                        train.enterTheTrain(departureTime,passenger,
-                                schedule.getLine(),destinationStation);
+                        train.enterTheTrain(departureTime, passenger,
+                                schedule.getLine(), destinationStation);
                         return;
                     }
                 }
             }
         }
-        if (departureTime == null){
+        if (departureTime == null) {
             throw new RuntimeException("Couldn't find the departure time near to enter time!");
         }
     }
