@@ -1,9 +1,9 @@
 package application.port;
 
+import application.service.payment.PaymentMethod;
+import domain.people.passenger.Passenger;
 import domain.system.Metro;
 import domain.ticket.Ticket;
-import domain.people.passenger.Passenger;
-import application.service.payment.PaymentMethod;
 
 public interface BookingService {
 

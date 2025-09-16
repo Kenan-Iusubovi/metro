@@ -24,21 +24,21 @@ public class BookingServiceImpl implements BookingService {
         this.fareCalculatorService = new FareCalculator();
     }
 
-    private void checkConditions(Metro metro, Passenger passenger){
-        if (metro == null){
+    private void checkConditions(Metro metro, Passenger passenger) {
+        if (metro == null) {
             throw new IllegalArgumentException("Metro can't be null.");
         }
-        if (metro.getPaymentService() == null){
+        if (metro.getPaymentService() == null) {
             throw new IllegalArgumentException("Payment application.service can't be null.");
         }
-        if (passenger == null){
+        if (passenger == null) {
             throw new IllegalArgumentException("Passenger can't be null");
         }
     }
 
     @Override
     public Ticket book(Metro metro, Passenger passenger, PaymentMethod method) {
-        checkConditions(metro,passenger);
+        checkConditions(metro, passenger);
         BigDecimal price = fareCalculatorService.calculateTicketPrice(passenger.getCategory());
 
         try (PaymentSession session = new PaymentSession()) {
@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
 
         } catch (PaymentFailedException e) {
             throw new RuntimeException("Booking failed: " + e.getMessage(), e);
-        }  finally {
+        } finally {
             System.out.println("Payment attempt finished, session cleaned up.");
         }
     }
@@ -78,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public void setIssuedTickets(Ticket[] issuedTickets) {
-        if (issuedTickets == null){
+        if (issuedTickets == null) {
             throw new IllegalArgumentException("Ticket can't be null.");
         }
         this.issuedTickets = issuedTickets;

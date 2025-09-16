@@ -30,7 +30,7 @@ public class Turnstile implements OpenClose {
     }
 
     public void setCode(String code) {
-        if (code == null || code.isBlank()){
+        if (code == null || code.isBlank()) {
             throw new IllegalArgumentException("Code can't be null or negative.");
         }
         this.code = code;
@@ -75,7 +75,7 @@ public class Turnstile implements OpenClose {
         if (ticket == null) {
             throw new InvalidTicketException("No ticket presented.");
         }
-        if (ticket.useForEntry()){
+        if (ticket.useForEntry()) {
             System.out.printf("Ticket %s accepted at turnstile %s%n", ticket.getCode(), code);
             open();
             System.out.printf("Passenger goes throw.%n");

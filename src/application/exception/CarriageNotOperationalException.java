@@ -1,6 +1,6 @@
 package application.exception;
 
-public class CarriageNotOperationalException extends RuntimeException{
+public class CarriageNotOperationalException extends RuntimeException {
 
     public CarriageNotOperationalException(String message) {
         super(message);

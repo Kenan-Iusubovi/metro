@@ -128,28 +128,28 @@ public class Station {
     }
 
     public void addTurnstile(Turnstile turnstile) {
-        if (turnstile == null){
+        if (turnstile == null) {
             throw new IllegalArgumentException("Turnstile can't be null.");
         }
         this.turnstiles = (Turnstile[]) ArrayUtils.add(this.turnstiles, turnstile);
     }
 
-    private void setTurnstiles(Turnstile[] turnstiles){
+    private void setTurnstiles(Turnstile[] turnstiles) {
         if (turnstiles == null) {
             throw new IllegalArgumentException("Turnstiles can't be null");
         }
-        if (turnstiles.length < 1){
+        if (turnstiles.length < 1) {
             throw new TurnstileUnavailableException("Add at least 1 turnstile.");
         }
         this.turnstiles = new Turnstile[0];
-        for (Turnstile turnstile : turnstiles){
+        for (Turnstile turnstile : turnstiles) {
             addTurnstile(turnstile);
         }
     }
 
-    private boolean stationHasActiveTurnstile(){
-        for (Turnstile turnstile : turnstiles){
-            if (turnstile.isActive()){
+    private boolean stationHasActiveTurnstile() {
+        for (Turnstile turnstile : turnstiles) {
+            if (turnstile.isActive()) {
                 return true;
             }
         }
@@ -157,20 +157,21 @@ public class Station {
     }
 
     public void removeTurnstile(Turnstile turnstile) {
-        if (turnstile == null){
+        if (turnstile == null) {
             throw new IllegalArgumentException("Turnstile can't be null.");
         }
         this.turnstiles = (Turnstile[]) ArrayUtils.delete(this.turnstiles, turnstile);
     }
-    public void enterStation(Passenger passenger, Ticket ticket){
+
+    public void enterStation(Passenger passenger, Ticket ticket) {
         System.out.printf("Passenger %s %s entered domain.station %s%n",
                 passenger.getFirstname(), passenger.getSurname(), this.getName());
         Random r = new Random();
-        int randomTurnstile = r.nextInt(0,turnstiles.length);
-        if (!stationHasActiveTurnstile()){
+        int randomTurnstile = r.nextInt(0, turnstiles.length);
+        if (!stationHasActiveTurnstile()) {
             throw new RuntimeException("No active turnstile on this domain.station.");
         }
-        while (!turnstiles[randomTurnstile].isActive()){
+        while (!turnstiles[randomTurnstile].isActive()) {
             randomTurnstile = r.nextInt(0, turnstiles.length);
         }
         turnstiles[randomTurnstile].pass(ticket);

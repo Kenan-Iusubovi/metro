@@ -6,7 +6,7 @@ import application.service.payment.PaymentReceipt;
 
 import java.math.BigDecimal;
 
-public interface PaymentService{
+public interface PaymentService {
 
     PaymentReceipt processPayment(BigDecimal amount,
                                   PaymentMethod method) throws PaymentFailedException;

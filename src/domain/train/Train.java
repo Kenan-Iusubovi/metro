@@ -41,7 +41,7 @@ public class Train implements OpenClose, PublicTransport {
     public void board(Passenger passenger) {
         open();
         onboardCount++;
-        if (onboardCount > getCapacity()){
+        if (onboardCount > getCapacity()) {
             System.err.printf("The train is full %n");
             onboardCount--;
             close();
@@ -53,20 +53,20 @@ public class Train implements OpenClose, PublicTransport {
 
     @Override
     public void alight(Passenger passenger) {
-        onboardCount --;
+        onboardCount--;
         System.out.printf("%s%s alight from train %n",
                 passenger.getFirstname(), passenger.getSurname());
         close();
     }
 
     @Override
-    public void open(){
+    public void open() {
         doorsClosed = false;
         System.out.printf("%d door's opened%n", getDoorsAmount());
     }
 
     @Override
-    public void close(){
+    public void close() {
         doorsClosed = true;
         System.out.printf("%d door's closed%n", getDoorsAmount());
     }
@@ -101,10 +101,10 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     public void addCarriage(Carriage carriage) {
-        if (carriage == null){
+        if (carriage == null) {
             throw new IllegalArgumentException("Carriage to add can't be null.");
         }
-        if (carriage.getCarriageStatus() != CarriageStatus.ACTIVE){
+        if (carriage.getCarriageStatus() != CarriageStatus.ACTIVE) {
             throw new CarriageNotOperationalException("Carriage can't be attached" +
                     " because carriage status = " + carriage.getCarriageStatus().toString());
         }
@@ -112,21 +112,21 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     public void removeCarriage(Carriage carriage) {
-        if (carriage == null){
+        if (carriage == null) {
             throw new IllegalArgumentException("Carriage to remove can't be null.");
         }
         this.carriages = (Carriage[]) ArrayUtils.delete(this.carriages, carriage);
     }
 
-    private void setCarriages(Carriage[] carriages){
+    private void setCarriages(Carriage[] carriages) {
         if (carriages == null) {
             throw new IllegalArgumentException("Carriages can't be null");
         }
-        if (carriages.length < 2){
+        if (carriages.length < 2) {
             throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
         this.carriages = new Carriage[0];
-        for (Carriage carriage : carriages){
+        for (Carriage carriage : carriages) {
             addCarriage(carriage);
         }
     }
@@ -138,13 +138,13 @@ public class Train implements OpenClose, PublicTransport {
 
     @Override
     public void assignDriver(Driver driver) {
-        if (driver == null){
+        if (driver == null) {
             throw new IllegalArgumentException("You can't assign null instead of driver");
         }
         this.driver = driver;
     }
 
-    public void removeDriver(){
+    public void removeDriver() {
         this.driver = null;
     }
 
@@ -160,42 +160,42 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     @Override
-    public int getCapacity(){
+    public int getCapacity() {
         int capacity = 0;
-        for (Carriage carriage : carriages){
+        for (Carriage carriage : carriages) {
             capacity += carriage.getCarriageTotalCapacity();
         }
         return capacity;
     }
 
     @Override
-    public int getDoorsAmount(){
+    public int getDoorsAmount() {
         int doorCount = 0;
-        for (Carriage carriage : carriages){
+        for (Carriage carriage : carriages) {
             doorCount += carriage.getDoorCount();
         }
         return doorCount;
     }
 
     private Station go(Line line, Station destination, Passenger passenger,
-                       boolean continueToTerminus)  {
-        if (line == null){
+                       boolean continueToTerminus) {
+        if (line == null) {
             throw new IllegalArgumentException("Nowhere to go line is null.");
         }
-        if (line.getStations() == null){
+        if (line.getStations() == null) {
             throw new IllegalArgumentException("Nowhere to go stations is null.");
         }
-        if (driver == null){
+        if (driver == null) {
             throw new NoEmployeeAssignedException("To be able run metro system you" +
                     " should assign driver for each train!");
         }
 
         Station[] stations = line.getStations();
-        for (int i = 0; i < stations.length; i++){
+        for (int i = 0; i < stations.length; i++) {
             System.out.printf("Station %s%n", stations[i].getName());
             open();
 
-            if (passenger != null && stations[i].equals(destination)){
+            if (passenger != null && stations[i].equals(destination)) {
                 alight(passenger);
                 System.out.printf("%s %s arrived at destination station %s%n",
                         passenger.getFirstname(), passenger.getSurname(), stations[i].getName());
@@ -222,7 +222,7 @@ public class Train implements OpenClose, PublicTransport {
 
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
                                  Line line, Station destinationStation) {
-        if (LocalTime.now().isBefore(departureTime)){
+        if (LocalTime.now().isBefore(departureTime)) {
             System.out.printf("%s %s is waiting for train at %s%n",
                     passenger.getFirstname(), passenger.getSurname(), departureTime);
         }

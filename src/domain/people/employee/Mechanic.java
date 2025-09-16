@@ -3,6 +3,7 @@ package domain.people.employee;
 
 import domain.train.CarriageMaintenanceRecord;
 import domain.train.Train;
+
 import java.time.LocalDate;
 
 public class Mechanic extends Employee {

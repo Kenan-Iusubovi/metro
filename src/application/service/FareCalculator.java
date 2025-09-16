@@ -1,6 +1,7 @@
 package application.service;
 
 import domain.people.passenger.PassengerCategory;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 

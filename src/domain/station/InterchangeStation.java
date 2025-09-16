@@ -90,11 +90,11 @@ public class InterchangeStation extends Station {
         return targetStation;
     }
 
-    private void setTransferStations(Station[] stations){
-        if (stations.length == 0){
+    private void setTransferStations(Station[] stations) {
+        if (stations.length == 0) {
             throw new IllegalArgumentException("No station to add as interchange station");
         }
-        for (Station station : stations){
+        for (Station station : stations) {
             addTransferStation(station);
         }
     }

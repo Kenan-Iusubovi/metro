@@ -1,10 +1,12 @@
 package application.exception;
 
-public class NoEmployeeAssignedException extends RuntimeException{
+public class NoEmployeeAssignedException extends RuntimeException {
 
     public NoEmployeeAssignedException(String message) {
-        super(message); }
+        super(message);
+    }
 
     public NoEmployeeAssignedException(String message, Throwable cause) {
-        super(message, cause); }
+        super(message, cause);
+    }
 }

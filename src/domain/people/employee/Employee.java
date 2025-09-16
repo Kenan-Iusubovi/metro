@@ -26,7 +26,7 @@ public abstract class Employee extends Human {
 
     public Employee(String firstname, String surname, LocalDate dateOfBirth,
                     String licenseNumber, int yearsOfExperience) {
-        super(firstname, surname,dateOfBirth);
+        super(firstname, surname, dateOfBirth);
         this.id = ++idCounter;
         setFirstname(firstname);
         setSurname(surname);
@@ -65,9 +65,10 @@ public abstract class Employee extends Human {
         return working;
     }
 
-    protected void setWorking(boolean working){
+    protected void setWorking(boolean working) {
         this.working = working;
     }
+
     protected abstract void startWorking();
 
     protected abstract void stopWorking();

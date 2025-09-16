@@ -38,7 +38,7 @@ public class Passenger extends Human {
 
     public Passenger(String firstname, String surname, LocalDate dateOfBirth,
                      String phoneNumber, PassengerCategory category) {
-        super(firstname,surname,dateOfBirth);
+        super(firstname, surname, dateOfBirth);
         this.id = ++idCounter;
         setPhoneNumber(phoneNumber);
         setCategory(category);
