@@ -1,86 +1,84 @@
 package application.service.payment;
 
+import application.exception.PaymentFailedException;
 import application.port.PaymentService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.UUID;
 
-public class PaymentServiceImpl implements PaymentService {
+public final class PaymentServiceImpl implements PaymentService {
 
-    private static final int MAX_RECORDS = 100;
+    private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000.00");
+    private static final double FAILURE_RATE = 0.2;
+    private static final Random RANDOM = new Random();
 
-    private LocalDateTime[] timestamps;
-    private String[] texts;
-    private int size;
+    private boolean connected = false;
 
-    public PaymentServiceImpl() {
-        this.timestamps = new LocalDateTime[MAX_RECORDS];
-        this.texts = new String[MAX_RECORDS];
-        this.size = 0;
+    @Override
+    public PaymentReceipt processPayment(BigDecimal amount,
+                                         PaymentMethod method) throws PaymentFailedException {
+        ensureConnectedOrThrow();
+        BigDecimal normalized = normalizeAndValidate(amount);
+        validateMethod(method);
+        return new PaymentReceipt(newId(), TransactionType.PAYMENT, normalized, method, LocalDateTime.now());
     }
 
     @Override
-    public void processPayment(BigDecimal amount, PaymentMethod method) {
-        if (amount == null || amount.signum() < 0) {
-            throw new IllegalArgumentException("Amount can't be negative.");
-        }
-        if (method == null){
-            throw new IllegalArgumentException("Payment Method can't be null.");
-        }
-        record("PAY " + amount + " " + method);
+    public PaymentReceipt refund(BigDecimal amount,
+                                 PaymentMethod method) throws PaymentFailedException {
+        ensureConnectedOrThrow();
+        BigDecimal normalized = normalizeAndValidate(amount);
+        validateMethod(method);
+        return new PaymentReceipt(newId(), TransactionType.REFUND,
+                normalized, method, LocalDateTime.now());
     }
 
-    @Override
-    public void refund(BigDecimal amount, PaymentMethod method) {
-        if (amount == null || amount.signum() <= 0){
-            throw new IllegalArgumentException("Amount can't be negative.");
+    private void ensureConnectedOrThrow() throws PaymentFailedException {
+        if (connected) {
+            return;
         }
-        if (method == null){
-            throw new IllegalArgumentException("Payment method can't be null.");
+        if (!connectWithFallback()) {
+            throw new PaymentFailedException("Unable to establish connection to payment service");
         }
-        record("REFUND " + amount + " " + method);
     }
 
-    private void record(String text) {
-        if (size < MAX_RECORDS) {
-            timestamps[size] = LocalDateTime.now();
-            texts[size] = text;
-            size++;
+    private boolean connectWithFallback() {
+        if (RANDOM.nextDouble() < FAILURE_RATE) {
+            System.err.println("Connection failed, retrying...");
+            if (RANDOM.nextDouble() < FAILURE_RATE) {
+                connected = false;
+                return false;
+            }
         }
-        System.out.println(text);
-        System.out.println();
+        connected = true;
+        return true;
     }
 
-    public LocalDateTime[] getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(LocalDateTime[] timestamps) {
-        if (timestamps == null) {
-            throw new IllegalArgumentException("Timestamp can't be null.");
+    private BigDecimal normalizeAndValidate(BigDecimal amount) throws PaymentFailedException {
+        if (amount == null) {
+            throw new PaymentFailedException("Amount must not be null");
         }
-        this.timestamps = timestamps;
-    }
-
-    public String[] getTexts() {
-        return texts;
-    }
-
-    public void setTexts(String[] texts) {
-        if (texts == null) {
-            throw new IllegalArgumentException("Texts can't be null.");
+        BigDecimal scaled = amount.setScale(2, RoundingMode.HALF_UP);
+        if (scaled.compareTo(MIN_AMOUNT) < 0) {
+            throw new PaymentFailedException("Amount must be at least " + MIN_AMOUNT);
         }
-        this.texts = texts;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        if (size < 0 || size > MAX_RECORDS) {
-            throw new IllegalArgumentException("Size must be between 0 and " + MAX_RECORDS+".");
+        if (scaled.compareTo(MAX_AMOUNT) > 0) {
+            throw new PaymentFailedException("Amount must not exceed " + MAX_AMOUNT);
         }
-        this.size = size;
+        return scaled;
+    }
+
+    private void validateMethod(PaymentMethod method) throws PaymentFailedException {
+        if (method == null) {
+            throw new PaymentFailedException("Payment method must not be null");
+        }
+    }
+
+    private String newId() {
+        return UUID.randomUUID().toString();
     }
 }

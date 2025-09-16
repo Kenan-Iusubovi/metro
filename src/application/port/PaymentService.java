@@ -1,13 +1,17 @@
 package application.port;
 
+import application.exception.PaymentFailedException;
 import application.service.payment.PaymentMethod;
+import application.service.payment.PaymentReceipt;
 
 import java.math.BigDecimal;
 
-public interface PaymentService {
+public interface PaymentService{
 
-    void processPayment(BigDecimal amount, PaymentMethod method);
+    PaymentReceipt processPayment(BigDecimal amount,
+                                  PaymentMethod method) throws PaymentFailedException;
 
-    void refund(BigDecimal amount, PaymentMethod method);
+    PaymentReceipt refund(BigDecimal amount,
+                          PaymentMethod method) throws PaymentFailedException;
 
 }

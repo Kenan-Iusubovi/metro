@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
         String subject = "🎟 Ticket Purchase Success";
         String body =
                 "Hello " + passengerName + ",\n\n" +
-                        "Your domain.ticket has been successfully purchased.\n" +
+                        "Your ticket has been successfully purchased.\n" +
                         "Ticket ID : " + ticketId + "\n" +
                         "Price     : " + price + "\n\n" +
                         "Thank you for choosing our metro system!";

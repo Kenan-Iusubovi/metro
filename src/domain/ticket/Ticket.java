@@ -1,5 +1,6 @@
 package domain.ticket;
 
+import application.exception.InvalidTicketException;
 import application.service.payment.PaymentMethod;
 
 import java.math.BigDecimal;
@@ -32,8 +33,8 @@ public class Ticket {
 
     public boolean useForEntry() {
         if (!isValidForEntry()){
-            System.out.println("Unfortunately you domain.ticket status is " + this.getStatus().toString());
-            return false;
+            throw new InvalidTicketException("Unfortunately you ticket status is "
+                    + this.getStatus().toString());
         }
         this.status = TicketStatus.USED;
         return true;
@@ -41,7 +42,7 @@ public class Ticket {
 
     public void cancel() {
         if (status != TicketStatus.ACTIVE) {
-            throw new IllegalArgumentException("The domain.ticket should be " +
+            throw new InvalidTicketException("The ticket should be " +
                     "Active to Cancel it!");
         }
         this.status = TicketStatus.CANCELLED;

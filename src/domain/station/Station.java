@@ -1,5 +1,6 @@
 package domain.station;
 
+import application.exception.TurnstileUnavailableException;
 import domain.people.passenger.Passenger;
 import domain.ticket.Ticket;
 import utils.ArrayUtils;
@@ -63,41 +64,6 @@ public class Station {
         for (int i = 0; i < turnstiles.length; i++) {
             if (turnstiles[i] != null) {
                 turnstiles[i].close();
-            }
-        }
-    }
-
-    public void openTurnstile(String code) {
-        if (code == null || code.isBlank()) {
-            throw new IllegalArgumentException("Code can't be null or empty.");
-        }
-        for (int i = 0; i < turnstiles.length; i++) {
-            if (turnstiles[i] != null && code.equalsIgnoreCase(turnstiles[i].getCode())) {
-                turnstiles[i].open();
-                try {
-                    wait(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                turnstiles[i].close();
-                return;
-            }
-        }
-        throw new IllegalArgumentException("Turnstile with code " + code + " not found");
-    }
-
-    public void activateAll() {
-        for (int i = 0; i < turnstiles.length; i++) {
-            if (turnstiles[i] != null) {
-                turnstiles[i].activate();
-            }
-        }
-    }
-
-    public void deactivateAll() {
-        for (int i = 0; i < turnstiles.length; i++) {
-            if (turnstiles[i] != null) {
-                turnstiles[i].deactivate();
             }
         }
     }
@@ -173,7 +139,7 @@ public class Station {
             throw new IllegalArgumentException("Turnstiles can't be null");
         }
         if (turnstiles.length < 1){
-            throw new IllegalArgumentException("Add at least 1 turnstile.");
+            throw new TurnstileUnavailableException("Add at least 1 turnstile.");
         }
         this.turnstiles = new Turnstile[0];
         for (Turnstile turnstile : turnstiles){
@@ -208,6 +174,14 @@ public class Station {
             randomTurnstile = r.nextInt(0, turnstiles.length);
         }
         turnstiles[randomTurnstile].pass(ticket);
+    }
+
+    public void audit(String message) {
+        System.out.printf("[AUDIT][%s][Station %s] %s%n",
+                java.time.LocalDateTime.now(),
+                getName(),
+                message
+        );
     }
 
     @Override

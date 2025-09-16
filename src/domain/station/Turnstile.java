@@ -1,5 +1,7 @@
 package domain.station;
 
+import application.exception.InvalidTicketException;
+import application.exception.TurnstileUnavailableException;
 import application.port.OpenClose;
 import domain.ticket.Ticket;
 
@@ -53,6 +55,10 @@ public class Turnstile implements OpenClose {
 
     @Override
     public void open() {
+        if (!active) {
+            throw new TurnstileUnavailableException("Cannot open" +
+                    " deactivated turnstile " + code + ".");
+        }
         this.closed = false;
         System.out.printf("Turnstile with code%s opened.%n", code);
     }
@@ -64,10 +70,10 @@ public class Turnstile implements OpenClose {
 
     public void pass(Ticket ticket) {
         if (!active) {
-            throw new RuntimeException("Turnstile " + code + " is deactivated.");
+            throw new TurnstileUnavailableException("Turnstile " + code + " is deactivated.");
         }
         if (ticket == null) {
-            throw new RuntimeException("No domain.ticket presented.");
+            throw new InvalidTicketException("No ticket presented.");
         }
         if (ticket.useForEntry()){
             System.out.printf("Ticket %s accepted at turnstile %s%n", ticket.getCode(), code);
@@ -78,7 +84,7 @@ public class Turnstile implements OpenClose {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.printf("Passenger goes inside the domain.station.%n");
+            System.out.printf("Passenger goes inside the station.%n");
             close();
             System.out.printf("Turnstile %s is closed!%n", code);
         }

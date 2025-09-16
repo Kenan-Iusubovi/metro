@@ -1,5 +1,6 @@
 package domain.train;
 
+import application.exception.NoEmployeeAssignedException;
 import domain.people.employee.Mechanic;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,12 @@ public class CarriageMaintenanceRecord {
         setCarriage(carriage);
         this.maintenanceStartTime = LocalDateTime.now();
         setMechanic(mechanic);
+    }
+
+    public CarriageMaintenanceRecord(Carriage[] carriage) {
+        this.id = UUID.randomUUID();
+        setCarriage(carriage);
+        this.maintenanceStartTime = LocalDateTime.now();
     }
 
     public UUID getId() {
@@ -49,6 +56,10 @@ public class CarriageMaintenanceRecord {
     public void openTicket(String description) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Description cant be null or empty.");
+        }
+        if (mechanic == null){
+            throw new NoEmployeeAssignedException("No mechanic assigned for repair number "
+            +this.id);
         }
         this.maintenanceStartTime = LocalDateTime.now();
         this.description = description;

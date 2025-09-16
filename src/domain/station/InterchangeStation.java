@@ -55,14 +55,14 @@ public class InterchangeStation extends Station {
 
     public void addTransferStation(Station station) {
         if (station == null) {
-            throw new IllegalArgumentException("Transfer domain.station can't be null.");
+            throw new IllegalArgumentException("Transfer station can't be null.");
         }
         this.transferStations = (Station[]) ArrayUtils.add(this.transferStations, station);
     }
 
     public void removeTransferStation(Station station) {
         if (station == null) {
-            throw new IllegalArgumentException("Transfer domain.station can't be null.");
+            throw new IllegalArgumentException("Transfer station can't be null.");
         }
         this.transferStations = (Station[]) ArrayUtils.delete(this.transferStations, station);
     }
@@ -77,13 +77,13 @@ public class InterchangeStation extends Station {
 
     public Station changeLine(Passenger passenger, Station targetStation) {
         if (passenger == null || targetStation == null) {
-            throw new IllegalArgumentException("Passenger and target domain.station can't be null.");
+            throw new IllegalArgumentException("Passenger and target station can't be null.");
         }
         if (!canTransferTo(targetStation)) {
-            throw new IllegalStateException("This interchange does not connect to the target domain.station.");
+            throw new IllegalStateException("This interchange does not connect to the target station.");
         }
         System.out.printf(
-                "Passenger %s %s changed the line from domain.station %s to domain.station %s.%n",
+                "Passenger %s %s changed the line from station %s to station %s.%n",
                 passenger.getFirstname(), passenger.getSurname(),
                 this.getName(), targetStation.getName()
         );
@@ -92,7 +92,7 @@ public class InterchangeStation extends Station {
 
     private void setTransferStations(Station[] stations){
         if (stations.length == 0){
-            throw new IllegalArgumentException("No domain.station to add as interchange domain.station");
+            throw new IllegalArgumentException("No station to add as interchange station");
         }
         for (Station station : stations){
             addTransferStation(station);

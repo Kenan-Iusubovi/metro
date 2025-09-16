@@ -1,5 +1,7 @@
 package domain.train;
 
+import application.exception.CarriageNotOperationalException;
+import application.exception.NoEmployeeAssignedException;
 import application.port.OpenClose;
 import application.port.PublicTransport;
 import domain.people.employee.Driver;
@@ -45,7 +47,7 @@ public class Train implements OpenClose, PublicTransport {
             close();
             return;
         }
-        System.out.printf("%s%s passenger just unboarded, total amount of passengers %d%n",
+        System.out.printf("%s%s passenger just boarded, total amount of passengers %d%n",
                 passenger.getFirstname(), passenger.getSurname(), onboardCount);
     }
 
@@ -102,6 +104,10 @@ public class Train implements OpenClose, PublicTransport {
         if (carriage == null){
             throw new IllegalArgumentException("Carriage to add can't be null.");
         }
+        if (carriage.getCarriageStatus() != CarriageStatus.ACTIVE){
+            throw new CarriageNotOperationalException("Carriage can't be attached" +
+                    " because carriage status = " + carriage.getCarriageStatus().toString());
+        }
         this.carriages = (Carriage[]) ArrayUtils.add(this.carriages, carriage);
     }
 
@@ -117,7 +123,7 @@ public class Train implements OpenClose, PublicTransport {
             throw new IllegalArgumentException("Carriages can't be null");
         }
         if (carriages.length < 2){
-            throw new IllegalArgumentException("To make a domain.train should add minimum 2 carriages.");
+            throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
         this.carriages = new Carriage[0];
         for (Carriage carriage : carriages){
@@ -156,8 +162,8 @@ public class Train implements OpenClose, PublicTransport {
     @Override
     public int getCapacity(){
         int capacity = 0;
-        for (Carriage c : carriages){
-            capacity += c.getCarriageTotalCapacity();
+        for (Carriage carriage : carriages){
+            capacity += carriage.getCarriageTotalCapacity();
         }
         return capacity;
     }
@@ -172,7 +178,7 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     private Station go(Line line, Station destination, Passenger passenger,
-                       boolean continueToTerminus){
+                       boolean continueToTerminus)  {
         if (line == null){
             throw new IllegalArgumentException("Nowhere to go line is null.");
         }
@@ -180,7 +186,7 @@ public class Train implements OpenClose, PublicTransport {
             throw new IllegalArgumentException("Nowhere to go stations is null.");
         }
         if (driver == null){
-            throw new RuntimeException("To be able run metro system you" +
+            throw new NoEmployeeAssignedException("To be able run metro system you" +
                     " should assign driver for each train!");
         }
 
@@ -191,7 +197,7 @@ public class Train implements OpenClose, PublicTransport {
 
             if (passenger != null && stations[i].equals(destination)){
                 alight(passenger);
-                System.out.printf("%s %s arrived at destination domain.station %s%n",
+                System.out.printf("%s %s arrived at destination station %s%n",
                         passenger.getFirstname(), passenger.getSurname(), stations[i].getName());
 
                 if (!continueToTerminus) {
@@ -205,7 +211,8 @@ public class Train implements OpenClose, PublicTransport {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                System.out.printf("Caution door's is closing, next domain.station is %s%n", stations[i + 1].getName());
+                System.out.printf("Caution door's is closing, next station is %s%n",
+                        stations[i + 1].getName());
                 close();
             }
         }
@@ -214,9 +221,9 @@ public class Train implements OpenClose, PublicTransport {
 
 
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
-                                 Line line, Station destinationStation){
+                                 Line line, Station destinationStation) {
         if (LocalTime.now().isBefore(departureTime)){
-            System.out.printf("%s %s is waiting for domain.train at %s%n",
+            System.out.printf("%s %s is waiting for train at %s%n",
                     passenger.getFirstname(), passenger.getSurname(), departureTime);
         }
         System.out.printf("Train is arrived.%n");
