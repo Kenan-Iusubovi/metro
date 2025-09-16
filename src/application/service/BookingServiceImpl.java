@@ -58,6 +58,8 @@ public class BookingServiceImpl implements BookingService {
 
         } catch (PaymentFailedException e) {
             throw new RuntimeException("Booking failed: " + e.getMessage(), e);
+        }  finally {
+            System.out.println("Payment attempt finished, session cleaned up.");
         }
     }
 
