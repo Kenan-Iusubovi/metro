@@ -57,9 +57,9 @@ public class CarriageMaintenanceRecord {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Description cant be null or empty.");
         }
-        if (mechanic == null){
+        if (mechanic == null) {
             throw new NoEmployeeAssignedException("No mechanic assigned for repair number "
-            +this.id);
+                    + this.id);
         }
         this.maintenanceStartTime = LocalDateTime.now();
         this.description = description;
@@ -97,7 +97,7 @@ public class CarriageMaintenanceRecord {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CarriageMaintenanceRecord that = (CarriageMaintenanceRecord) o;
-        return  Objects.equals(id, that.id) && Objects.equals(carriage, that.carriage)
+        return Objects.equals(id, that.id) && Objects.equals(carriage, that.carriage)
                 && Objects.equals(maintenanceStartTime, that.maintenanceStartTime)
                 && Objects.equals(maintenanceEndTime, that.maintenanceEndTime)
                 && Objects.equals(description, that.description)

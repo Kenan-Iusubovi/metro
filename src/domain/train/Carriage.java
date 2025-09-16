@@ -65,7 +65,7 @@ public class Carriage {
     }
 
     public void setSeatCapacity(int seats) {
-        if (seats < 0){
+        if (seats < 0) {
             throw new IllegalArgumentException("Seat's capacity can't be negative.");
         }
         this.seatCapacity = seats;
@@ -76,7 +76,7 @@ public class Carriage {
     }
 
     public void setStandingCapacity(int standingCapacity) {
-        if (seatCapacity < 0){
+        if (seatCapacity < 0) {
             throw new IllegalArgumentException("Standing capacity can't be negative.");
         }
         this.standingCapacity = standingCapacity;
@@ -87,17 +87,17 @@ public class Carriage {
     }
 
     public void setCarriageStatus(CarriageStatus carriageStatus) {
-        if (carriageStatus == null){
+        if (carriageStatus == null) {
             throw new IllegalArgumentException("Carriage status can't be null.");
         }
         this.carriageStatus = carriageStatus;
     }
 
-    public boolean isCarriageActive(){
+    public boolean isCarriageActive() {
         return CarriageStatus.ACTIVE.equals(carriageStatus);
     }
 
-    public int getCarriageTotalCapacity(){
+    public int getCarriageTotalCapacity() {
         return seatCapacity + standingCapacity;
     }
 

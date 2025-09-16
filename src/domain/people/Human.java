@@ -47,7 +47,7 @@ public abstract class Human {
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
-        if (dateOfBirth == null){
+        if (dateOfBirth == null) {
             throw new IllegalArgumentException("Date of birth can't be null.");
         }
         this.dateOfBirth = dateOfBirth;

@@ -32,7 +32,7 @@ public class Ticket {
     }
 
     public boolean useForEntry() {
-        if (!isValidForEntry()){
+        if (!isValidForEntry()) {
             throw new InvalidTicketException("Unfortunately you ticket status is "
                     + this.getStatus().toString());
         }
@@ -70,7 +70,7 @@ public class Ticket {
     }
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
-        if (paymentMethod == null){
+        if (paymentMethod == null) {
             throw new IllegalArgumentException("Payment method can't be null.");
         }
         this.paymentMethod = paymentMethod;

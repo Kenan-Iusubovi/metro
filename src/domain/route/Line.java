@@ -38,11 +38,11 @@ public class Line {
     }
 
     public boolean hasStation(Station station) {
-        if (station == null){
+        if (station == null) {
             return false;
         }
         for (int i = 0; i < stations.length; i++) {
-            if (stations[i] != null && stations[i].getCode() == station.getCode()){
+            if (stations[i] != null && stations[i].getCode() == station.getCode()) {
                 return true;
             }
         }
@@ -107,27 +107,27 @@ public class Line {
     }
 
     public void addStation(Station station) {
-        if (station == null){
+        if (station == null) {
             throw new IllegalArgumentException("Station can't be null.");
         }
         this.stations = (Station[]) ArrayUtils.add(this.stations, station);
     }
 
     public void removeStation(Station station) {
-        if (station == null){
+        if (station == null) {
             throw new IllegalArgumentException("Station can't be null.");
         }
         this.stations = (Station[]) ArrayUtils.delete(this.stations, station);
     }
 
-    private void setStations(Station[] stations){
+    private void setStations(Station[] stations) {
         if (stations == null) {
             throw new IllegalArgumentException("Stations can't be null");
         }
-        if (stations.length < 2){
+        if (stations.length < 2) {
             throw new IllegalArgumentException("To make a line should add minimum 2 stations.");
         }
-        for (Station station : stations){
+        for (Station station : stations) {
             addStation(station);
         }
     }
@@ -137,14 +137,14 @@ public class Line {
     }
 
     public void addTrain(Train train) {
-        if (train == null){
+        if (train == null) {
             throw new IllegalArgumentException("Train can't be null.");
         }
         this.trains = (Train[]) ArrayUtils.add(this.trains, train);
     }
 
     public void removeTrain(Train train) {
-        if (train == null){
+        if (train == null) {
             throw new IllegalArgumentException("Train can't be null.");
         }
         this.trains = (Train[]) ArrayUtils.delete(this.trains, train);
