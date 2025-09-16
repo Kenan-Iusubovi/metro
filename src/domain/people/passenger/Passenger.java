@@ -40,7 +40,6 @@ public class Passenger extends Human {
                      String phoneNumber, PassengerCategory category) {
         super(firstname,surname,dateOfBirth);
         this.id = ++idCounter;
-        setEmail(email);
         setPhoneNumber(phoneNumber);
         setCategory(category);
         this.tickets = new Ticket[0];

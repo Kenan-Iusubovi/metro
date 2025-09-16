@@ -4,84 +4,81 @@ import application.exception.PaymentFailedException;
 import application.port.PaymentService;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Random;
+import java.util.UUID;
 
-public class PaymentServiceImpl implements PaymentService {
+public final class PaymentServiceImpl implements PaymentService {
 
-    private static final int MAX_RECORDS = 100;
+    private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000.00");
+    private static final double FAILURE_RATE = 0.2;
+    private static final Random RANDOM = new Random();
 
-    private final LocalDateTime[] timestamps = new LocalDateTime[MAX_RECORDS];
-    private final String[] texts = new String[MAX_RECORDS];
-    private int size = 0;
-    private long writeIndex = 0;
-
-    @Override
-    public void processPayment(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
-        if (amount == null || amount.signum() <= 0) {
-            throw new PaymentFailedException("Amount must be > 0.");
-        }
-        if (method == null) {
-            throw new PaymentFailedException("Payment method must not be null.");
-        }
-        record("PAY " + amount + " " + method);
-    }
+    private boolean connected = false;
 
     @Override
-    public void refund(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
-        if (amount == null || amount.signum() <= 0) {
-            throw new PaymentFailedException("Amount must be > 0.");
+    public PaymentReceipt processPayment(BigDecimal amount,
+                                         PaymentMethod method) throws PaymentFailedException {
+        ensureConnectedOrThrow();
+        BigDecimal normalized = normalizeAndValidate(amount);
+        validateMethod(method);
+        return new PaymentReceipt(newId(), TransactionType.PAYMENT, normalized, method, LocalDateTime.now());
+    }
+
+    @Override
+    public PaymentReceipt refund(BigDecimal amount,
+                                 PaymentMethod method) throws PaymentFailedException {
+        ensureConnectedOrThrow();
+        BigDecimal normalized = normalizeAndValidate(amount);
+        validateMethod(method);
+        return new PaymentReceipt(newId(), TransactionType.REFUND,
+                normalized, method, LocalDateTime.now());
+    }
+
+    private void ensureConnectedOrThrow() throws PaymentFailedException {
+        if (connected) {
+            return;
         }
+        if (!connectWithFallback()) {
+            throw new PaymentFailedException("Unable to establish connection to payment service");
+        }
+    }
+
+    private boolean connectWithFallback() {
+        if (RANDOM.nextDouble() < FAILURE_RATE) {
+            System.err.println("Connection failed, retrying...");
+            if (RANDOM.nextDouble() < FAILURE_RATE) {
+                connected = false;
+                return false;
+            }
+        }
+        connected = true;
+        return true;
+    }
+
+    private BigDecimal normalizeAndValidate(BigDecimal amount) throws PaymentFailedException {
+        if (amount == null) {
+            throw new PaymentFailedException("Amount must not be null");
+        }
+        BigDecimal scaled = amount.setScale(2, RoundingMode.HALF_UP);
+        if (scaled.compareTo(MIN_AMOUNT) < 0) {
+            throw new PaymentFailedException("Amount must be at least " + MIN_AMOUNT);
+        }
+        if (scaled.compareTo(MAX_AMOUNT) > 0) {
+            throw new PaymentFailedException("Amount must not exceed " + MAX_AMOUNT);
+        }
+        return scaled;
+    }
+
+    private void validateMethod(PaymentMethod method) throws PaymentFailedException {
         if (method == null) {
-            throw new PaymentFailedException("Payment method must not be null.");
+            throw new PaymentFailedException("Payment method must not be null");
         }
-        record("REFUND " + amount + " " + method);
     }
 
-    private void record(String text) {
-        int idx = (int) (writeIndex % MAX_RECORDS);
-        timestamps[idx] = LocalDateTime.now();
-        texts[idx] = text;
-        writeIndex++;
-        if (size < MAX_RECORDS) size++;
-        System.out.println("[" + timestamps[idx] + "] " + text + "\n");
-    }
-
-    public LocalDateTime[] getTimestamps() {
-        LocalDateTime[] out = new LocalDateTime[size];
-        for (int i = 0; i < size; i++) {
-            int src = (int) ((writeIndex - 1 - i + MAX_RECORDS) % MAX_RECORDS);
-            out[i] = timestamps[src];
-        }
-        return out;
-    }
-
-    public String[] getTexts() {
-        String[] out = new String[size];
-        for (int i = 0; i < size; i++) {
-            int src = (int) ((writeIndex - 1 - i + MAX_RECORDS) % MAX_RECORDS);
-            out[i] = texts[src];
-        }
-        return out;
-    }
-
-    public void setHistory(LocalDateTime[] newTimestamps, String[] newTexts) throws PaymentFailedException {
-        if (newTimestamps == null || newTexts == null) {
-            throw new PaymentFailedException("History arrays must not be null.");
-        }
-        if (newTimestamps.length != newTexts.length) {
-            throw new PaymentFailedException("History arrays must have the same length.");
-        }
-        if (newTimestamps.length > MAX_RECORDS) {
-            throw new PaymentFailedException("History length must be <= " + MAX_RECORDS + ".");
-        }
-        Arrays.fill(timestamps, null);
-        Arrays.fill(texts, null);
-        for (int i = 0; i < newTimestamps.length; i++) {
-            timestamps[i] = newTimestamps[i];
-            texts[i] = newTexts[i];
-        }
-        size = newTimestamps.length;
-        writeIndex = size;
+    private String newId() {
+        return UUID.randomUUID().toString();
     }
 }

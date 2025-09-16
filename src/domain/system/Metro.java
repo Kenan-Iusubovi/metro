@@ -47,7 +47,7 @@ public class Metro {
         System.out.println("Welcome to " + SYSTEM_VENDOR);
         FareCalculator.setBaseCost(2.50);
         FareCalculator.setChildDiscountPercentage(100);
-        FareCalculator.setDisableDiscountPercentage(100);
+        FareCalculator.setDisabledDiscountPercentage(100);
         FareCalculator.setSeniorDiscountPercentage(75);
         FareCalculator.setStudentDiscountPercentage(50);
     }

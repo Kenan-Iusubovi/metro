@@ -10,7 +10,7 @@ public final class FareCalculator {
     private static int childDiscountPercentage;
     private static int studentDiscountPercentage;
     private static int seniorDiscountPercentage;
-    private static int disableDiscountPercentage;
+    private static int disabledDiscountPercentage;
 
     private static final int MAX_DISCOUNT = 100;
 
@@ -20,7 +20,7 @@ public final class FareCalculator {
         setChildDiscountPercentage(50);
         setStudentDiscountPercentage(25);
         setSeniorDiscountPercentage(30);
-        setDisableDiscountPercentage(40);
+        setDisabledDiscountPercentage(40);
     }
 
     public static BigDecimal calculateTicketPrice(PassengerCategory category) {
@@ -33,7 +33,7 @@ public final class FareCalculator {
             case CHILD -> discount = calculateDiscountAmount(childDiscountPercentage);
             case STUDENT -> discount = calculateDiscountAmount(studentDiscountPercentage);
             case SENIOR -> discount = calculateDiscountAmount(seniorDiscountPercentage);
-            case DISABLED -> discount = calculateDiscountAmount(disableDiscountPercentage);
+            case DISABLED -> discount = calculateDiscountAmount(disabledDiscountPercentage);
             default -> {
                 return baseCost;
             }
@@ -100,13 +100,13 @@ public final class FareCalculator {
         FareCalculator.seniorDiscountPercentage = seniorDiscountPercentage;
     }
 
-    public static int getDisableDiscountPercentage() {
-        return disableDiscountPercentage;
+    public static int getDisabledDiscountPercentage() {
+        return disabledDiscountPercentage;
     }
 
-    public static void setDisableDiscountPercentage(int disableDiscountPercentage) {
-        checkDiscountPercentage(disableDiscountPercentage);
-        FareCalculator.disableDiscountPercentage = disableDiscountPercentage;
+    public static void setDisabledDiscountPercentage(int disabledDiscountPercentage) {
+        checkDiscountPercentage(disabledDiscountPercentage);
+        FareCalculator.disabledDiscountPercentage = disabledDiscountPercentage;
     }
 
     private static void checkDiscountPercentage(int percentage) {

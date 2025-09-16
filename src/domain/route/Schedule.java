@@ -151,7 +151,7 @@ public class Schedule {
         return null;
     }
 
-    public static final class ScheudeleGenerator {
+    public static final class ScheduleGenerator {
 
         public static Schedule fixedHeadway(Line line,
                                             LocalTime firstAtOrigin,

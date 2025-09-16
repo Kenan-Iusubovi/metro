@@ -1,8 +1,10 @@
 package application.service;
 
+import application.exception.PaymentFailedException;
 import application.port.BookingService;
 import application.port.EmailService;
 import application.service.payment.PaymentMethod;
+import application.service.payment.PaymentSession;
 import domain.people.passenger.Passenger;
 import domain.system.Metro;
 import domain.ticket.Ticket;
@@ -37,21 +39,26 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Ticket book(Metro metro, Passenger passenger, PaymentMethod method) {
         checkConditions(metro,passenger);
-
         BigDecimal price = fareCalculatorService.calculateTicketPrice(passenger.getCategory());
-        metro.getPaymentService().processPayment(price, method);
 
-        Ticket ticket = new Ticket(price, method);
-        passenger.addTicket(ticket);
+        try (PaymentSession session = new PaymentSession()) {
+            session.processPayment(price, method);
 
-        this.issuedTickets = (Ticket[]) ArrayUtils.add(this.issuedTickets, ticket);
-        emailService.sendTicketPurchaseSuccess(
-                passenger.getEmail(),
-                passenger.getFirstname() + " " + passenger.getSurname(),
-                ticket.getCode(),
-                price.toPlainString()
-        );
-        return ticket;
+            Ticket ticket = new Ticket(price, method);
+            passenger.addTicket(ticket);
+            this.issuedTickets = (Ticket[]) ArrayUtils.add(this.issuedTickets, ticket);
+
+            emailService.sendTicketPurchaseSuccess(
+                    passenger.getEmail(),
+                    passenger.getFirstname() + " " + passenger.getSurname(),
+                    ticket.getCode(),
+                    price.toPlainString()
+            );
+            return ticket;
+
+        } catch (PaymentFailedException e) {
+            throw new RuntimeException("Booking failed: " + e.getMessage(), e);
+        }
     }
 
     @Override

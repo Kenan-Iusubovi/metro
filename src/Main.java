@@ -26,7 +26,7 @@ public class Main {
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
         tbilisiMetro.setServiceStartAt(LocalTime.of(8,30));
-        tbilisiMetro.setServiceEndAt(LocalTime.of(11,59));
+        tbilisiMetro.setServiceEndAt(LocalTime.of(23,59));
 
         BookingService bookingService = new BookingServiceImpl();
 
@@ -249,7 +249,7 @@ public class Main {
 
         akhmeteliVarketiliLine.addTrain(tbilisiTrain1);
 
-        Schedule schedule = Schedule.ScheudeleGenerator.fromTrainCount(
+        Schedule schedule = Schedule.ScheduleGenerator.fromTrainCount(
                 akhmeteliVarketiliLine, tbilisiMetro,1,
                 2, 2, 30, 5
         );
