@@ -1,10 +1,13 @@
 package domain.route;
 
+import application.exception.ScheduleException;
 import domain.station.Station;
 import domain.system.Metro;
 import domain.train.Train;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class Schedule {
 
@@ -12,55 +15,31 @@ public class Schedule {
 
     private Long id;
     private Line line;
-    private LocalTime[][] departureTimes;
+    private Map<Station, NavigableSet<LocalTime>> departureTimes;
 
-    public Schedule(Line line, LocalTime[][] departureTimes) {
+    public Schedule(Line line, Map<Station, NavigableSet<LocalTime>> departureTimes) {
         this.id = ++idCounter;
         setLine(line);
         setDepartureTimes(departureTimes);
     }
 
-    private int stationIndex(Station station) {
-        if (station == null) throw new IllegalArgumentException("Station can't be null.");
-        Station[] stations = line.getStations();
-        for (int i = 0; i < stations.length; i++) {
-            if (stations[i] != null && stations[i].getCode() == station.getCode()) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public LocalTime nextDepartureTime(Station station, LocalTime at) {
         if (at == null) {
-            throw new IllegalArgumentException("Time can't be null.");
+            throw new ScheduleException("Time can't be null.");
         }
-        int index = stationIndex(station);
-        if (index == -1) {
-            return null;
-        }
-        LocalTime[] times = departureTimes[index];
-        if (times == null || times.length == 0) {
-            return null;
-        }
-        LocalTime candidate = null;
-        LocalTime earliest = null;
 
-        for (int i = 0; i < times.length; i++) {
-            LocalTime time = times[i];
-            if (time == null) {
-                continue;
-            }
-            if (earliest == null || time.isBefore(earliest)) {
-                earliest = time;
-            }
-            if (!time.isBefore(at)) {
-                if (candidate == null || time.isBefore(candidate)) {
-                    candidate = time;
-                }
-            }
+        NavigableSet<LocalTime> times = departureTimes.get(station);
+        if (times == null || times.isEmpty()) {
+            return null;
         }
-        return (candidate != null) ? candidate : earliest;
+
+        LocalTime next = times.ceiling(at);
+
+        if (next == null) {
+            next = times.first();
+        }
+
+        return next;
     }
 
     public long getId() {
@@ -73,197 +52,149 @@ public class Schedule {
 
     public void setLine(Line line) {
         if (line == null) {
-            throw new IllegalArgumentException("Line can't be null.");
+            throw new ScheduleException("Line can't be null.");
         }
+
         this.line = line;
     }
 
-    public LocalTime[][] getDepartureTimes() {
+    public Map<Station, NavigableSet<LocalTime>> getDepartureTimes() {
         return departureTimes;
     }
 
-    public void setDepartureTimes(LocalTime[][] departureTimes) {
+    public void setDepartureTimes(Map<Station, NavigableSet<LocalTime>> departureTimes) {
         if (departureTimes == null) {
-            throw new IllegalArgumentException("Departure times can't be null.");
+            throw new ScheduleException("Departure times can't be null.");
         }
-        Station[] stations = line.getStations();
-        if (stations == null) {
-            throw new IllegalStateException("Line must have stations before setting departures.");
-        }
-        if (departureTimes.length != stations.length) {
-            throw new IllegalArgumentException("DepartureTimes rows must match stations length.");
-        }
-        LocalTime[][] copy = new LocalTime[departureTimes.length][];
 
-        for (int i = 0; i < departureTimes.length; i++) {
-            LocalTime[] row = departureTimes[i];
-            if (row == null) {
-                copy[i] = new LocalTime[0];
-                continue;
-            }
-            LocalTime previos = null;
-
-            for (int k = 0; k < row.length; k++) {
-                LocalTime time = row[k];
-                if (time == null) {
-                    throw new IllegalArgumentException("Null time at row " + i + ", col " + k);
-                }
-                if (previos != null && time.isBefore(previos)) {
-                    throw new IllegalArgumentException("Times must be ascending at row " + i);
-                }
-                previos = time;
-            }
-            LocalTime[] rowCopy = new LocalTime[row.length];
-            System.arraycopy(row, 0, rowCopy, 0, row.length);
-            copy[i] = rowCopy;
+        List<Station> stations = line.getStations();
+        if (stations == null || stations.isEmpty()) {
+            throw new ScheduleException("Line must have stations before setting departures.");
         }
-        this.departureTimes = copy;
+
+        if (departureTimes.size() != stations.size()) {
+            throw new ScheduleException("DepartureTimes must match number of stations.");
+        }
+
+        for (Station station : stations) {
+            NavigableSet<LocalTime> times = departureTimes.get(station);
+            if (times == null) {
+                throw new ScheduleException("Station " + station.getName() + " has no times.");
+            }
+        }
+
+        this.departureTimes = departureTimes;
     }
 
     public Train getTrainByDepartureTime(Station station, LocalTime departureTime) {
         if (station == null) {
-            throw new IllegalArgumentException("Station can't be null.");
+            throw new ScheduleException("Station can't be null.");
         }
+
         if (departureTime == null) {
-            throw new IllegalArgumentException("Departure time can't be null.");
+            throw new ScheduleException("Departure time can't be null.");
         }
-        int stationIndex = stationIndex(station);
-        if (stationIndex < 0) {
-            return null;
-        }
-        LocalTime[] stationTimes = departureTimes[stationIndex];
 
-        if (stationTimes == null || stationTimes.length == 0) {
+        NavigableSet<LocalTime> times = departureTimes.get(station);
+        if (times == null || !times.contains(departureTime)) {
             return null;
         }
 
-        for (int i = 0; i < stationTimes.length; i++) {
-            LocalTime time = stationTimes[i];
-
-            if (time != null && time.equals(departureTime)) {
-                Train[] trains = line.getTrains();
-                if (trains != null && trains.length > 0) {
-                    return trains[i % trains.length];
-                }
-                return null;
-            }
+        List<Train> trains = line.getTrains();
+        if (trains == null || trains.isEmpty()) {
+            return null;
         }
-        return null;
+
+        int index = new ArrayList<>(times).indexOf(departureTime);
+        return trains.get(index % trains.size());
     }
 
     public static final class ScheduleGenerator {
 
-        public static Schedule fixedHeadway(Line line,
-                                            LocalTime firstAtOrigin,
-                                            LocalTime lastAtOrigin,
-                                            int headwayMin,
-                                            int perStationOffsetMin) {
+        private ScheduleGenerator() {
+        }
+
+        public static Schedule generateDailySchedule(Line line, Metro metro,
+                                                     int minutesBetweenStops, int tripsCount) {
             if (line == null) {
-                throw new IllegalArgumentException("Line can't be null.");
+                throw new ScheduleException("Line can't be null.");
             }
-            if (firstAtOrigin == null || lastAtOrigin == null) {
-                throw new IllegalArgumentException("Times can't be null.");
+            if (metro == null) {
+                throw new ScheduleException("Metro can't be null.");
             }
-            if (headwayMin <= 0) {
-                throw new IllegalArgumentException("headwayMin must be > 0");
+            if (minutesBetweenStops <= 0) {
+                throw new ScheduleException("Minutes between stops must be positive.");
             }
-            if (perStationOffsetMin < 0) {
-                perStationOffsetMin = 0;
+            if (tripsCount <= 0) {
+                throw new ScheduleException("Train count must be positive.");
             }
 
-            Station[] stations = line.getStations();
-            LocalTime[][] departures = new LocalTime[stations.length][];
-            int firstMin = firstAtOrigin.getHour() * 60 + firstAtOrigin.getMinute();
-            int lastMin = lastAtOrigin.getHour() * 60 + lastAtOrigin.getMinute();
+            LocalTime serviceStart = metro.getServiceStartAt();
+            LocalTime serviceEnd = metro.getServiceEndAt();
 
-            for (int i = 0; i < stations.length; i++) {
-                if (stations[i] == null) {
-                    departures[i] = new LocalTime[0];
-                    continue;
-                }
-                int start = firstMin + i * perStationOffsetMin;
-                if (start > lastMin) {
-                    departures[i] = new LocalTime[0];
-                    continue;
-                }
-                int count = ((lastMin - start) / headwayMin) + 1;
-                LocalTime[] row = new LocalTime[count];
-                for (int k = 0; k < count; k++) {
-                    int m = start + k * headwayMin;
-                    row[k] = LocalTime.of(m / 60, m % 60);
-                }
-                departures[i] = row;
+            if (serviceStart == null || serviceEnd == null) {
+                throw new ScheduleException("Metro service hours must be set.");
             }
-            return new Schedule(line, departures);
-        }
-
-        public static Schedule fromTrainCount(Line line, Metro metro,
-                                              int trains,
-                                              int perStationOffsetMin,
-                                              int runMinBetweenStations,
-                                              int dwellMidSec,
-                                              int terminalTurnMin) {
-            if (line == null) {
-                throw new IllegalArgumentException("Line can't be null.");
+            if (serviceStart.isAfter(serviceEnd)) {
+                throw new ScheduleException("Service start time must be before end time.");
             }
-            if (metro.getServiceStartAt() == null || metro.getServiceEndAt() == null) {
-                throw new IllegalArgumentException("Times can't be null.");
+
+            List<Station> stations = line.getStations();
+            if (stations == null || stations.isEmpty()) {
+                throw new ScheduleException("Line must have stations.");
             }
-            if (trains <= 0) {
-                throw new IllegalArgumentException("trains must be > 0");
-            }
-            if (perStationOffsetMin < 0) {
-                perStationOffsetMin = 0;
-            }
-            int stationCount = (line.getStations() == null) ? 0 : line.getStations().length;
-            double dwellMidMin = Math.ceil(Math.max(0, dwellMidSec) / 60.0);
-            int headwayMin = headwayFromTrains(
-                    stationCount,
-                    Math.max(1, runMinBetweenStations),
-                    dwellMidMin,
-                    Math.max(0, terminalTurnMin),
-                    trains
-            );
-            return fixedHeadway(line, metro.getServiceStartAt(),
-                    metro.getServiceEndAt(), headwayMin, perStationOffsetMin);
-        }
 
-        private static int headwayFromTrains(int stationCount,
-                                             double runMinBetweenStations,
-                                             double dwellMidMin,
-                                             double terminalTurnMin,
-                                             int trains) {
-            if (stationCount < 2) return 1;
-            int segments = stationCount - 1;
-            int intermediates = Math.max(0, stationCount - 2);
-            double oneWay = segments * runMinBetweenStations + intermediates * dwellMidMin;
-            double cycle = 2 * oneWay + 2 * terminalTurnMin;
+            Map<Station, NavigableSet<LocalTime>> departureTimes = new LinkedHashMap<>();
 
-            return Math.max(1, (int) Math.ceil(cycle / trains));
-        }
+            long totalServiceMinutes = ChronoUnit.MINUTES.between(serviceStart, serviceEnd);
+            int intervalMinutes = (int) totalServiceMinutes / tripsCount;
 
-        public static void printTimetable(Line line, LocalTime[][] departures) {
-            Station[] stations = (line == null) ? null : line.getStations();
+            for (int i = 0; i < stations.size(); i++) {
+                Station station = stations.get(i);
+                NavigableSet<LocalTime> times = new TreeSet<>();
 
-            if (stations == null || departures == null) {
-                return;
-            }
-            for (int i = 0; i < stations.length; i++) {
-                String name = (stations[i] == null) ? ("<null-" + i + ">") : stations[i].getName();
-                System.out.printf("%s: ", name);
-                LocalTime[] row = (i < departures.length &&
-                        departures[i] != null) ? departures[i] : new LocalTime[0];
+                int stationOffsetMinutes = i * minutesBetweenStops;
 
-                for (int k = 0; k < row.length; k++) {
-                    LocalTime t = row[k];
-                    if (t != null) {
-                        String hh = (t.getHour() < 10 ? "0" : "") + t.getHour();
-                        String mm = (t.getMinute() < 10 ? "0" : "") + t.getMinute();
-                        System.out.printf("%s:%s%s", hh, mm, (k < row.length - 1 ? ", " : ""));
+                for (int trainIndex = 0; trainIndex < tripsCount; trainIndex++) {
+                    LocalTime baseTime = serviceStart.plusMinutes(
+                            trainIndex * intervalMinutes);
+                    LocalTime stationTime = baseTime.plusMinutes(stationOffsetMinutes);
+
+                    if (!stationTime.isAfter(serviceEnd)) {
+                        LocalTime roundedTime = roundToNearestFiveMinutes(stationTime);
+                        if (!roundedTime.isBefore(serviceStart) && !roundedTime.
+                                isAfter(serviceEnd)) {
+                            times.add(roundedTime);
+                        }
                     }
                 }
-                System.out.printf("%n");
+
+                departureTimes.put(station, times);
             }
+            printSchedule(line, departureTimes);
+            return new Schedule(line, departureTimes);
+        }
+
+        private static LocalTime roundToNearestFiveMinutes(LocalTime time) {
+            int minute = time.getMinute();
+            int roundedMinute = (minute / 5) * 5;
+            if (minute % 5 >= 3) {
+                roundedMinute += 5;
+            }
+            if (roundedMinute >= 60) {
+                return time.plusHours(1).withMinute(roundedMinute - 60).
+                        withSecond(0).withNano(0);
+            }
+            return time.withMinute(roundedMinute).withSecond(0).withNano(0);
+        }
+    }
+
+    private static void printSchedule(Line line, Map<Station,
+            NavigableSet<LocalTime>> departureTimes) {
+        System.out.println("Schedule for Line: " + line.getName());
+        for (Station station : departureTimes.keySet()) {
+            System.out.println("Station: " + station.getName() + " = " +
+                    departureTimes.get(station));
         }
     }
 }

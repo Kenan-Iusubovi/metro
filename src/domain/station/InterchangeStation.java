@@ -1,78 +1,71 @@
 package domain.station;
 
 import domain.people.passenger.Passenger;
-import utils.ArrayUtils;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class InterchangeStation extends Station {
 
-    private Station[] transferStations;
+    private Set<Station> transferStations;
 
     public InterchangeStation(String name, long code, boolean accessible,
                               byte platformCount, LocalDate builtOn) {
         super(name, code, accessible, platformCount, builtOn);
-        this.transferStations = new Station[0];
+        this.transferStations = new HashSet<>();
     }
 
     public InterchangeStation(String name, long code, byte platformCount,
-                              LocalDate builtOn, Turnstile[] turnstiles) {
+                              LocalDate builtOn, Set<Turnstile> turnstiles) {
         super(name, code, platformCount, builtOn, turnstiles);
-        this.transferStations = new Station[0];
+        this.transferStations = new HashSet<>();
     }
 
-    public Station[] getTransferStations() {
+    public Set<Station> getTransferStations() {
         return transferStations;
     }
 
     public InterchangeStation(String name, long code, boolean accessible,
-                              byte platformCount, LocalDate builtOn, Station[] transferStations) {
+                              byte platformCount, LocalDate builtOn, Station[] stations) {
         super(name, code, accessible, platformCount, builtOn);
-        this.transferStations = new Station[0];
-        setTransferStations(transferStations);
+        this.transferStations = new HashSet<>();
+        setTransferStations(stations);
     }
 
     public InterchangeStation(String name, long code, byte platformCount, LocalDate builtOn,
-                              Turnstile[] turnstiles, Station[] transferStations) {
+                              Set<Turnstile> turnstiles, Station[] stations) {
         super(name, code, platformCount, builtOn, turnstiles);
-        this.transferStations = new Station[0];
-        setTransferStations(transferStations);
+        this.transferStations = new HashSet<>();
+        setTransferStations(stations);
     }
 
     public InterchangeStation(String name, long code, boolean accessible,
-                              byte platformCount, LocalDate builtOn, Station transferStation) {
+                              byte platformCount, LocalDate builtOn, Station station) {
         super(name, code, accessible, platformCount, builtOn);
-        this.transferStations = new Station[0];
-        addTransferStation(transferStation);
-    }
-
-    public InterchangeStation(String name, long code, byte platformCount, LocalDate builtOn,
-                              Turnstile[] turnstiles, Station transferStation) {
-        super(name, code, platformCount, builtOn, turnstiles);
-        this.transferStations = new Station[0];
-        addTransferStation(transferStation);
+        this.transferStations = new HashSet<>();
+        addTransferStation(station);
     }
 
     public void addTransferStation(Station station) {
         if (station == null) {
             throw new IllegalArgumentException("Transfer station can't be null.");
         }
-        this.transferStations = (Station[]) ArrayUtils.add(this.transferStations, station);
+        this.transferStations.add(station);
     }
 
     public void removeTransferStation(Station station) {
         if (station == null) {
             throw new IllegalArgumentException("Transfer station can't be null.");
         }
-        this.transferStations = (Station[]) ArrayUtils.delete(this.transferStations, station);
+        this.transferStations.remove(station);
     }
 
     public boolean canTransferTo(Station station) {
-        if (station == null) return false;
-        for (Station s : transferStations) {
-            if (s == station) return true;
+        if (station == null) {
+            return false;
         }
-        return false;
+        return transferStations.contains(station);
     }
 
     public Station changeLine(Passenger passenger, Station targetStation) {

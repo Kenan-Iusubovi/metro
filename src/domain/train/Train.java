@@ -8,9 +8,12 @@ import domain.people.employee.Driver;
 import domain.people.passenger.Passenger;
 import domain.route.Line;
 import domain.station.Station;
-import utils.ArrayUtils;
+import utils.MyDoublyLinkedList;
 
 import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 public class Train implements OpenClose, PublicTransport {
 
@@ -18,19 +21,19 @@ public class Train implements OpenClose, PublicTransport {
 
     private long id;
     private String code;
-    private Carriage[] carriages;
+    private List<Carriage> carriages;
     private int onboardCount;
     private byte acTemperature;
     boolean doorsClosed;
     private Driver driver;
 
-    public Train(Carriage[] carriages) {
+    public Train(MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
         setCarriages(carriages);
         this.onboardCount = 0;
     }
 
-    public Train(String code, Carriage[] carriages) {
+    public Train(String code, MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
         setCode(code);
         setCarriages(carriages);
@@ -95,7 +98,7 @@ public class Train implements OpenClose, PublicTransport {
         this.code = code;
     }
 
-    public Carriage[] getCarriages() {
+    public List<Carriage> getCarriages() {
 
         return carriages;
     }
@@ -108,24 +111,24 @@ public class Train implements OpenClose, PublicTransport {
             throw new CarriageNotOperationalException("Carriage can't be attached" +
                     " because carriage status = " + carriage.getCarriageStatus().toString());
         }
-        this.carriages = (Carriage[]) ArrayUtils.add(this.carriages, carriage);
+        this.carriages.add(carriage);
     }
 
     public void removeCarriage(Carriage carriage) {
         if (carriage == null) {
             throw new IllegalArgumentException("Carriage to remove can't be null.");
         }
-        this.carriages = (Carriage[]) ArrayUtils.delete(this.carriages, carriage);
+        this.carriages.remove(carriage);
     }
 
-    private void setCarriages(Carriage[] carriages) {
+    private void setCarriages(List<Carriage> carriages) {
         if (carriages == null) {
             throw new IllegalArgumentException("Carriages can't be null");
         }
-        if (carriages.length < 2) {
+        if (carriages.size() < 2) {
             throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
-        this.carriages = new Carriage[0];
+        this.carriages = new LinkedList<>();
         for (Carriage carriage : carriages) {
             addCarriage(carriage);
         }
@@ -190,35 +193,35 @@ public class Train implements OpenClose, PublicTransport {
                     " should assign driver for each train!");
         }
 
-        Station[] stations = line.getStations();
-        for (int i = 0; i < stations.length; i++) {
-            System.out.printf("Station %s%n", stations[i].getName());
+        List<Station> stations = line.getStations();
+        for (int i = 0; i < stations.size(); i++) {
+            System.out.printf("Station %s%n", stations.get(i).getName());
             open();
 
-            if (passenger != null && stations[i].equals(destination)) {
+            if (passenger != null && stations.get(i).equals(destination)) {
                 alight(passenger);
                 System.out.printf("%s %s arrived at destination station %s%n",
-                        passenger.getFirstname(), passenger.getSurname(), stations[i].getName());
+                        passenger.getFirstname(), passenger.getSurname(),
+                        stations.get(i).getName());
 
                 if (!continueToTerminus) {
-                    return stations[i];
+                    return stations.get(i);
                 }
             }
 
-            if (i < stations.length - 1) {
+            if (i < stations.size() - 1) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
                 System.out.printf("Caution door's is closing, next station is %s%n",
-                        stations[i + 1].getName());
+                        stations.get(i + 1).getName());
                 close();
             }
         }
-        return stations[stations.length - 1];
+        return stations.getLast();
     }
-
 
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
                                  Line line, Station destinationStation) {
@@ -234,5 +237,17 @@ public class Train implements OpenClose, PublicTransport {
         return destinationStation;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Train train)) return false;
+        return id == train.id &&
+                Objects.equals(code, train.code) &&
+                Objects.equals(carriages, train.carriages);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code, carriages);
+    }
 }

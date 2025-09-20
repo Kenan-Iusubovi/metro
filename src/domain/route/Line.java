@@ -2,7 +2,10 @@ package domain.route;
 
 import domain.station.Station;
 import domain.train.Train;
-import utils.ArrayUtils;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Line {
 
@@ -13,8 +16,8 @@ public class Line {
     private String name;
     private String color;
     private boolean active;
-    private Station[] stations;
-    private Train[] trains;
+    private List<Station> stations;
+    private List<Train> trains;
 
     public Line(long code, String name, String color) {
         this.id = ++idCounter;
@@ -22,31 +25,23 @@ public class Line {
         setName(name);
         setColor(color);
         setActive(true);
-        this.stations = new Station[0];
-        this.trains = new Train[0];
+        this.stations = new ArrayList<>();
+        this.trains = new LinkedList<>();
     }
 
-    public Line(long code, String name, String color, Station[] stations) {
+    public Line(long code, String name, String color, List<Station> stations) {
         this.id = ++idCounter;
         setCode(code);
         setName(name);
         setColor(color);
         setActive(true);
-        this.stations = new Station[0];
-        this.trains = new Train[0];
+        this.stations = new ArrayList<>();
+        this.trains = new LinkedList<>();
         setStations(stations);
     }
 
     public boolean hasStation(Station station) {
-        if (station == null) {
-            return false;
-        }
-        for (int i = 0; i < stations.length; i++) {
-            if (stations[i] != null && stations[i].getCode() == station.getCode()) {
-                return true;
-            }
-        }
-        return false;
+        return stations.contains(station);
     }
 
     public void activate() {
@@ -102,7 +97,7 @@ public class Line {
         this.active = active;
     }
 
-    public Station[] getStations() {
+    public List<Station> getStations() {
         return stations;
     }
 
@@ -110,21 +105,21 @@ public class Line {
         if (station == null) {
             throw new IllegalArgumentException("Station can't be null.");
         }
-        this.stations = (Station[]) ArrayUtils.add(this.stations, station);
+        this.stations.add(station);
     }
 
     public void removeStation(Station station) {
         if (station == null) {
             throw new IllegalArgumentException("Station can't be null.");
         }
-        this.stations = (Station[]) ArrayUtils.delete(this.stations, station);
+        this.stations.remove(station);
     }
 
-    private void setStations(Station[] stations) {
+    private void setStations(List<Station> stations) {
         if (stations == null) {
             throw new IllegalArgumentException("Stations can't be null");
         }
-        if (stations.length < 2) {
+        if (stations.size() < 2) {
             throw new IllegalArgumentException("To make a line should add minimum 2 stations.");
         }
         for (Station station : stations) {
@@ -132,7 +127,7 @@ public class Line {
         }
     }
 
-    public Train[] getTrains() {
+    public List<Train> getTrains() {
         return trains;
     }
 
@@ -140,13 +135,13 @@ public class Line {
         if (train == null) {
             throw new IllegalArgumentException("Train can't be null.");
         }
-        this.trains = (Train[]) ArrayUtils.add(this.trains, train);
+        this.trains.add(train);
     }
 
     public void removeTrain(Train train) {
         if (train == null) {
             throw new IllegalArgumentException("Train can't be null.");
         }
-        this.trains = (Train[]) ArrayUtils.delete(this.trains, train);
+        this.trains.remove(train);
     }
 }

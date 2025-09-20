@@ -11,7 +11,8 @@ public final class PaymentReceipt {
     private final PaymentMethod method;
     private final LocalDateTime timestamp;
 
-    public PaymentReceipt(String id, TransactionType type, BigDecimal amount, PaymentMethod method, LocalDateTime timestamp) {
+    public PaymentReceipt(String id, TransactionType type, BigDecimal amount,
+                          PaymentMethod method, LocalDateTime timestamp) {
         this.id = Objects.requireNonNull(id);
         this.type = Objects.requireNonNull(type);
         this.amount = Objects.requireNonNull(amount);

@@ -8,18 +8,19 @@ import application.service.payment.PaymentSession;
 import domain.people.passenger.Passenger;
 import domain.system.Metro;
 import domain.ticket.Ticket;
-import utils.ArrayUtils;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BookingServiceImpl implements BookingService {
 
-    private Ticket[] issuedTickets;
+    private Set<Ticket> issuedTickets;
     private EmailService emailService;
     private FareCalculator fareCalculatorService;
 
     public BookingServiceImpl() {
-        this.issuedTickets = new Ticket[0];
+        this.issuedTickets = new HashSet<>();
         this.emailService = new EmailServiceImpl();
         this.fareCalculatorService = new FareCalculator();
     }
@@ -46,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
 
             Ticket ticket = new Ticket(price, method);
             passenger.addTicket(ticket);
-            this.issuedTickets = (Ticket[]) ArrayUtils.add(this.issuedTickets, ticket);
+            this.issuedTickets.add(ticket);
 
             emailService.sendTicketPurchaseSuccess(
                     passenger.getEmail(),
@@ -68,16 +69,16 @@ public class BookingServiceImpl implements BookingService {
         if (ticket == null || passenger == null) {
             throw new IllegalArgumentException("Ticket or passenger can't be null or empty.");
         }
-        this.issuedTickets = (Ticket[]) ArrayUtils.delete(this.issuedTickets, ticket);
+        this.issuedTickets.remove(ticket);
         passenger.removeTicket(ticket);
     }
 
 
-    public Ticket[] getIssuedTickets() {
+    public Set<Ticket> getIssuedTickets() {
         return issuedTickets;
     }
 
-    public void setIssuedTickets(Ticket[] issuedTickets) {
+    public void setIssuedTickets(Set<Ticket> issuedTickets) {
         if (issuedTickets == null) {
             throw new IllegalArgumentException("Ticket can't be null.");
         }
