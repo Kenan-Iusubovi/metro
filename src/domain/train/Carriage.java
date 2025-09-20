@@ -1,6 +1,7 @@
 package domain.train;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Carriage {
 
@@ -107,5 +108,16 @@ public class Carriage {
 
     public void setSeverityScore(float severityScore) {
         this.severityScore = severityScore;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Carriage carriage)) return false;
+        return id == carriage.id && doorCount == carriage.doorCount && productionYear == carriage.productionYear && seatCapacity == carriage.seatCapacity && standingCapacity == carriage.standingCapacity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, doorCount, productionYear, seatCapacity, standingCapacity);
     }
 }

@@ -19,6 +19,9 @@ import domain.train.Train;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
@@ -30,154 +33,160 @@ public class Main {
 
         BookingService bookingService = new BookingServiceImpl();
 
-        Turnstile[] akhmeteliTurnstiles = {
+        Set<Turnstile> akhmeteliTurnstiles = Set.of(
                 new Turnstile("AKH-T1", true),
                 new Turnstile("AKH-T2", true),
                 new Turnstile("AKH-T3", false)
-        };
+        );
 
-        Turnstile[] sarajishviliTurnstiles = {
+        Set<Turnstile> sarajishviliTurnstiles = Set.of(
                 new Turnstile("SAR-T1", true),
                 new Turnstile("SAR-T2", false)
-        };
+        );
 
-        Turnstile[] ghrmagheleTurnstiles = {
+        Set<Turnstile> ghrmagheleTurnstiles = Set.of(
                 new Turnstile("GHR-T1", true)
-        };
+        );
 
-        Turnstile[] didubeTurnstiles = {
+        Set<Turnstile> didubeTurnstiles = Set.of(
                 new Turnstile("DID-T1", true),
                 new Turnstile("DID-T2", true),
                 new Turnstile("DID-T3", false),
                 new Turnstile("DID-T4", false)
-        };
+        );
 
-        Turnstile[] gotsiridzeTurnstiles = {
+        Set<Turnstile> gotsiridzeTurnstiles = Set.of(
                 new Turnstile("GOT-T1", true),
                 new Turnstile("GOT-T2", false)
-        };
+        );
 
-        Turnstile[] nadzaladeviTurnstiles = {
+        Set<Turnstile> nadzaladeviTurnstiles = Set.of(
                 new Turnstile("NAD-T1", true),
                 new Turnstile("NAD-T2", false)
-        };
+        );
 
-        Turnstile[] stationSquareTurnstiles = {
+        Set<Turnstile> stationSquareTurnstiles = Set.of(
                 new Turnstile("SSQ-T1", true),
                 new Turnstile("SSQ-T2", true),
                 new Turnstile("SSQ-T3", false),
                 new Turnstile("SSQ-T4", false),
                 new Turnstile("SSQ-T5", true)
-        };
+        );
 
-        Turnstile[] marjanishviliTurnstiles = {
+        Set<Turnstile> marjanishviliTurnstiles = Set.of(
                 new Turnstile("MAR-T1", true),
                 new Turnstile("MAR-T2", false)
-        };
+        );
 
-        Turnstile[] rustaveliTurnstiles = {
+        Set<Turnstile> rustaveliTurnstiles = Set.of(
                 new Turnstile("RUS-T1", true),
                 new Turnstile("RUS-T2", false)
-        };
+        );
 
-        Turnstile[] freedomSquareTurnstiles = {
+        Set<Turnstile> freedomSquareTurnstiles = Set.of(
                 new Turnstile("FRS-T1", true),
                 new Turnstile("FRS-T2", true),
                 new Turnstile("FRS-T3", false)
-        };
+        );
 
-        Turnstile[] avlabariTurnstiles = {
+        Set<Turnstile> avlabariTurnstiles = Set.of(
                 new Turnstile("AVL-T1", true),
                 new Turnstile("AVL-T2", false)
-        };
+        );
 
-        Turnstile[] samgoriTurnstiles = {
+        Set<Turnstile> samgoriTurnstiles = Set.of(
                 new Turnstile("SAM-T1", true),
                 new Turnstile("SAM-T2", false)
-        };
+        );
 
-        Turnstile[] isaniTurnstiles = {
+        Set<Turnstile> isaniTurnstiles = Set.of(
                 new Turnstile("ISA-T1", true)
-        };
+        );
 
-        Turnstile[] varketiliTurnstiles = {
+        Set<Turnstile> varketiliTurnstiles = Set.of(
                 new Turnstile("VAR-T1", true),
                 new Turnstile("VAR-T2", true),
                 new Turnstile("VAR-T3", false),
                 new Turnstile("VAR-T4", false)
-        };
+        );
 
-        Turnstile[] guramishviliTurnstiles = {
+        Set<Turnstile> guramishviliTurnstiles = Set.of(
                 new Turnstile("GUR-T1", true),
                 new Turnstile("GUR-T2", false)
-        };
+        );
 
-        Turnstile[] aragveli300Turnstiles = {
+        Set<Turnstile> aragveli300Turnstiles = Set.of(
                 new Turnstile("ARA-T1", true),
                 new Turnstile("ARA-T2", true),
                 new Turnstile("ARA-T3", false)
-        };
+        );
 
-        Turnstile[] stationSquare2Turnstiles = {
+        Set<Turnstile> stationSquare2Turnstiles = Set.of(
                 new Turnstile("SSQ2-T1", true),
                 new Turnstile("SSQ2-T2", true),
                 new Turnstile("SSQ2-T3", false)
-        };
+        );
 
-        Turnstile[] tsereteliTurnstiles = {
+        Set<Turnstile> tsereteliTurnstiles = Set.of(
                 new Turnstile("TSE-T1", true),
                 new Turnstile("TSE-T2", false)
-        };
+        );
 
-        Turnstile[] technicalUniversityTurnstiles = {
+        Set<Turnstile> technicalUniversityTurnstiles = Set.of(
                 new Turnstile("TUN-T1", true),
                 new Turnstile("TUN-T2", true)
-        };
+        );
 
-        Turnstile[] medicalUniversityTurnstiles = {
+        Set<Turnstile> medicalUniversityTurnstiles = Set.of(
                 new Turnstile("MED-T1", true),
                 new Turnstile("MED-T2", false)
-        };
+        );
 
-        Turnstile[] delisiTurnstiles = {
+        Set<Turnstile> delisiTurnstiles = Set.of(
                 new Turnstile("DEL-T1", true),
                 new Turnstile("DEL-T2", false)
-        };
+        );
 
-        Turnstile[] vazhaPshavelaTurnstiles = {
+        Set<Turnstile> vazhaPshavelaTurnstiles = Set.of(
                 new Turnstile("VAZ-T1", true),
                 new Turnstile("VAZ-T2", true),
                 new Turnstile("VAZ-T3", false)
-        };
+        );
 
-        Turnstile[] stateUniversityTurnstiles = {
+        Set<Turnstile> stateUniversityTurnstiles = Set.of(
                 new Turnstile("UNI-T1", true),
                 new Turnstile("UNI-T2", false)
-        };
+        );
 
-        Station[] saburtaloStations = {
+        List<Station> saburtaloStations = Arrays.asList(
                 new InterchangeStation("Station Square2", 2001L, (byte) 2,
-                        LocalDate.of(1979, 1, 1), stationSquare2Turnstiles),
+                        LocalDate.of(1979, 1, 1),
+                        stationSquare2Turnstiles),
                 new Station("Tsereteli", 2002L, (byte) 2,
-                        LocalDate.of(1979, 1, 1), tsereteliTurnstiles),
+                        LocalDate.of(1979, 1, 1),
+                        tsereteliTurnstiles),
                 new Station("Technical University", 2003L, (byte) 2,
-                        LocalDate.of(1979, 1, 1), technicalUniversityTurnstiles),
+                        LocalDate.of(1979, 1, 1),
+                        technicalUniversityTurnstiles),
                 new Station("Medical University", 2004L, (byte) 2,
-                        LocalDate.of(2004, 1, 1), medicalUniversityTurnstiles),
+                        LocalDate.of(2004, 1, 1),
+                        medicalUniversityTurnstiles),
                 new Station("Delisi", 2005L, (byte) 2,
-                        LocalDate.of(1979, 1, 1), delisiTurnstiles),
+                        LocalDate.of(1979, 1, 1),
+                        delisiTurnstiles),
                 new Station("Vazha-Pshavela", 2006L, (byte) 2,
-                        LocalDate.of(2000, 1, 1), vazhaPshavelaTurnstiles),
+                        LocalDate.of(2000, 1, 1),
+                        vazhaPshavelaTurnstiles),
                 new Station("State University", 2007L, (byte) 2,
-                        LocalDate.of(2017, 1, 1), stateUniversityTurnstiles)
-        };
-
+                        LocalDate.of(2017, 1, 1),
+                        stateUniversityTurnstiles)
+        );
 
         Line saburtaloLine = new Line(
                 7842, "Saburtalo", "GREEN", saburtaloStations
         );
 
-        Station[] akhmeteliVarketiliStations = {
+        List<Station> akhmeteliVarketiliStations = Arrays.asList(
                 new Station("Akhmeteli Theatre", 1000L, (byte) 2,
                         LocalDate.of(1989, 1, 1), akhmeteliTurnstiles),
                 new Station("Sarajishvili", 1008L, (byte) 2,
@@ -210,20 +219,20 @@ public class Main {
                         LocalDate.of(1971, 1, 1), samgoriTurnstiles),
                 new Station("Varketili", 1016L, (byte) 2,
                         LocalDate.of(1981, 1, 1), varketiliTurnstiles)
-        };
+        );
 
 
         Line akhmeteliVarketiliLine = new Line(
                 5698, "Akhmeteli-Varketili", "RED", akhmeteliVarketiliStations
         );
 
-        InterchangeStation stationSquare1 = (InterchangeStation) akhmeteliVarketiliStations[7];
-        InterchangeStation stationSquare2 = (InterchangeStation) saburtaloStations[0];
+        InterchangeStation stationSquare1 = (InterchangeStation) akhmeteliVarketiliStations.get(7);
+        InterchangeStation stationSquare2 = (InterchangeStation) saburtaloStations.get(0);
 
         stationSquare1.addTransferStation(stationSquare2);
         stationSquare2.addTransferStation(stationSquare1);
 
-        Carriage[] carriages = {
+        List<Carriage> carriages = Arrays.asList(
                 new Carriage((byte) 4, (short) 2010, 40, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2011, 42, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2012, 38, CarriageStatus.ACTIVE),
@@ -236,7 +245,7 @@ public class Main {
                 new Carriage((byte) 4, (short) 2019, 50, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2020, 48, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2021, 52, CarriageStatus.ACTIVE)
-        };
+        );
 
         Driver driver = new Driver("Levan", "Kiknavelidze",
                 "DRV-1234", 7);
@@ -248,9 +257,8 @@ public class Main {
 
         akhmeteliVarketiliLine.addTrain(tbilisiTrain1);
 
-        Schedule schedule = Schedule.ScheduleGenerator.fromTrainCount(
-                akhmeteliVarketiliLine, tbilisiMetro, 1,
-                2, 2, 30, 5
+        Schedule schedule = Schedule.ScheduleGenerator.generateDailySchedule(
+                akhmeteliVarketiliLine, tbilisiMetro, 10, 15
         );
         tbilisiMetro.addSchedule(schedule);
 
@@ -263,8 +271,8 @@ public class Main {
 
         tbilisiMetro.enterMetro(
                 ninoPassenger, ticket,
-                akhmeteliVarketiliLine.getStations()[0],
-                akhmeteliVarketiliLine.getStations()[10]
+                akhmeteliVarketiliLine.getStations().get(0),
+                akhmeteliVarketiliLine.getStations().get(10)
         );
 
         Mechanic mechanic = new Mechanic("Jason", "Stethem",

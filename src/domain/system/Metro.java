@@ -1,5 +1,6 @@
 package domain.system;
 
+import application.exception.ScheduleException;
 import application.port.PaymentService;
 import application.service.FareCalculator;
 import domain.people.passenger.Passenger;
@@ -7,11 +8,12 @@ import domain.route.Schedule;
 import domain.station.Station;
 import domain.ticket.Ticket;
 import domain.train.Train;
-import utils.ArrayUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Metro {
 
@@ -22,7 +24,7 @@ public class Metro {
     private String city;
     private LocalDateTime launchedOn;
     private LocalDate createdAt;
-    private Schedule[] schedules;
+    private List<Schedule> schedules;
     private PaymentService paymentService;
     private LocalTime serviceStartAt;
     private LocalTime serviceEndAt;
@@ -32,10 +34,10 @@ public class Metro {
         setCity(city);
         this.createdAt = createdAt;
         this.launchedOn = LocalDateTime.now();
-        this.schedules = new Schedule[0];
+        this.schedules = new ArrayList<>();
     }
 
-    public Metro(String city, LocalDate createdAt, Schedule[] schedule) {
+    public Metro(String city, LocalDate createdAt, List<Schedule> schedule) {
         this.id = ++idCounter;
         setCity(city);
         this.createdAt = createdAt;
@@ -56,65 +58,52 @@ public class Metro {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name of Station can't be null or empty.");
         }
-        Station[] all = getStations();
-        for (int i = 0; i < all.length; i++) {
-            if (all[i] != null && name.equalsIgnoreCase(all[i].getName())) {
-                return all[i];
+        List<Station> stations = getStations();
+        for (Station station : stations) {
+            if (station.getName().equals(name)) {
+                return station;
             }
         }
-        return null;
+        throw new ScheduleException("No station with name " + name + " was find in schedule");
     }
 
     public Station findStationByCode(long code) {
-        Station[] all = getStations();
-        for (int i = 0; i < all.length; i++) {
-            if (all[i] != null && all[i].getCode() == code) {
-                return all[i];
+        List<Station> stations = getStations();
+        for (Station station : stations) {
+            if (station.getCode() == code) {
+                return station;
             }
         }
-        return null;
+        throw new ScheduleException("No station with code " + code + " was find in schedule");
     }
 
     public void openAllStations() {
-        Station[] all = getStations();
-        for (int i = 0; i < all.length; i++) {
-            if (all[i] != null) {
-                all[i].openAll();
-            }
+        List<Station> stations = getStations();
+        for (Station station : stations) {
+            station.openAll();
         }
     }
 
     public void closeAllStations() {
-        Station[] all = getStations();
-        for (int i = 0; i < all.length; i++) {
-            if (all[i] != null) {
-                all[i].closeAll();
-            }
+        List<Station> stations = getStations();
+        for (Station station : stations) {
+            station.closeAll();
         }
     }
 
-    public Station[] getStations() {
-        if (schedules == null || schedules.length == 0) {
-            return new Station[0];
+    public List<Station> getStations() {
+        if (schedules == null || schedules.isEmpty()) {
+            throw new ScheduleException("Schedule has no stations");
         }
-        int total = 0;
-        for (int i = 0; i < schedules.length; i++) {
-            Station[] s = schedules[i] != null ? schedules[i].getLine().getStations() : null;
-            if (s != null) {
-                total += s.length;
+        List<Station> stations = new ArrayList<>();
+        for (Schedule schedule : schedules) {
+            if (schedule.getLine() != null && schedule.getLine().getStations() != null
+                    && schedule.getLine().getStations().isEmpty()) {
+                stations.addAll(schedule.getLine().getStations());
             }
+            return stations;
         }
-        Station[] result = new Station[total];
-        int idx = 0;
-        for (int i = 0; i < schedules.length; i++) {
-            Station[] s = schedules[i] != null ? schedules[i].getLine().getStations() : null;
-            if (s != null) {
-                for (int j = 0; j < s.length; j++) {
-                    result[idx++] = s[j];
-                }
-            }
-        }
-        return result;
+        return null;
     }
 
     public Long getId() {
@@ -147,7 +136,7 @@ public class Metro {
         this.createdAt = createdAt;
     }
 
-    public Schedule[] getSchedules() {
+    public List<Schedule> getSchedules() {
         return schedules;
     }
 
@@ -155,20 +144,17 @@ public class Metro {
         if (schedule == null) {
             throw new IllegalArgumentException("Schedule can't be null.");
         }
-        this.schedules = (Schedule[]) ArrayUtils.add(this.schedules, schedule);
+        this.schedules.add(schedule);
     }
 
-    private void setSchedules(Schedule[] schedules) {
+    private void setSchedules(List<Schedule> schedules) {
         if (schedules == null) {
             throw new IllegalArgumentException("Schedules can't be null.");
         }
-        if (schedules.length < 1) {
+        if (schedules.isEmpty()) {
             throw new IllegalArgumentException("Add at least 1 schedule.");
         }
-        this.schedules = new Schedule[0];
-        for (Schedule schedule : schedules) {
-            addSchedule(schedule);
-        }
+        this.schedules = schedules;
     }
 
     public LocalTime getServiceEndAt() {
@@ -219,7 +205,7 @@ public class Metro {
         LocalTime departureTime = null;
 
         for (Schedule schedule : schedules) {
-            Station[] stations = schedule.getLine().getStations();
+            List<Station> stations = schedule.getLine().getStations();
             for (Station station : stations) {
                 if (station.equals(onboardingStation)) {
                     departureTime = schedule.nextDepartureTime(station, LocalTime.now());

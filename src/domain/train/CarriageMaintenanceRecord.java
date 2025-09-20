@@ -4,29 +4,29 @@ import application.exception.NoEmployeeAssignedException;
 import domain.people.employee.Mechanic;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class CarriageMaintenanceRecord {
 
     private UUID id;
-    private Carriage[] carriage;
+    private List<Carriage> carriages;
     private LocalDateTime maintenanceStartTime;
     private LocalDateTime maintenanceEndTime;
     private String description;
     private Mechanic mechanic;
 
-    public CarriageMaintenanceRecord(Carriage[] carriage, Mechanic mechanic) {
+    public CarriageMaintenanceRecord(List<Carriage> carriages, Mechanic mechanic) {
         this.id = UUID.randomUUID();
-        setCarriage(carriage);
+        setCarriages(carriages);
         this.maintenanceStartTime = LocalDateTime.now();
         setMechanic(mechanic);
     }
 
-    public CarriageMaintenanceRecord(Carriage[] carriage) {
+    public CarriageMaintenanceRecord(List<Carriage> carriages) {
         this.id = UUID.randomUUID();
-        setCarriage(carriage);
+        setCarriages(carriages);
         this.maintenanceStartTime = LocalDateTime.now();
     }
 
@@ -34,15 +34,15 @@ public class CarriageMaintenanceRecord {
         return id;
     }
 
-    public Carriage[] getCarriage() {
-        return carriage;
+    public List<Carriage> getCarriages() {
+        return carriages;
     }
 
-    private void setCarriage(Carriage[] carriage) {
-        if (carriage == null || carriage.length == 0) {
+    private void setCarriages(List<Carriage> carriages) {
+        if (carriages == null || carriages.isEmpty()) {
             throw new IllegalArgumentException("Carriage on repair can't be null or empty.");
         }
-        this.carriage = carriage;
+        this.carriages = carriages;
     }
 
     public LocalDateTime getMaintenanceStartTime() {
@@ -97,7 +97,7 @@ public class CarriageMaintenanceRecord {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CarriageMaintenanceRecord that = (CarriageMaintenanceRecord) o;
-        return Objects.equals(id, that.id) && Objects.equals(carriage, that.carriage)
+        return Objects.equals(id, that.id) && Objects.equals(carriages, that.carriages)
                 && Objects.equals(maintenanceStartTime, that.maintenanceStartTime)
                 && Objects.equals(maintenanceEndTime, that.maintenanceEndTime)
                 && Objects.equals(description, that.description)
@@ -106,7 +106,7 @@ public class CarriageMaintenanceRecord {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, carriage, maintenanceStartTime,
+        return Objects.hash(id, carriages, maintenanceStartTime,
                 maintenanceEndTime, description, mechanic);
     }
 
@@ -114,7 +114,7 @@ public class CarriageMaintenanceRecord {
     public String toString() {
         return "CarriageMaintenanceRecord{" +
                 "id=" + id +
-                ", carriage=" + Arrays.toString(carriage) +
+                ", carriages=" + carriages +
                 ", maintenanceStartTime=" + maintenanceStartTime +
                 ", maintenanceEndTime=" + maintenanceEndTime +
                 ", description='" + description + '\'' +
