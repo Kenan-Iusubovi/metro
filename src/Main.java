@@ -2,6 +2,7 @@ import application.port.BookingService;
 import application.service.BookingServiceImpl;
 import application.service.payment.PaymentMethod;
 import application.service.payment.PaymentServiceImpl;
+import domain.parking.TrainParking;
 import domain.people.employee.Driver;
 import domain.people.employee.Mechanic;
 import domain.people.passenger.Passenger;
@@ -253,6 +254,10 @@ public class Main {
 
         Train tbilisiTrain1 = new Train("TB1", carriages);
 
+        TrainParking<Train> parking = new TrainParking<>("Tbilisi Parking","Tbilisi");
+        parking.parkTrain(tbilisiTrain1);
+        parking.getTrainOutOfParking(tbilisiTrain1);
+
         tbilisiTrain1.assignDriver(driver);
         driver.assignTrain(tbilisiTrain1);
 
@@ -275,6 +280,8 @@ public class Main {
                 akhmeteliVarketiliLine.getStations().get(0),
                 akhmeteliVarketiliLine.getStations().get(10)
         );
+
+        parking.parkTrain(tbilisiTrain1);
 
         Mechanic mechanic = new Mechanic("Jason", "Stethem",
                 "SCJ-0569", 25, tbilisiTrain1);
