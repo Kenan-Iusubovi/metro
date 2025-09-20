@@ -28,13 +28,13 @@ public class Ticket {
     }
 
     private boolean isValidForEntry() {
-        return status == TicketStatus.ACTIVE;
+        return status.isValidForEntry();
     }
 
     public boolean useForEntry() {
         if (!isValidForEntry()) {
-            throw new InvalidTicketException("Unfortunately you ticket status is "
-                    + this.getStatus().toString());
+            throw new InvalidTicketException("Unfortunately your ticket status is "
+                    + this.getStatus().getDetailedStatus());
         }
         this.status = TicketStatus.USED;
         return true;
@@ -43,10 +43,10 @@ public class Ticket {
     public void cancel() {
         if (status != TicketStatus.ACTIVE) {
             throw new InvalidTicketException("The ticket should be " +
-                    "Active to Cancel it!");
+                    "Active to Cancel it! Current status: " + status.getDetailedStatus());
         }
         this.status = TicketStatus.CANCELLED;
-        System.out.println("Ticket with number " + this.id + " was Successfully canceled.");
+        System.out.println("Ticket with number " + this.id + " was successfully canceled.");
     }
 
     public Long getId() {
@@ -96,5 +96,4 @@ public class Ticket {
     public String toString() {
         return "Ticket{id=%d, code=%s, status=%s}".formatted(id, code, status);
     }
-
 }

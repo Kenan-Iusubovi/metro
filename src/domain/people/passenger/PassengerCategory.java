@@ -1,10 +1,51 @@
 package domain.people.passenger;
 
-public enum PassengerCategory {
+import java.math.BigDecimal;
 
-    ADULT,
-    CHILD,
-    STUDENT,
-    SENIOR,
-    DISABLED
+public enum PassengerCategory {
+    ADULT(0, "Standard adult fare"),
+    CHILD(50, "Children under 12"),
+    STUDENT(25, "Students with valid ID"),
+    SENIOR(30, "Seniors 65+"),
+    DISABLED(40, "Persons with disabilities");
+
+    private final int discountPercentage;
+    private final String description;
+
+    static {
+        System.out.println("PassengerCategory enum loaded with " + values().length + " categories");
+    }
+
+    PassengerCategory(int discountPercentage, String description) {
+        this.discountPercentage = discountPercentage;
+        this.description = description;
+    }
+
+    public BigDecimal applyDiscount(BigDecimal basePrice) {
+        switch (this) {
+            case CHILD:
+                return basePrice.multiply(BigDecimal.valueOf(0.5));
+            case STUDENT:
+                return basePrice.multiply(BigDecimal.valueOf(0.75));
+            case SENIOR:
+                return basePrice.multiply(BigDecimal.valueOf(0.7));
+            case DISABLED:
+                return basePrice.multiply(BigDecimal.valueOf(0.6));
+            default:
+                return basePrice;
+        }
+    }
+
+    public String getFullDescription() {
+        return name() + ": " + description + " (" + discountPercentage + "% discount)";
+    }
+
+    public static PassengerCategory fromDescription(String desc) {
+        for (PassengerCategory category : values()) {
+            if (category.description.equalsIgnoreCase(desc)) {
+                return category;
+            }
+        }
+        return ADULT;
+    }
 }

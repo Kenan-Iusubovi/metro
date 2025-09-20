@@ -8,6 +8,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.*;
 
 public final class PaymentServiceImpl implements PaymentService {
 
@@ -18,23 +19,71 @@ public final class PaymentServiceImpl implements PaymentService {
 
     private boolean connected = false;
 
+    private final BooleanSupplier connectionRetry = () -> {
+        if (RANDOM.nextDouble() < FAILURE_RATE) {
+            System.err.println("Connection failed, retrying...");
+            return RANDOM.nextDouble() >= FAILURE_RATE;
+        }
+        return true;
+    };
+
+    private final Predicate<BigDecimal> amountValidator = amount ->
+            amount != null &&
+                    amount.compareTo(MIN_AMOUNT) >= 0 &&
+                    amount.compareTo(MAX_AMOUNT) <= 0;
+
+    private final Consumer<String> paymentLogger = message ->
+            System.out.println("[PAYMENT LOG] " + LocalDateTime.now() + ": " + message);
+
+    private final Supplier<String> transactionIdSupplier = () ->
+            "TX-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+    private final Function<BigDecimal, BigDecimal> amountNormalizer = amount ->
+            amount.setScale(2, RoundingMode.HALF_UP);
+
     @Override
-    public PaymentReceipt processPayment(BigDecimal amount,
-                                         PaymentMethod method) throws PaymentFailedException {
+    public PaymentReceipt processPayment(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
         ensureConnectedOrThrow();
         BigDecimal normalized = normalizeAndValidate(amount);
         validateMethod(method);
-        return new PaymentReceipt(newId(), TransactionType.PAYMENT, normalized, method, LocalDateTime.now());
+
+        record PaymentRecord(String id, BigDecimal amt, PaymentMethod pm, TransactionType tt, LocalDateTime time, boolean success) {
+            String getFormattedAmount() {
+                return amt.setScale(2) + " GEL";
+            }
+        }
+
+        PaymentRecord transaction = new PaymentRecord(
+                transactionIdSupplier.get(), normalized, method, TransactionType.PAYMENT, LocalDateTime.now(), true
+        );
+
+        paymentLogger.accept("Processed payment: " + transaction.getFormattedAmount() + " via " + method.getPaymentDetails());
+
+        return new PaymentReceipt(transaction.id(), TransactionType.PAYMENT, normalized, method, LocalDateTime.now());
     }
 
     @Override
-    public PaymentReceipt refund(BigDecimal amount,
-                                 PaymentMethod method) throws PaymentFailedException {
+    public PaymentReceipt refund(BigDecimal amount, PaymentMethod method) throws PaymentFailedException {
         ensureConnectedOrThrow();
         BigDecimal normalized = normalizeAndValidate(amount);
         validateMethod(method);
-        return new PaymentReceipt(newId(), TransactionType.REFUND,
-                normalized, method, LocalDateTime.now());
+
+        record RefundRecord(String id, BigDecimal amt, PaymentMethod pm, TransactionType tt, LocalDateTime time, boolean success) {
+            String getFormattedAmount() {
+                return amt.setScale(2) + " GEL";
+            }
+            boolean isRefund() {
+                return tt == TransactionType.REFUND;
+            }
+        }
+
+        RefundRecord transaction = new RefundRecord(
+                transactionIdSupplier.get(), normalized, method, TransactionType.REFUND, LocalDateTime.now(), true
+        );
+
+        paymentLogger.accept("Processed refund: " + transaction.getFormattedAmount() + " via " + method.getPaymentDetails());
+
+        return new PaymentReceipt(transaction.id(), TransactionType.REFUND, normalized, method, LocalDateTime.now());
     }
 
     private void ensureConnectedOrThrow() throws PaymentFailedException {
@@ -47,35 +96,21 @@ public final class PaymentServiceImpl implements PaymentService {
     }
 
     private boolean connectWithFallback() {
-        if (RANDOM.nextDouble() < FAILURE_RATE) {
-            System.err.println("Connection failed, retrying...");
-            if (RANDOM.nextDouble() < FAILURE_RATE) {
-                connected = false;
-                return false;
-            }
-        }
-        connected = true;
-        return true;
+        return connectionRetry.getAsBoolean();
     }
 
     private BigDecimal normalizeAndValidate(BigDecimal amount) throws PaymentFailedException {
-        if (amount == null) {
-            throw new PaymentFailedException("Amount must not be null");
+        if (!amountValidator.test(amount)) {
+            throw new PaymentFailedException("Invalid amount: " + amount);
         }
-        BigDecimal scaled = amount.setScale(2, RoundingMode.HALF_UP);
-        if (scaled.compareTo(MIN_AMOUNT) < 0) {
-            throw new PaymentFailedException("Amount must be at least " + MIN_AMOUNT);
-        }
-        if (scaled.compareTo(MAX_AMOUNT) > 0) {
-            throw new PaymentFailedException("Amount must not exceed " + MAX_AMOUNT);
-        }
-        return scaled;
+        return amountNormalizer.apply(amount);
     }
 
     private void validateMethod(PaymentMethod method) throws PaymentFailedException {
         if (method == null) {
             throw new PaymentFailedException("Payment method must not be null");
         }
+        paymentLogger.accept("Validated payment method: " + method.getPaymentDetails());
     }
 
     private String newId() {
