@@ -16,6 +16,7 @@ import domain.ticket.Ticket;
 import domain.train.Carriage;
 import domain.train.CarriageStatus;
 import domain.train.Train;
+import utils.MyDoublyLinkedList;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -232,7 +233,7 @@ public class Main {
         stationSquare1.addTransferStation(stationSquare2);
         stationSquare2.addTransferStation(stationSquare1);
 
-        List<Carriage> carriages = Arrays.asList(
+        MyDoublyLinkedList<Carriage> carriages = MyDoublyLinkedList.of(
                 new Carriage((byte) 4, (short) 2010, 40, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2011, 42, CarriageStatus.ACTIVE),
                 new Carriage((byte) 4, (short) 2012, 38, CarriageStatus.ACTIVE),

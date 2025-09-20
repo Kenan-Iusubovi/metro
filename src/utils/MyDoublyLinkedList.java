@@ -368,6 +368,14 @@ public class MyDoublyLinkedList<T> implements List<T> {
         return modified;
     }
 
+    public static <T> MyDoublyLinkedList<T> of(T... items) {
+        MyDoublyLinkedList<T> list = new MyDoublyLinkedList<>();
+        for (T item : items) {
+            list.add(item);
+        }
+        return list;
+    }
+
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException("subList not implemented");

@@ -8,6 +8,7 @@ import domain.people.employee.Driver;
 import domain.people.passenger.Passenger;
 import domain.route.Line;
 import domain.station.Station;
+import utils.MyDoublyLinkedList;
 
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -26,13 +27,13 @@ public class Train implements OpenClose, PublicTransport {
     boolean doorsClosed;
     private Driver driver;
 
-    public Train(List<Carriage> carriages) {
+    public Train(MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
         setCarriages(carriages);
         this.onboardCount = 0;
     }
 
-    public Train(String code, List<Carriage> carriages) {
+    public Train(String code, MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
         setCode(code);
         setCarriages(carriages);
