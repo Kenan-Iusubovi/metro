@@ -27,14 +27,14 @@ public class InterchangeStation extends Station {
     }
 
     public InterchangeStation(String name, long code, boolean accessible,
-                              byte platformCount, LocalDate builtOn, Station[] stations) {
+                              byte platformCount, LocalDate builtOn, Set<Station> stations) {
         super(name, code, accessible, platformCount, builtOn);
         this.transferStations = new HashSet<>();
         setTransferStations(stations);
     }
 
     public InterchangeStation(String name, long code, byte platformCount, LocalDate builtOn,
-                              Set<Turnstile> turnstiles, Station[] stations) {
+                              Set<Turnstile> turnstiles, Set<Station> stations) {
         super(name, code, platformCount, builtOn, turnstiles);
         this.transferStations = new HashSet<>();
         setTransferStations(stations);
@@ -83,8 +83,8 @@ public class InterchangeStation extends Station {
         return targetStation;
     }
 
-    private void setTransferStations(Station[] stations) {
-        if (stations.length == 0) {
+    private void setTransferStations(Set<Station> stations) {
+        if (stations.isEmpty()) {
             throw new IllegalArgumentException("No station to add as interchange station");
         }
         for (Station station : stations) {
