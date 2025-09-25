@@ -206,10 +206,12 @@ public class Metro {
 
         for (Schedule schedule : schedules) {
             List<Station> stations = schedule.getLine().getStations();
+
             for (Station station : stations) {
                 if (station.equals(onboardingStation)) {
                     departureTime = schedule.nextDepartureTime(station, LocalTime.now());
                     if (departureTime != null) {
+
                         station.enterStation(passenger, ticket);
 
                         Train train = schedule.getTrainByDepartureTime(station, departureTime);

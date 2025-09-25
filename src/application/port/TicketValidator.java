@@ -6,5 +6,5 @@ import domain.ticket.Ticket;
 @FunctionalInterface
 public interface TicketValidator {
 
-    boolean validate(Ticket ticket, Passenger passenger);
+    boolean validate(Passenger passenger, Ticket ticket);
 }
