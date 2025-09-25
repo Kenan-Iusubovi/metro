@@ -78,7 +78,7 @@ public class Turnstile implements OpenClose {
         }
 
         if (!ticketValidator.validate(passenger, ticket)) {
-            throw new InvalidTicketException("No ticket presented.");
+            throw new InvalidTicketException("Not valid ticket presented.");
         }
         if (ticket.useForEntry()) {
             System.out.printf("Ticket %s accepted at turnstile %s%n", ticket.getCode(), code);

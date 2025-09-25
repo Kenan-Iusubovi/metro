@@ -1,6 +1,7 @@
 package domain.system;
 
 import application.exception.ScheduleException;
+import application.port.PassengerAction;
 import application.port.PaymentService;
 import application.service.FareCalculator;
 import domain.people.passenger.Passenger;
@@ -223,8 +224,14 @@ public class Metro {
 
                     Runnable startDriverWork = () -> train.getDriver().startWorking();
 
+                    PassengerAction boardPassenger = (passenger1, station1) -> {
+                        train.board(passenger1);
+                        System.out.printf("%s %s arrived at destination station %s%n",
+                                passenger1.getFirstname(), passenger1.getSurname(), station1.getName());
+                    };
+
                     Runnable enterTheTrain = () -> train.enterTheTrain(departureTime, passenger,
-                            schedule.getLine(), destinationStation, onboardingStation);
+                            schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
 
                     enterStation.run();
                     startDriverWork.run();

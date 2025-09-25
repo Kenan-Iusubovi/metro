@@ -200,6 +200,7 @@ public class Train implements OpenClose, PublicTransport {
             open();
 
             if (passenger != null && stations.get(i).equals(destination)) {
+
                 alightAction.execute(passenger, destination);
                 if (!continueToTerminus) {
                     return stations.get(i);
@@ -221,18 +222,15 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
-                                 Line line, Station destinationStation, Station onboardingStation) {
+                                 Line line, Station destinationStation,
+                                 Station onboardingStation, PassengerAction boardPassenger) {
         if (LocalTime.now().isBefore(departureTime)) {
             System.out.printf("%s %s is waiting for train at %s%n",
                     passenger.getFirstname(), passenger.getSurname(), departureTime);
         }
         System.out.printf("Train is arrived.%n");
 
-        PassengerAction boardPassenger = (passenger1, station) -> {
-            board(passenger1);
-            System.out.printf("%s %s arrived at destination station %s%n",
-                    passenger1.getFirstname(), passenger1.getSurname(), station.getName());
-        };
+
 
         boardPassenger.execute(passenger, onboardingStation);
 

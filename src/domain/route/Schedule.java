@@ -108,6 +108,7 @@ public class Schedule {
 
         TrainAssignmentStrategy trainAssignmentStrategy = () -> {
             int index = new ArrayList<>(times).indexOf(departureTime);
+
             return trains.get(index % trains.size());
         };
 
