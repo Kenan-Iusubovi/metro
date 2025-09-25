@@ -2,9 +2,10 @@ package domain.people.passenger;
 
 import domain.people.Human;
 import domain.ticket.Ticket;
-import utils.ArrayUtils;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Passenger extends Human {
 
@@ -14,7 +15,7 @@ public class Passenger extends Human {
     private String email;
     private String phoneNumber;
     private PassengerCategory category;
-    private Ticket[] tickets;
+    private Set<Ticket> tickets;
 
     public Passenger(String firstname, String surname, String email,
                      String phoneNumber, PassengerCategory category) {
@@ -23,7 +24,7 @@ public class Passenger extends Human {
         setEmail(email);
         setPhoneNumber(phoneNumber);
         setCategory(category);
-        this.tickets = new Ticket[0];
+        this.tickets = new HashSet<>();
     }
 
     public Passenger(String firstname, String surname, LocalDate dateOfBirth,
@@ -33,7 +34,7 @@ public class Passenger extends Human {
         setEmail(email);
         setPhoneNumber(phoneNumber);
         setCategory(category);
-        this.tickets = new Ticket[0];
+        this.tickets = new HashSet<>();
     }
 
     public Passenger(String firstname, String surname, LocalDate dateOfBirth,
@@ -42,7 +43,7 @@ public class Passenger extends Human {
         this.id = ++idCounter;
         setPhoneNumber(phoneNumber);
         setCategory(category);
-        this.tickets = new Ticket[0];
+        this.tickets = new HashSet<>();
     }
 
     public Passenger(String firstname, String surname, String email, PassengerCategory category) {
@@ -50,7 +51,7 @@ public class Passenger extends Human {
         this.id = ++idCounter;
         setEmail(email);
         setCategory(category);
-        this.tickets = new Ticket[0];
+        this.tickets = new HashSet<>();
     }
 
     public long getId() {
@@ -90,7 +91,7 @@ public class Passenger extends Human {
         this.category = category;
     }
 
-    public Ticket[] getTickets() {
+    public Set<Ticket> getTickets() {
         return tickets;
     }
 
@@ -98,13 +99,13 @@ public class Passenger extends Human {
         if (ticket == null) {
             throw new IllegalArgumentException("Ticket can't be null.");
         }
-        this.tickets = (Ticket[]) ArrayUtils.add(this.tickets, ticket);
+        this.tickets.add(ticket);
     }
 
     public void removeTicket(Ticket ticket) {
         if (ticket == null) {
             throw new IllegalArgumentException("Ticket can't be null.");
         }
-        this.tickets = (Ticket[]) ArrayUtils.delete(this.tickets, ticket);
+        this.tickets.add(ticket);
     }
 }

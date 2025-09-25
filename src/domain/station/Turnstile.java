@@ -7,6 +7,8 @@ import application.port.TicketValidator;
 import domain.people.passenger.Passenger;
 import domain.ticket.Ticket;
 
+import java.util.Objects;
+
 public class Turnstile implements OpenClose {
 
     private static long idCounter = 0;
@@ -99,5 +101,16 @@ public class Turnstile implements OpenClose {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Turnstile turnstile)) return false;
+        return Objects.equals(id, turnstile.id) && Objects.equals(code, turnstile.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code);
     }
 }
