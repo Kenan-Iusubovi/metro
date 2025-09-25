@@ -57,31 +57,31 @@ public final class PaymentServiceImpl implements PaymentService {
     }
 
     public void ensureConnectionOrThrow() throws PaymentFailedException {
-
-        this.connected = tryToConnect(() -> {
-
-            int attempts = 0;
-            int maxAttempts = 3;
-
-            while (attempts < maxAttempts) {
-                if (Math.random() > FAILURE_RATE) {
-                    return true;
-                }
-                attempts++;
-                System.err.printf("Connection failed , retry number %d/%d", attempts, maxAttempts);
-
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return false;
-        });
+        this.connected = tryToConnect(this::attemptConnection);
 
         if (!this.connected) {
             throw new PaymentFailedException("Unable to establish connection with payment server");
         }
+    }
+
+    private boolean attemptConnection() {
+        int attempts = 0;
+        int maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+            if (Math.random() > FAILURE_RATE) {
+                return true;
+            }
+            attempts++;
+            System.err.printf("Connection failed, retry number %d/%d%n", attempts, maxAttempts);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
 
     private boolean isAmountValid(BigDecimal amount, Predicate<BigDecimal> validator) {
@@ -89,16 +89,21 @@ public final class PaymentServiceImpl implements PaymentService {
     }
 
     private BigDecimal normalizeAmount(BigDecimal amount, Function<BigDecimal, BigDecimal> normalizer) {
-        return normalizer.apply(amount);
+
+        BigDecimal processed = amount.abs();
+        return normalizer.apply(processed);
     }
 
     private BigDecimal normalizeAndValidateAmount(BigDecimal amount) throws PaymentFailedException {
+        Predicate<BigDecimal> amountValidator = value ->
+                value != null &&
+                        value.compareTo(MIN_AMOUNT) >= 0 &&
+                        value.compareTo(MAX_AMOUNT) <= 0;
 
-        if (!isAmountValid(amount, amountToNormalize ->
-                amountToNormalize != null && amountToNormalize.compareTo(MIN_AMOUNT) >= 0
-                        && amountToNormalize.compareTo(MAX_AMOUNT) <= 0)) {
-            throw new PaymentFailedException("Invalid amount:" + amount);
+        if (!isAmountValid(amount, amountValidator)) {
+            throw new PaymentFailedException("Invalid amount: " + amount);
         }
+
         return normalizeAmount(amount, value -> value.setScale(2, RoundingMode.HALF_UP));
     }
 
@@ -115,9 +120,7 @@ public final class PaymentServiceImpl implements PaymentService {
 
         logMessage("Validated payment method: " + paymentMethod.getPaymentDetails(),
                 transactionType,
-                (message, type) -> {
-                    System.out.printf("[%s LOG] %s : %s%n", type.name(),
-                            java.time.LocalDateTime.now(), message);
-                });
+                (message, type) -> System.out.printf("[%s LOG] %s : %s%n",
+                        type.name(), LocalDateTime.now(), message));
     }
 }

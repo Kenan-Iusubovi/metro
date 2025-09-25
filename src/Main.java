@@ -276,10 +276,18 @@ public class Main {
 
         Ticket ticket = bookingService.book(tbilisiMetro, ninoPassenger, PaymentMethod.METRO_CARD);
 
+        Runnable enterStation = () -> akhmeteliVarketiliLine.getStations().getFirst()
+                .enterStation(ninoPassenger, ticket);
+
+        Runnable startDriverWork = () -> tbilisiTrain1.getDriver().startWorking();
+
+
+
         tbilisiMetro.enterMetro(
-                ninoPassenger, ticket,
-                akhmeteliVarketiliLine.getStations().get(0),
-                akhmeteliVarketiliLine.getStations().get(10)
+                enterStation, startDriverWork,
+                akhmeteliVarketiliLine.getStations().getFirst(),
+                akhmeteliVarketiliLine.getStations().get(12),
+                ninoPassenger
         );
 
         parking.parkTrain(tbilisiTrain1);

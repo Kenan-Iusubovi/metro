@@ -7,7 +7,6 @@ import application.service.FareCalculator;
 import domain.people.passenger.Passenger;
 import domain.route.Schedule;
 import domain.station.Station;
-import domain.ticket.Ticket;
 import domain.train.Train;
 
 import java.time.LocalDate;
@@ -188,21 +187,8 @@ public class Metro {
         this.paymentService = paymentService;
     }
 
-    public void enterMetro(Passenger passenger, Ticket ticket,
-                           Station onboardingStation, Station destinationStation) {
-        if (passenger == null) {
-            throw new IllegalArgumentException("Passenger can't be null and enter the station!");
-        }
-        if (ticket == null) {
-            throw new IllegalArgumentException("You can't enter without domain.ticket. " +
-                    "Ticket can.t be null.");
-        }
-        if (onboardingStation == null) {
-            throw new IllegalArgumentException("Onboarding station can't be null.");
-        }
-        if (destinationStation == null) {
-            throw new IllegalArgumentException("Destination station can't be null.");
-        }
+    public void enterMetro(Runnable enterStation, Runnable startDriverWork, Station onboardingStation,
+                           Station destinationStation, Passenger passenger) {
 
         for (Schedule schedule : schedules) {
             List<Station> stations = schedule.getLine().getStations();
@@ -216,13 +202,8 @@ public class Metro {
                         throw new RuntimeException("Couldn't find the departure time near to enter time!");
                     }
 
-                    Runnable enterStation = () -> station.enterStation(passenger, ticket);
-
-
-
                     Train train = schedule.getTrainByDepartureTime(station, departureTime);
 
-                    Runnable startDriverWork = () -> train.getDriver().startWorking();
 
                     PassengerAction boardPassenger = (passenger1, station1) -> {
                         train.board(passenger1);
@@ -230,12 +211,12 @@ public class Metro {
                                 passenger1.getFirstname(), passenger1.getSurname(), station1.getName());
                     };
 
-                    Runnable enterTheTrain = () -> train.enterTheTrain(departureTime, passenger,
-                            schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
-
                     enterStation.run();
                     startDriverWork.run();
-                    enterTheTrain.run();
+
+                     train.enterTheTrain(departureTime, passenger,
+                            schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
+
                     return;
                 }
             }
