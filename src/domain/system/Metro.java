@@ -217,6 +217,8 @@ public class Metro {
 
                     Runnable enterStation = () -> station.enterStation(passenger, ticket);
 
+
+
                     Train train = schedule.getTrainByDepartureTime(station, departureTime);
 
                     Runnable startDriverWork = () -> train.getDriver().startWorking();
