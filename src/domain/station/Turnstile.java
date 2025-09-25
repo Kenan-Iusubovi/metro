@@ -77,11 +77,11 @@ public class Turnstile implements OpenClose {
             throw new TurnstileUnavailableException("Turnstile " + code + " is deactivated.");
         }
 
-        TicketValidator validator = (passenger1, ticket1) ->
+        TicketValidator ticketValidator = (passenger1, ticket1) ->
                 passenger1 != null && ticket1 != null &&
-                        passenger1.getTickets().co
+                        !passenger1.getTickets().isEmpty() && passenger1.getTickets().contains(ticket1);
 
-        if (ticket == null) {
+        if (!ticketValidator.validate(passenger, ticket)) {
             throw new InvalidTicketException("No ticket presented.");
         }
         if (ticket.useForEntry()) {
