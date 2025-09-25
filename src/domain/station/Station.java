@@ -1,6 +1,7 @@
 package domain.station;
 
 import application.exception.TurnstileUnavailableException;
+import application.port.TicketValidator;
 import domain.people.passenger.Passenger;
 import domain.ticket.Ticket;
 
@@ -172,7 +173,11 @@ public class Station {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No active turnstile available"));
 
-        activeTurnstile.pass(passenger, ticket);
+        TicketValidator ticketValidator = (passenger1, ticket1) ->
+                passenger1 != null && ticket1 != null &&
+                        !passenger1.getTickets().isEmpty() && passenger1.getTickets().contains(ticket1);
+
+        activeTurnstile.pass(passenger, ticket, ticketValidator);
 
         System.out.printf("Passenger %s %s used turnstile %d%n",
                 passenger.getFirstname(), passenger.getSurname(), activeTurnstile.getId());
