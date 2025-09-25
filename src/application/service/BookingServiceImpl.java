@@ -78,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
         return issuedTickets;
     }
 
-    public void setIssuedTickets(Set<Ticket> issuedTickets) {
+    private void setIssuedTickets(Set<Ticket> issuedTickets) {
         if (issuedTickets == null) {
             throw new IllegalArgumentException("Ticket can't be null.");
         }

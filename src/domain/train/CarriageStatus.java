@@ -1,9 +1,36 @@
 package domain.train;
 
 public enum CarriageStatus {
+    ACTIVE("Operational", true, "green"),
+    MAINTENANCE("Under maintenance", false, "yellow"),
+    PARKED("Parked in depot", false, "blue"),
+    OUT_OF_SERVICE("Temporarily out of service", false, "red"),
+    DECOMMISSIONED("Permanently removed", false, "gray");
 
-    ACTIVE,
-    IN_REPAIR,
-    OUT_OF_SERVICE,
-    PARKED
+    private final String statusDescription;
+    private final boolean operational;
+    private final String indicatorColor;
+
+    CarriageStatus(String description, boolean operational, String color) {
+        this.statusDescription = description;
+        this.operational = operational;
+        this.indicatorColor = color;
+    }
+
+    public boolean canCarryPassengers() {
+        return operational && this != PARKED;
+    }
+
+    public String getStatusWithColor() {
+        return statusDescription + " [" + indicatorColor + "]";
+    }
+
+    public static CarriageStatus fromString(String status) {
+        for (CarriageStatus s : values()) {
+            if (s.name().equalsIgnoreCase(status)) {
+                return s;
+            }
+        }
+        return OUT_OF_SERVICE;
+    }
 }

@@ -6,79 +6,118 @@ import application.port.PaymentService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Random;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public final class PaymentServiceImpl implements PaymentService {
 
     private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
     private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000.00");
     private static final double FAILURE_RATE = 0.2;
-    private static final Random RANDOM = new Random();
 
     private boolean connected = false;
 
     @Override
     public PaymentReceipt processPayment(BigDecimal amount,
-                                         PaymentMethod method) throws PaymentFailedException {
-        ensureConnectedOrThrow();
-        BigDecimal normalized = normalizeAndValidate(amount);
-        validateMethod(method);
-        return new PaymentReceipt(newId(), TransactionType.PAYMENT, normalized, method, LocalDateTime.now());
+                                         PaymentMethod paymentMethod) throws PaymentFailedException {
+        ensureConnectionOrThrow();
+        BigDecimal normalizedAmount = normalizeAndValidateAmount(amount);
+        validatePaymentMethodOrThrow(paymentMethod, TransactionType.PAYMENT);
+
+        return new PaymentReceipt(
+                UUID.randomUUID(),
+                TransactionType.PAYMENT,
+                normalizedAmount,
+                paymentMethod,
+                LocalDateTime.now()
+        );
     }
 
     @Override
     public PaymentReceipt refund(BigDecimal amount,
-                                 PaymentMethod method) throws PaymentFailedException {
-        ensureConnectedOrThrow();
-        BigDecimal normalized = normalizeAndValidate(amount);
-        validateMethod(method);
-        return new PaymentReceipt(newId(), TransactionType.REFUND,
-                normalized, method, LocalDateTime.now());
+                                 PaymentMethod paymentMethod) throws PaymentFailedException {
+        ensureConnectionOrThrow();
+        BigDecimal normalizedAmount = normalizeAndValidateAmount(amount);
+        validatePaymentMethodOrThrow(paymentMethod, TransactionType.REFUND);
+
+        return new PaymentReceipt(
+                UUID.randomUUID(),
+                TransactionType.REFUND,
+                normalizedAmount,
+                paymentMethod,
+                LocalDateTime.now()
+        );
     }
 
-    private void ensureConnectedOrThrow() throws PaymentFailedException {
-        if (connected) {
-            return;
-        }
-        if (!connectWithFallback()) {
-            throw new PaymentFailedException("Unable to establish connection to payment service");
-        }
+    private boolean tryToConnect(BooleanSupplier connection) {
+        return connection.getAsBoolean();
     }
 
-    private boolean connectWithFallback() {
-        if (RANDOM.nextDouble() < FAILURE_RATE) {
-            System.err.println("Connection failed, retrying...");
-            if (RANDOM.nextDouble() < FAILURE_RATE) {
-                connected = false;
-                return false;
+    public void ensureConnectionOrThrow() throws PaymentFailedException {
+
+        this.connected = tryToConnect(() -> {
+
+            int attempts = 0;
+            int maxAttempts = 3;
+
+            while (attempts < maxAttempts) {
+                if (Math.random() > FAILURE_RATE) {
+                    return true;
+                }
+                attempts++;
+                System.err.printf("Connection failed , retry number %d/%d", attempts, maxAttempts);
+
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-        connected = true;
-        return true;
-    }
+            return false;
+        });
 
-    private BigDecimal normalizeAndValidate(BigDecimal amount) throws PaymentFailedException {
-        if (amount == null) {
-            throw new PaymentFailedException("Amount must not be null");
-        }
-        BigDecimal scaled = amount.setScale(2, RoundingMode.HALF_UP);
-        if (scaled.compareTo(MIN_AMOUNT) < 0) {
-            throw new PaymentFailedException("Amount must be at least " + MIN_AMOUNT);
-        }
-        if (scaled.compareTo(MAX_AMOUNT) > 0) {
-            throw new PaymentFailedException("Amount must not exceed " + MAX_AMOUNT);
-        }
-        return scaled;
-    }
-
-    private void validateMethod(PaymentMethod method) throws PaymentFailedException {
-        if (method == null) {
-            throw new PaymentFailedException("Payment method must not be null");
+        if (!this.connected) {
+            throw new PaymentFailedException("Unable to establish connection with payment server");
         }
     }
 
-    private String newId() {
-        return UUID.randomUUID().toString();
+    private boolean isAmountValid(BigDecimal amount, Predicate<BigDecimal> validator) {
+        return validator.test(amount);
+    }
+
+    private BigDecimal normalizeAmount(BigDecimal amount, Function<BigDecimal, BigDecimal> normalizer) {
+        return normalizer.apply(amount);
+    }
+
+    private BigDecimal normalizeAndValidateAmount(BigDecimal amount) throws PaymentFailedException {
+
+        if (!isAmountValid(amount, amountToNormalize ->
+                amountToNormalize != null && amountToNormalize.compareTo(MIN_AMOUNT) >= 0
+                        && amountToNormalize.compareTo(MAX_AMOUNT) <= 0)) {
+            throw new PaymentFailedException("Invalid amount:" + amount);
+        }
+        return normalizeAmount(amount, value -> value.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    private void logMessage(String message, TransactionType transactionType,
+                            BiConsumer<String, TransactionType> logger) {
+        logger.accept(message, transactionType);
+    }
+
+    public void validatePaymentMethodOrThrow(PaymentMethod paymentMethod,
+                                             TransactionType transactionType) throws PaymentFailedException {
+        if (paymentMethod == null) {
+            throw new PaymentFailedException("Payment method is null!");
+        }
+
+        logMessage("Validated payment method: " + paymentMethod.getPaymentDetails(),
+                transactionType,
+                (message, type) -> {
+                    System.out.printf("[%s LOG] %s : %s%n", type.name(),
+                            java.time.LocalDateTime.now(), message);
+                });
     }
 }

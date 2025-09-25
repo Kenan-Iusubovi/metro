@@ -202,27 +202,37 @@ public class Metro {
         if (destinationStation == null) {
             throw new IllegalArgumentException("Destination station can't be null.");
         }
-        LocalTime departureTime = null;
 
         for (Schedule schedule : schedules) {
             List<Station> stations = schedule.getLine().getStations();
-            for (Station station : stations) {
-                if (station.equals(onboardingStation)) {
-                    departureTime = schedule.nextDepartureTime(station, LocalTime.now());
-                    if (departureTime != null) {
-                        station.enterStation(passenger, ticket);
 
-                        Train train = schedule.getTrainByDepartureTime(station, departureTime);
-                        train.getDriver().startWorking();
-                        train.enterTheTrain(departureTime, passenger,
-                                schedule.getLine(), destinationStation);
-                        return;
+            for (Station station : stations) {
+
+                if (station.equals(onboardingStation)) {
+
+                    LocalTime departureTime = schedule.nextDepartureTime(station, LocalTime.now());
+                    if (departureTime == null) {
+                        throw new RuntimeException("Couldn't find the departure time near to enter time!");
                     }
+
+                    Runnable enterStation = () -> station.enterStation(passenger, ticket);
+
+
+
+                    Train train = schedule.getTrainByDepartureTime(station, departureTime);
+
+                    Runnable startDriverWork = () -> train.getDriver().startWorking();
+
+                    Runnable enterTheTrain = () -> train.enterTheTrain(departureTime, passenger,
+                            schedule.getLine(), destinationStation, onboardingStation);
+
+                    enterStation.run();
+                    startDriverWork.run();
+                    enterTheTrain.run();
+                    return;
                 }
             }
         }
-        if (departureTime == null) {
-            throw new RuntimeException("Couldn't find the departure time near to enter time!");
-        }
     }
 }
+

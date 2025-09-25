@@ -3,6 +3,8 @@ package domain.station;
 import application.exception.InvalidTicketException;
 import application.exception.TurnstileUnavailableException;
 import application.port.OpenClose;
+import application.port.TicketValidator;
+import domain.people.passenger.Passenger;
 import domain.ticket.Ticket;
 
 import java.util.Objects;
@@ -70,11 +72,16 @@ public class Turnstile implements OpenClose {
         this.closed = true;
     }
 
-    public void pass(Ticket ticket) {
+    public void pass(Passenger passenger, Ticket ticket) {
         if (!active) {
             throw new TurnstileUnavailableException("Turnstile " + code + " is deactivated.");
         }
-        if (ticket == null) {
+
+        TicketValidator ticketValidator = (passenger1, ticket1) ->
+                passenger1 != null && ticket1 != null &&
+                        !passenger1.getTickets().isEmpty() && passenger1.getTickets().contains(ticket1);
+
+        if (!ticketValidator.validate(passenger, ticket)) {
             throw new InvalidTicketException("No ticket presented.");
         }
         if (ticket.useForEntry()) {

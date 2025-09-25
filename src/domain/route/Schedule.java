@@ -1,6 +1,7 @@
 package domain.route;
 
 import application.exception.ScheduleException;
+import application.port.TrainAssignmentStrategy;
 import domain.station.Station;
 import domain.system.Metro;
 import domain.train.Train;
@@ -105,8 +106,16 @@ public class Schedule {
             return null;
         }
 
-        int index = new ArrayList<>(times).indexOf(departureTime);
-        return trains.get(index % trains.size());
+        TrainAssignmentStrategy trainAssignmentStrategy = () -> {
+            int index = new ArrayList<>(times).indexOf(departureTime);
+            return trains.get(index % trains.size());
+        };
+
+        return findTrain(trainAssignmentStrategy);
+    }
+
+    private Train findTrain(TrainAssignmentStrategy trainAssignmentStrategy){
+         return trainAssignmentStrategy.find();
     }
 
     public static final class ScheduleGenerator {

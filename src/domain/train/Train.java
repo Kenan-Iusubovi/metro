@@ -3,6 +3,7 @@ package domain.train;
 import application.exception.CarriageNotOperationalException;
 import application.exception.NoEmployeeAssignedException;
 import application.port.OpenClose;
+import application.port.PassengerAction;
 import application.port.PublicTransport;
 import domain.people.employee.Driver;
 import domain.people.passenger.Passenger;
@@ -181,7 +182,7 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     private Station go(Line line, Station destination, Passenger passenger,
-                       boolean continueToTerminus) {
+                       boolean continueToTerminus, PassengerAction alightAction) {
         if (line == null) {
             throw new IllegalArgumentException("Nowhere to go line is null.");
         }
@@ -199,11 +200,7 @@ public class Train implements OpenClose, PublicTransport {
             open();
 
             if (passenger != null && stations.get(i).equals(destination)) {
-                alight(passenger);
-                System.out.printf("%s %s arrived at destination station %s%n",
-                        passenger.getFirstname(), passenger.getSurname(),
-                        stations.get(i).getName());
-
+                alightAction.execute(passenger, destination);
                 if (!continueToTerminus) {
                     return stations.get(i);
                 }
@@ -224,15 +221,28 @@ public class Train implements OpenClose, PublicTransport {
     }
 
     public Station enterTheTrain(LocalTime departureTime, Passenger passenger,
-                                 Line line, Station destinationStation) {
+                                 Line line, Station destinationStation, Station onboardingStation) {
         if (LocalTime.now().isBefore(departureTime)) {
             System.out.printf("%s %s is waiting for train at %s%n",
                     passenger.getFirstname(), passenger.getSurname(), departureTime);
         }
         System.out.printf("Train is arrived.%n");
-        board(passenger);
 
-        go(line, destinationStation, passenger, true);
+        PassengerAction boardPassenger = (passenger1, station) -> {
+            board(passenger1);
+            System.out.printf("%s %s arrived at destination station %s%n",
+                    passenger1.getFirstname(), passenger1.getSurname(), station.getName());
+        };
+
+        boardPassenger.execute(passenger, onboardingStation);
+
+        PassengerAction alightPassenger = (passenger1, station) ->{
+            alight(passenger1);
+            System.out.printf("%s %s arrived at destination station %s%n",
+                    passenger1.getFirstname(), passenger1.getSurname(), station.getName());
+        };
+
+        go(line, destinationStation, passenger, true, alightPassenger);
 
         return destinationStation;
     }

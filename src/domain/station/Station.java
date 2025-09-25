@@ -172,7 +172,7 @@ public class Station {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No active turnstile available"));
 
-        activeTurnstile.pass(ticket);
+        activeTurnstile.pass(passenger, ticket);
 
         System.out.printf("Passenger %s %s used turnstile %d%n",
                 passenger.getFirstname(), passenger.getSurname(), activeTurnstile.getId());
