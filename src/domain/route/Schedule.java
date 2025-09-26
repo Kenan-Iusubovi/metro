@@ -97,14 +97,8 @@ public class Schedule {
         }
 
         NavigableSet<LocalTime> times = departureTimes.get(station);
-        if (times == null || !times.contains(departureTime)) {
-            return null;
-        }
 
         List<Train> trains = line.getTrains();
-        if (trains == null || trains.isEmpty()) {
-            return null;
-        }
 
         TrainAssignmentStrategy trainAssignmentStrategy = () -> {
             int index = new ArrayList<>(times).indexOf(departureTime);
@@ -112,10 +106,18 @@ public class Schedule {
             return trains.get(index % trains.size());
         };
 
-        return findTrain(trainAssignmentStrategy);
+        return findTrain(trainAssignmentStrategy,times,trains,departureTime);
     }
 
-    private Train findTrain(TrainAssignmentStrategy trainAssignmentStrategy){
+    private Train findTrain(TrainAssignmentStrategy trainAssignmentStrategy,
+                            NavigableSet<LocalTime> times, List<Train> trains, LocalTime departureTime){
+        if (times == null || !times.contains(departureTime)) {
+            return null;
+        }
+        if (trains == null || trains.isEmpty()) {
+            return null;
+        }
+        System.out.println("Searching for the available trains ....");
          return trainAssignmentStrategy.find();
     }
 
