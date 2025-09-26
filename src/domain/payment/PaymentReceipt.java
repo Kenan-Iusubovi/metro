@@ -1,4 +1,7 @@
-package application.service.payment;
+package domain.payment;
+
+import application.service.payment.PaymentMethod;
+import application.service.payment.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

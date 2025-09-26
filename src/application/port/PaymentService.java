@@ -2,7 +2,7 @@ package application.port;
 
 import application.exception.PaymentFailedException;
 import application.service.payment.PaymentMethod;
-import application.service.payment.PaymentReceipt;
+import domain.payment.PaymentReceipt;
 
 import java.math.BigDecimal;
 
