@@ -31,7 +31,8 @@ public class TrainParking<T extends Train> {
             System.out.println("Train " + train.getCode() + " is already parked here");
             return false;
         }
-        train.getCarriages().forEach(carriage -> carriage.setCarriageStatus(CarriageStatus.PARKED));
+        train.getCarriages().forEach(carriage ->
+                carriage.setCarriageStatus(CarriageStatus.PARKED));
 
         parkedTrains.add(train);
         System.out.println("Train " + train.getCode()+ " was parked in " + this.name + " parking");
@@ -46,7 +47,8 @@ public class TrainParking<T extends Train> {
             System.out.println("Train " + train.getCode() + " is not parked here");
             return false;
         }
-        train.getCarriages().forEach(carriage -> carriage.setCarriageStatus(CarriageStatus.ACTIVE));
+        train.getCarriages().forEach(carriage ->
+                carriage.setCarriageStatus(CarriageStatus.ACTIVE));
 
         parkedTrains.remove(train);
         System.out.println("Train " + train.getCode()+ " was driven out from "
@@ -71,7 +73,8 @@ public class TrainParking<T extends Train> {
 
     public void clearParking(){
         for (T train : parkedTrains){
-            train.getCarriages().forEach(carriage -> carriage.setCarriageStatus(CarriageStatus.ACTIVE));
+            train.getCarriages().forEach(carriage ->
+                    carriage.setCarriageStatus(CarriageStatus.ACTIVE));
         }
         parkedTrains.clear();
         System.out.println("All trains were driven out from " + this.name + " parking");

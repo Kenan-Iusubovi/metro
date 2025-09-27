@@ -204,9 +204,9 @@ public class Schedule {
     private static void printSchedule(Line line, Map<Station,
             NavigableSet<LocalTime>> departureTimes) {
         System.out.println("Schedule for Line: " + line.getName());
-        for (Station station : departureTimes.keySet()) {
-            System.out.println("Station: " + station.getName() + " = " +
-                    departureTimes.get(station));
-        }
+        departureTimes.entrySet().stream()
+                .forEach( entry ->
+                        System.out.println("Station: " + entry.getKey().getName()
+                        + " = " + entry.getValue()));
     }
 }

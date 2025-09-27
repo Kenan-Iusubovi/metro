@@ -1,4 +1,4 @@
-package domain.payment;
+package domain.paymentrecord;
 
 import application.service.payment.PaymentMethod;
 import application.service.payment.TransactionType;

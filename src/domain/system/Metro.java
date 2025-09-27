@@ -189,38 +189,35 @@ public class Metro {
 
     public void enterMetro(Runnable enterStation, Runnable startDriverWork, Station onboardingStation,
                            Station destinationStation, Passenger passenger) {
+        schedules.stream()
+         .filter(schedule -> schedule.getLine().getStations()
+          .contains(onboardingStation)).findFirst().ifPresentOrElse(
+             schedule -> {
+                LocalTime departureTime = schedule.nextDepartureTime(onboardingStation,
+                        LocalTime.now());
 
-        for (Schedule schedule : schedules) {
-            List<Station> stations = schedule.getLine().getStations();
-
-            for (Station station : stations) {
-
-                if (station.equals(onboardingStation)) {
-
-                    LocalTime departureTime = schedule.nextDepartureTime(station, LocalTime.now());
                     if (departureTime == null) {
-                        throw new RuntimeException("Couldn't find the departure time near to enter time!");
-                    }
+                                throw new RuntimeException("Couldn't find the " +
+                                        "departure time near to enter time!");
+                            }
+                            Train train = schedule.getTrainByDepartureTime(onboardingStation,
+                                    departureTime);
 
-                    Train train = schedule.getTrainByDepartureTime(station, departureTime);
+                            PassengerAction boardPassenger = (passenger1,
+                                                              station1) -> {
+                                train.board(passenger1);
+                                System.out.printf("%s %s arrived at destination station %s%n",
+                                        passenger1.getFirstname(), passenger1.getSurname(),
+                                        station1.getName());
+                            };
 
-
-                    PassengerAction boardPassenger = (passenger1, station1) -> {
-                        train.board(passenger1);
-                        System.out.printf("%s %s arrived at destination station %s%n",
-                                passenger1.getFirstname(), passenger1.getSurname(), station1.getName());
-                    };
-
-                    enterStation.run();
-                    startDriverWork.run();
-
-                     train.enterTheTrain(departureTime, passenger,
-                            schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
-
-                    return;
-                }
-            }
-        }
+                            enterStation.run();
+                            startDriverWork.run();
+                        },
+                        () -> {
+                            throw new RuntimeException("Schedule doesn't contains " +
+                                    "the onboarding station!");
+                        });
     }
 }
 
