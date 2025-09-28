@@ -213,6 +213,7 @@ public class Metro {
 
                             enterStation.run();
                             startDriverWork.run();
+                            train.enterTheTrain(departureTime,passenger,schedule.getLine(),destinationStation,onboardingStation,boardPassenger);
                         },
                         () -> {
                             throw new RuntimeException("Schedule doesn't contains " +

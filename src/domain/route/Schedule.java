@@ -9,6 +9,9 @@ import domain.train.Train;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Schedule {
 
@@ -157,32 +160,27 @@ public class Schedule {
             }
 
             Map<Station, NavigableSet<LocalTime>> departureTimes = new LinkedHashMap<>();
-
             long totalServiceMinutes = ChronoUnit.MINUTES.between(serviceStart, serviceEnd);
-            int intervalMinutes = (int) totalServiceMinutes / tripsCount;
+            long intervalMinutes = totalServiceMinutes / tripsCount;
 
-            for (int i = 0; i < stations.size(); i++) {
-                Station station = stations.get(i);
-                NavigableSet<LocalTime> times = new TreeSet<>();
+            IntStream.range(0,stations.size()).forEach( index ->{
+                Station station = stations.get(index);
 
-                int stationOffsetMinutes = i * minutesBetweenStops;
+                int stationOfsettMinutes = index * minutesBetweenStops;
 
-                for (int trainIndex = 0; trainIndex < tripsCount; trainIndex++) {
-                    LocalTime baseTime = serviceStart.plusMinutes(
-                            trainIndex * intervalMinutes);
-                    LocalTime stationTime = baseTime.plusMinutes(stationOffsetMinutes);
-
-                    if (!stationTime.isAfter(serviceEnd)) {
-                        LocalTime roundedTime = roundToNearestFiveMinutes(stationTime);
-                        if (!roundedTime.isBefore(serviceStart) && !roundedTime.
-                                isAfter(serviceEnd)) {
-                            times.add(roundedTime);
-                        }
-                    }
-                }
+                NavigableSet<LocalTime> times = Stream.iterate(
+                        serviceStart.plusMinutes(stationOfsettMinutes),
+                        nextTrainTine -> nextTrainTine.plusMinutes(intervalMinutes)
+                )
+                        .limit(tripsCount)
+                        .filter(stationTime -> !stationTime.isAfter(serviceEnd))
+                        .map(ScheduleGenerator::roundToNearestFiveMinutes)
+                        .filter(roundedTime -> !roundedTime.isAfter(serviceEnd))
+                        .collect(Collectors.toCollection(TreeSet::new));
 
                 departureTimes.put(station, times);
-            }
+            });
+
             printSchedule(line, departureTimes);
             return new Schedule(line, departureTimes);
         }
