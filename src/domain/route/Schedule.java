@@ -62,8 +62,14 @@ public class Schedule {
         this.line = line;
     }
 
-    public Map<Station, NavigableSet<LocalTime>> getDepartureTimes() {
-        return departureTimes;
+    public List<String> getDepartureTimes() {
+        return departureTimes.entrySet().stream()
+                .flatMap(entry ->
+                        entry.getValue().stream()
+                                .map(time -> entry.getKey().getName() + " --> " + time)
+                )
+                .sorted()
+                .toList();
     }
 
     public void setDepartureTimes(Map<Station, NavigableSet<LocalTime>> departureTimes) {
@@ -109,11 +115,11 @@ public class Schedule {
             return trains.get(index % trains.size());
         };
 
-        return findTrain(trainAssignmentStrategy,times,trains,departureTime);
+        return findTrain(trainAssignmentStrategy, times, trains, departureTime);
     }
 
     private Train findTrain(TrainAssignmentStrategy trainAssignmentStrategy,
-                            NavigableSet<LocalTime> times, List<Train> trains, LocalTime departureTime){
+                            NavigableSet<LocalTime> times, List<Train> trains, LocalTime departureTime) {
         if (times == null || !times.contains(departureTime)) {
             return null;
         }
@@ -121,7 +127,7 @@ public class Schedule {
             return null;
         }
         System.out.println("Searching for the available trains ....");
-         return trainAssignmentStrategy.find();
+        return trainAssignmentStrategy.find();
     }
 
     public static final class ScheduleGenerator {
@@ -163,15 +169,15 @@ public class Schedule {
             long totalServiceMinutes = ChronoUnit.MINUTES.between(serviceStart, serviceEnd);
             long intervalMinutes = totalServiceMinutes / tripsCount;
 
-            IntStream.range(0,stations.size()).forEach( index ->{
+            IntStream.range(0, stations.size()).forEach(index -> {
                 Station station = stations.get(index);
 
                 int stationOfsettMinutes = index * minutesBetweenStops;
 
                 NavigableSet<LocalTime> times = Stream.iterate(
-                        serviceStart.plusMinutes(stationOfsettMinutes),
-                        nextTrainTine -> nextTrainTine.plusMinutes(intervalMinutes)
-                )
+                                serviceStart.plusMinutes(stationOfsettMinutes),
+                                nextTrainTine -> nextTrainTine.plusMinutes(intervalMinutes)
+                        )
                         .limit(tripsCount)
                         .filter(stationTime -> !stationTime.isAfter(serviceEnd))
                         .map(ScheduleGenerator::roundToNearestFiveMinutes)
@@ -203,8 +209,8 @@ public class Schedule {
             NavigableSet<LocalTime>> departureTimes) {
         System.out.println("Schedule for Line: " + line.getName());
         departureTimes.entrySet().stream()
-                .forEach( entry ->
+                .forEach(entry ->
                         System.out.println("Station: " + entry.getKey().getName()
-                        + " = " + entry.getValue()));
+                                + " = " + entry.getValue()));
     }
 }

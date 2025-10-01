@@ -66,6 +66,14 @@ public class CarriageMaintenanceRecord {
         System.out.println("Maintenance number + " + this.id +
                 " started at  " + maintenanceStartTime +
                 " with description + " + description);
+
+        carriages.stream()
+                .forEach(carriage ->{
+                 carriage.setCarriageStatus(CarriageStatus.MAINTENANCE);
+                 carriage.setSeverityScore(carriage.getCarriageTotalCapacity()-0.2f);
+                });
+
+
     }
 
     public void closeTicket() {
@@ -75,6 +83,8 @@ public class CarriageMaintenanceRecord {
                         " license number %s.%n",
                 this.id, maintenanceEndTime,
                 mechanic.getFirstname(), mechanic.getSurname(), mechanic.getLicenseNumber());
+        carriages.stream()
+                .forEach(carriage -> carriage.setCarriageStatus(CarriageStatus.ACTIVE));
     }
 
     public String getDescription() {

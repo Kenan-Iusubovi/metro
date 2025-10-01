@@ -87,9 +87,7 @@ public class InterchangeStation extends Station {
         if (stations.isEmpty()) {
             throw new IllegalArgumentException("No station to add as interchange station");
         }
-        for (Station station : stations) {
-            addTransferStation(station);
-        }
+        stations.forEach(this::addTransferStation);
     }
 
     public Station changeStation(Passenger passenger, Station targetStation) {

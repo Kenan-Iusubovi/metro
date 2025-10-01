@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TrainParking<T extends Train> {
 
-    private AtomicLong idCounter = new AtomicLong(0);
+    private static AtomicLong idCounter = new AtomicLong(0);
 
     private Long id;
     private String name;
@@ -72,10 +72,12 @@ public class TrainParking<T extends Train> {
     }
 
     public void clearParking(){
-        for (T train : parkedTrains){
-            train.getCarriages().forEach(carriage ->
-                    carriage.setCarriageStatus(CarriageStatus.ACTIVE));
-        }
+        parkedTrains.forEach(
+                train -> train.getCarriages().forEach(
+                        carriage -> carriage.setCarriageStatus(CarriageStatus.ACTIVE)
+                )
+        );
+
         parkedTrains.clear();
         System.out.println("All trains were driven out from " + this.name + " parking");
     }

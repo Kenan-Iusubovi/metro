@@ -281,7 +281,9 @@ public class Main {
 
         Runnable startDriverWork = () -> tbilisiTrain1.getDriver().startWorking();
 
+        List<String> departureTimes = schedule.getDepartureTimes();
 
+        departureTimes.forEach(System.out::println);
 
         tbilisiMetro.enterMetro(
                 enterStation, startDriverWork,

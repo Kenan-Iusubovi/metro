@@ -181,6 +181,19 @@ public class Train implements OpenClose, PublicTransport {
         return doorCount;
     }
 
+    public List<Carriage> getCariagesFromYear(int minimumYear){
+      return  carriages.stream()
+                .filter(carriage -> carriage.getProductionYear() >= minimumYear)
+                .toList();
+    }
+
+    public List<Carriage> getCariagesByYearAndSeverityScore(int minimumYear, float minimumSeverityScore){
+        return carriages.stream()
+                .filter(carriage -> carriage.getProductionYear() >= minimumYear)
+                .filter(carriage -> carriage.getSeverityScore() >= minimumSeverityScore)
+                .toList();
+    }
+
     private Station go(Line line, Station destination, Passenger passenger,
                        boolean continueToTerminus, PassengerAction alightAction) {
         if (line == null) {
