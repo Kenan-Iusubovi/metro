@@ -1,0 +1,123 @@
+package com.solvd.metro.domain.train;
+
+import java.time.LocalDate;
+import java.util.Objects;
+
+public class Carriage {
+
+    private static long idCounter = 0;
+
+    private long id;
+    private byte doorCount;
+    private short productionYear;
+    private int seatCapacity;
+    private int standingCapacity;
+    private CarriageStatus carriageStatus;
+    private float severityScore;
+
+    public Carriage(byte doorCount, short productionYear, int seats) {
+        this.id = ++idCounter;
+        setDoorCount(doorCount);
+        setProductionYear(productionYear);
+        setSeatCapacity(seats);
+        setCarriageStatus(CarriageStatus.ACTIVE);
+        this.severityScore = 10;
+    }
+
+    public Carriage(byte doorCount, short productionYear,
+                    int seats, CarriageStatus carriageStatus) {
+        this.id = ++idCounter;
+        setDoorCount(doorCount);
+        setProductionYear(productionYear);
+        setSeatCapacity(seats);
+        setCarriageStatus(carriageStatus);
+        this.severityScore = 10;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public byte getDoorCount() {
+        return doorCount;
+    }
+
+    public void setDoorCount(byte doorCount) {
+        if (doorCount <= 0)
+            throw new IllegalArgumentException("Door count can't be negative.");
+        this.doorCount = doorCount;
+    }
+
+    public short getProductionYear() {
+        return productionYear;
+    }
+
+    public void setProductionYear(short productionYear) {
+        int currentYear = LocalDate.now().getYear();
+        if (productionYear <= 2005 || productionYear > currentYear)
+            throw new IllegalArgumentException("Carriage production year can't be " +
+                    "less then 2005 and more then current year" + currentYear);
+
+        this.productionYear = productionYear;
+    }
+
+    public int getSeatCapacity() {
+        return seatCapacity;
+    }
+
+    public void setSeatCapacity(int seats) {
+        if (seats < 0) {
+            throw new IllegalArgumentException("Seat's capacity can't be negative.");
+        }
+        this.seatCapacity = seats;
+    }
+
+    public int getStandingCapacity() {
+        return standingCapacity;
+    }
+
+    public void setStandingCapacity(int standingCapacity) {
+        if (seatCapacity < 0) {
+            throw new IllegalArgumentException("Standing capacity can't be negative.");
+        }
+        this.standingCapacity = standingCapacity;
+    }
+
+    public CarriageStatus getCarriageStatus() {
+        return carriageStatus;
+    }
+
+    public void setCarriageStatus(CarriageStatus carriageStatus) {
+        if (carriageStatus == null) {
+            throw new IllegalArgumentException("Carriage status can't be null.");
+        }
+        this.carriageStatus = carriageStatus;
+    }
+
+    public boolean isCarriageActive() {
+        return CarriageStatus.ACTIVE.equals(carriageStatus);
+    }
+
+    public int getCarriageTotalCapacity() {
+        return seatCapacity + standingCapacity;
+    }
+
+    public float getSeverityScore() {
+        return severityScore;
+    }
+
+    public void setSeverityScore(float severityScore) {
+        this.severityScore = severityScore;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Carriage carriage)) return false;
+        return id == carriage.id && doorCount == carriage.doorCount && productionYear == carriage.productionYear && seatCapacity == carriage.seatCapacity && standingCapacity == carriage.standingCapacity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, doorCount, productionYear, seatCapacity, standingCapacity);
+    }
+}
