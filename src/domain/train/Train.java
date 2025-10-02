@@ -29,6 +29,7 @@ public class Train implements OpenClose, PublicTransport {
 
     public Train(MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
+        this.carriages = new MyDoublyLinkedList<>();
         setCarriages(carriages);
         this.onboardCount = 0;
     }
@@ -36,6 +37,7 @@ public class Train implements OpenClose, PublicTransport {
     public Train(String code, MyDoublyLinkedList<Carriage> carriages) {
         this.id = ++idCounter;
         setCode(code);
+        this.carriages = new MyDoublyLinkedList<>();
         setCarriages(carriages);
         this.onboardCount = 0;
     }
@@ -128,7 +130,7 @@ public class Train implements OpenClose, PublicTransport {
         if (carriages.size() < 2) {
             throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
-        this.carriages
+        carriages
                 .forEach(this::addCarriage);
     }
 

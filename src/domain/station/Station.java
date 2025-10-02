@@ -40,6 +40,7 @@ public class Station {
         setPlatformCount(platformCount);
         this.accessible = false;
         setBuiltOn(builtOn);
+        this.turnstiles = new HashSet<>();
     }
 
     public Station(String name, long code, byte platformCount,
@@ -50,6 +51,7 @@ public class Station {
         setPlatformCount(platformCount);
         this.accessible = false;
         setBuiltOn(builtOn);
+        this.turnstiles = new HashSet<>();
         setTurnstiles(turnstiles);
     }
 
@@ -138,7 +140,7 @@ public class Station {
         if (turnstiles.isEmpty()) {
             throw new TurnstileUnavailableException("Add at least 1 turnstile.");
         }
-        this.turnstiles.stream()
+        turnstiles.stream()
                 .forEach(this::addTurnstile);
     }
 
@@ -160,7 +162,7 @@ public class Station {
 
         Turnstile activeTurnstile = turnstiles.stream()
                 .filter(Turnstile::isActive)
-                .findFirst()
+                .findAny()
                 .orElseThrow(() -> new RuntimeException("No active turnstile available"));
 
         TicketValidator ticketValidator = (passenger1, ticket1) ->

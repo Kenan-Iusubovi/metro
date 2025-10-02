@@ -18,6 +18,7 @@ import domain.train.Carriage;
 import domain.train.CarriageStatus;
 import domain.train.Train;
 import utils.MyDoublyLinkedList;
+import utils.Reflection;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,6 +29,8 @@ import java.util.Set;
 public class Main {
 
     public static void main(String[] args) {
+
+        Reflection reflection = new Reflection();
 
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
