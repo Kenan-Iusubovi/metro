@@ -12,7 +12,6 @@ import domain.station.Station;
 import utils.MyDoublyLinkedList;
 
 import java.time.LocalTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -129,10 +128,8 @@ public class Train implements OpenClose, PublicTransport {
         if (carriages.size() < 2) {
             throw new IllegalArgumentException("To make a train should add minimum 2 carriages.");
         }
-        this.carriages = new LinkedList<>();
-        for (Carriage carriage : carriages) {
-            addCarriage(carriage);
-        }
+        this.carriages
+                .forEach(this::addCarriage);
     }
 
     @Override
@@ -165,20 +162,16 @@ public class Train implements OpenClose, PublicTransport {
 
     @Override
     public int getCapacity() {
-        int capacity = 0;
-        for (Carriage carriage : carriages) {
-            capacity += carriage.getCarriageTotalCapacity();
-        }
-        return capacity;
+        return carriages.stream()
+                .mapToInt(Carriage::getCarriageTotalCapacity)
+                .sum();
     }
 
     @Override
     public int getDoorsAmount() {
-        int doorCount = 0;
-        for (Carriage carriage : carriages) {
-            doorCount += carriage.getDoorCount();
-        }
-        return doorCount;
+        return carriages.stream()
+                .mapToInt(Carriage::getDoorCount)
+                .sum();
     }
 
     public List<Carriage> getCariagesFromYear(int minimumYear){

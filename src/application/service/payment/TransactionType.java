@@ -1,5 +1,7 @@
 package application.service.payment;
 
+import java.util.Arrays;
+
 public enum TransactionType {
     PAYMENT("Funds deduction", true, "DR"),
     REFUND("Funds return", false, "CR"),
@@ -26,11 +28,11 @@ public enum TransactionType {
     }
 
     public static TransactionType fromCode(String code) {
-        for (TransactionType type : values()) {
-            if (type.code.equalsIgnoreCase(code)) {
-                return type;
-            }
-        }
-        return PAYMENT;
+
+       return Arrays.stream(TransactionType.values())
+                .filter(type -> type.code.equals(code))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No transaction type was" +
+                        " found by code " + code));
     }
 }

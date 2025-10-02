@@ -54,19 +54,15 @@ public class Station {
     }
 
     public void openAll() {
-        for (Turnstile turnstile : turnstiles) {
-            if (turnstile.isActive()) {
-                turnstile.open();
-            }
-        }
+        turnstiles.stream()
+                .filter(Turnstile::isActive)
+                .forEach(Turnstile::open);
     }
 
     public void closeAll() {
-        for (Turnstile turnstile : turnstiles) {
-            if (turnstile.isActive()) {
-                turnstile.close();
-            }
-        }
+        turnstiles.stream()
+                .filter(Turnstile::isActive)
+                .forEach(Turnstile::close);
     }
 
     public long getId() {
@@ -142,19 +138,13 @@ public class Station {
         if (turnstiles.isEmpty()) {
             throw new TurnstileUnavailableException("Add at least 1 turnstile.");
         }
-        this.turnstiles = new HashSet<>();
-        for (Turnstile turnstile : turnstiles) {
-            addTurnstile(turnstile);
-        }
+        this.turnstiles.stream()
+                .forEach(this::addTurnstile);
     }
 
     private boolean stationHasActiveTurnstile() {
-        for (Turnstile turnstile : turnstiles) {
-            if (turnstile.isActive()) {
-                return true;
-            }
-        }
-        return false;
+        return turnstiles.stream()
+                .anyMatch(Turnstile::isActive);
     }
 
     public void removeTurnstile(Turnstile turnstile) {

@@ -86,12 +86,12 @@ public class Schedule {
             throw new ScheduleException("DepartureTimes must match number of stations.");
         }
 
-        for (Station station : stations) {
-            NavigableSet<LocalTime> times = departureTimes.get(station);
-            if (times == null) {
-                throw new ScheduleException("Station " + station.getName() + " has no times.");
-            }
-        }
+        stations.stream()
+                .filter(station -> departureTimes.get(station) == null)
+                .findFirst()
+                .ifPresent(station -> {
+                    throw new ScheduleException("Station " + station.getName() + " has no times.");
+                });
 
         this.departureTimes = departureTimes;
     }

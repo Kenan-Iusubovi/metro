@@ -1,6 +1,7 @@
 package domain.people.passenger;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 public enum PassengerCategory {
     ADULT(0, "Standard adult fare"),
@@ -41,11 +42,10 @@ public enum PassengerCategory {
     }
 
     public static PassengerCategory fromDescription(String desc) {
-        for (PassengerCategory category : values()) {
-            if (category.description.equalsIgnoreCase(desc)) {
-                return category;
-            }
-        }
-        return ADULT;
+        return Arrays.stream(PassengerCategory.values())
+                .filter(passengerCategory -> passengerCategory.description.equals(desc))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No category with description "
+                        + desc + " was found"));
     }
 }

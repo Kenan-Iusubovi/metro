@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Metro {
 
@@ -58,52 +59,43 @@ public class Metro {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name of Station can't be null or empty.");
         }
-        List<Station> stations = getStations();
-        for (Station station : stations) {
-            if (station.getName().equals(name)) {
-                return station;
-            }
-        }
-        throw new ScheduleException("No station with name " + name + " was find in schedule");
+        return getStations().stream()
+                .filter(station -> station.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() ->
+                        new ScheduleException("No station with name " + name + " was find in schedule"));
+
     }
 
     public Station findStationByCode(long code) {
-        List<Station> stations = getStations();
-        for (Station station : stations) {
-            if (station.getCode() == code) {
-                return station;
-            }
-        }
-        throw new ScheduleException("No station with code " + code + " was find in schedule");
+        return getStations().stream()
+                .filter(station -> station.getCode() == code)
+                .findFirst()
+                .orElseThrow(() -> new ScheduleException("No station with code " + code
+                        + " was find in schedule"));
     }
 
     public void openAllStations() {
-        List<Station> stations = getStations();
-        for (Station station : stations) {
-            station.openAll();
-        }
+        getStations().forEach(Station::openAll);
     }
 
     public void closeAllStations() {
-        List<Station> stations = getStations();
-        for (Station station : stations) {
-            station.closeAll();
-        }
+        getStations().forEach(Station::closeAll);
     }
 
     public List<Station> getStations() {
         if (schedules == null || schedules.isEmpty()) {
             throw new ScheduleException("Schedule has no stations");
         }
-        List<Station> stations = new ArrayList<>();
-        for (Schedule schedule : schedules) {
-            if (schedule.getLine() != null && schedule.getLine().getStations() != null
-                    && schedule.getLine().getStations().isEmpty()) {
-                stations.addAll(schedule.getLine().getStations());
-            }
-            return stations;
-        }
-        return null;
+
+        return schedules.stream()
+                .filter(schedule -> schedule.getLine() != null)
+                .filter(schedule -> schedule.getLine().getStations() != null)
+                .filter(schedule -> !schedule.getLine().getStations().isEmpty())
+                .flatMap(schedule -> schedule.getLine().getStations().stream())
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> list.isEmpty() ? null : list));
     }
 
     public Long getId() {
@@ -190,13 +182,13 @@ public class Metro {
     public void enterMetro(Runnable enterStation, Runnable startDriverWork, Station onboardingStation,
                            Station destinationStation, Passenger passenger) {
         schedules.stream()
-         .filter(schedule -> schedule.getLine().getStations()
-          .contains(onboardingStation)).findFirst().ifPresentOrElse(
-             schedule -> {
-                LocalTime departureTime = schedule.nextDepartureTime(onboardingStation,
-                        LocalTime.now());
+                .filter(schedule -> schedule.getLine().getStations()
+                        .contains(onboardingStation)).findFirst().ifPresentOrElse(
+                        schedule -> {
+                            LocalTime departureTime = schedule.nextDepartureTime(onboardingStation,
+                                    LocalTime.now());
 
-                    if (departureTime == null) {
+                            if (departureTime == null) {
                                 throw new RuntimeException("Couldn't find the " +
                                         "departure time near to enter time!");
                             }
@@ -213,7 +205,7 @@ public class Metro {
 
                             enterStation.run();
                             startDriverWork.run();
-                            train.enterTheTrain(departureTime,passenger,schedule.getLine(),destinationStation,onboardingStation,boardPassenger);
+                            train.enterTheTrain(departureTime, passenger, schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
                         },
                         () -> {
                             throw new RuntimeException("Schedule doesn't contains " +

@@ -1,5 +1,7 @@
 package domain.train;
 
+import java.util.Arrays;
+
 public enum CarriageStatus {
     ACTIVE("Operational", true, "green"),
     MAINTENANCE("Under maintenance", false, "yellow"),
@@ -26,11 +28,11 @@ public enum CarriageStatus {
     }
 
     public static CarriageStatus fromString(String status) {
-        for (CarriageStatus s : values()) {
-            if (s.name().equalsIgnoreCase(status)) {
-                return s;
-            }
-        }
-        return OUT_OF_SERVICE;
+
+      return Arrays.stream(CarriageStatus.values())
+                .filter(carriageStatus -> carriageStatus.name().equals(status))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No carriage status with name "
+                        + status + " was found"));
     }
 }
