@@ -29,7 +29,7 @@ public enum CarriageStatus {
 
     public static CarriageStatus fromString(String status) {
 
-      return Arrays.stream(CarriageStatus.values())
+        return Arrays.stream(CarriageStatus.values())
                 .filter(carriageStatus -> carriageStatus.name().equals(status))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No carriage status with name "

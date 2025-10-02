@@ -29,7 +29,7 @@ public enum TransactionType {
 
     public static TransactionType fromCode(String code) {
 
-       return Arrays.stream(TransactionType.values())
+        return Arrays.stream(TransactionType.values())
                 .filter(type -> type.code.equals(code))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No transaction type was" +

@@ -68,9 +68,9 @@ public class CarriageMaintenanceRecord {
                 " with description + " + description);
 
         carriages.stream()
-                .forEach(carriage ->{
-                 carriage.setCarriageStatus(CarriageStatus.MAINTENANCE);
-                 carriage.setSeverityScore(carriage.getCarriageTotalCapacity()-0.2f);
+                .forEach(carriage -> {
+                    carriage.setCarriageStatus(CarriageStatus.MAINTENANCE);
+                    carriage.setSeverityScore(carriage.getCarriageTotalCapacity() - 0.2f);
                 });
 
 

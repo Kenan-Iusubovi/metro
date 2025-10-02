@@ -176,13 +176,13 @@ public class Train implements OpenClose, PublicTransport {
                 .sum();
     }
 
-    public List<Carriage> getCariagesFromYear(int minimumYear){
-      return  carriages.stream()
+    public List<Carriage> getCariagesFromYear(int minimumYear) {
+        return carriages.stream()
                 .filter(carriage -> carriage.getProductionYear() >= minimumYear)
                 .toList();
     }
 
-    public List<Carriage> getCariagesByYearAndSeverityScore(int minimumYear, float minimumSeverityScore){
+    public List<Carriage> getCariagesByYearAndSeverityScore(int minimumYear, float minimumSeverityScore) {
         return carriages.stream()
                 .filter(carriage -> carriage.getProductionYear() >= minimumYear)
                 .filter(carriage -> carriage.getSeverityScore() >= minimumSeverityScore)
@@ -239,10 +239,9 @@ public class Train implements OpenClose, PublicTransport {
         System.out.printf("Train is arrived.%n");
 
 
-
         boardPassenger.execute(passenger, onboardingStation);
 
-        PassengerAction alightPassenger = (passenger1, station) ->{
+        PassengerAction alightPassenger = (passenger1, station) -> {
             alight(passenger1);
             System.out.printf("%s %s arrived at destination station %s%n",
                     passenger1.getFirstname(), passenger1.getSurname(), station.getName());

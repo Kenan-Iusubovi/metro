@@ -30,8 +30,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Reflection reflection = new Reflection();
-
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
         tbilisiMetro.setServiceStartAt(LocalTime.of(8, 30));
@@ -258,11 +256,16 @@ public class Main {
 
         Train tbilisiTrain1 = new Train("TB1", carriages);
 
-        TrainParking<Train> parking = new TrainParking<>("Tbilisi Parking","Tbilisi");
+        TrainParking<Train> parking = Reflection.createTrainParking();
+
         parking.parkTrain(tbilisiTrain1);
+
+        Reflection.getParkedTrainCountReflectively();
+
         parking.getTrainOutOfParking(tbilisiTrain1);
 
         tbilisiTrain1.assignDriver(driver);
+
         driver.assignTrain(tbilisiTrain1);
 
         akhmeteliVarketiliLine.addTrain(tbilisiTrain1);

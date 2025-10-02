@@ -14,4 +14,5 @@ public record PaymentReceipt(
         BigDecimal amount,
         PaymentMethod method,
         LocalDateTime timestamp
-){}
+) {
+}

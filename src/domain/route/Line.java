@@ -122,7 +122,7 @@ public class Line {
         if (stations.size() < 2) {
             throw new IllegalArgumentException("To make a line should add minimum 2 stations.");
         }
-       stations.forEach(this::addStation);
+        stations.forEach(this::addStation);
     }
 
     public List<Train> getTrains() {
