@@ -43,7 +43,8 @@ public class TrainParking<T extends Train> {
                 carriage.setCarriageStatus(CarriageStatus.PARKED));
 
         parkedTrains.add(train);
-        System.out.println("Train " + train.getCode() + " was parked in " + this.name + " parking");
+        System.out.println("Train " + train.getCode() + " was parked in " + this.name +
+                " parking located in " + location);
         return true;
     }
 
@@ -60,7 +61,7 @@ public class TrainParking<T extends Train> {
 
         parkedTrains.remove(train);
         System.out.println("Train " + train.getCode() + " was driven out from "
-                + this.name + " parking");
+                + this.name + " parking located in " + location);
         return true;
     }
 
