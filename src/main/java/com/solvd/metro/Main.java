@@ -19,6 +19,7 @@ import com.solvd.metro.domain.ticket.Ticket;
 import com.solvd.metro.domain.train.Carriage;
 import com.solvd.metro.domain.train.CarriageStatus;
 import com.solvd.metro.domain.train.Train;
+import com.solvd.metro.utils.BookUtils;
 import com.solvd.metro.utils.MyDoublyLinkedList;
 import com.solvd.metro.utils.Reflection;
 
@@ -31,6 +32,17 @@ import java.util.Set;
 public class Main {
 
     public static void main(String[] args) {
+
+        String bookPath = "src/main/resources/The Silver Glen  A story of " +
+                "the rebellion of 1715 by Bessie Dill.txt";
+
+        BookUtils bookUtils = new BookUtils();
+
+        List<String> bookText = bookUtils.readTheBook(bookPath);
+
+        Set<String> uniqueWords = bookUtils.getUniqueWords(bookText);
+
+        bookUtils.writeInFile(uniqueWords,"src/main/resources/unique words text.txt");
 
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
