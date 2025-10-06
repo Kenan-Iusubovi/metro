@@ -38,3 +38,5 @@ build/
 
 # Kotlin
 .kotlin/
+
+*.log

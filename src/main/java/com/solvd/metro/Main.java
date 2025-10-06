@@ -20,6 +20,7 @@ import com.solvd.metro.domain.train.Carriage;
 import com.solvd.metro.domain.train.CarriageStatus;
 import com.solvd.metro.domain.train.Train;
 import com.solvd.metro.utils.BookUtils;
+import com.solvd.metro.utils.LoggerUtils;
 import com.solvd.metro.utils.MyDoublyLinkedList;
 import com.solvd.metro.utils.Reflection;
 
@@ -33,7 +34,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String bookPath = "src/main/resources/The Silver Glen  A story of " +
+        LoggerUtils.redirectAllSystemStreams();
+
+        String bookPath = "src/main/resources/books/The Silver Glen  A story of " +
                 "the rebellion of 1715 by Bessie Dill.txt";
 
         BookUtils bookUtils = new BookUtils();
@@ -42,7 +45,7 @@ public class Main {
 
         Set<String> uniqueWords = bookUtils.getUniqueWords(bookText);
 
-        bookUtils.writeInFile(uniqueWords,"src/main/resources/unique words text.txt");
+        bookUtils.writeInFile(uniqueWords,"src/main/resources/books/unique words text.txt");
 
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
@@ -300,10 +303,6 @@ public class Main {
                 .enterStation(ninoPassenger, ticket);
 
         Runnable startDriverWork = () -> tbilisiTrain1.getDriver().startWorking();
-
-        List<String> departureTimes = schedule.getDepartureTimes();
-
-        departureTimes.forEach(System.out::println);
 
         tbilisiMetro.enterMetro(
                 enterStation, startDriverWork,
