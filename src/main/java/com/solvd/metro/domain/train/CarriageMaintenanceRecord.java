@@ -3,6 +3,8 @@ package com.solvd.metro.domain.train;
 
 import com.solvd.metro.application.exception.NoEmployeeAssignedException;
 import com.solvd.metro.domain.people.employee.Mechanic;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class CarriageMaintenanceRecord {
+
+    private static final Logger logger = LogManager.getLogger(CarriageMaintenanceRecord.class);
 
     private UUID id;
     private List<Carriage> carriages;
@@ -41,6 +45,7 @@ public class CarriageMaintenanceRecord {
 
     private void setCarriages(List<Carriage> carriages) {
         if (carriages == null || carriages.isEmpty()) {
+            logger.error("Carriage on repair can't be null or empty.");
             throw new IllegalArgumentException("Carriage on repair can't be null or empty.");
         }
         this.carriages = carriages;
@@ -56,17 +61,18 @@ public class CarriageMaintenanceRecord {
 
     public void openTicket(String description) {
         if (description == null || description.isBlank()) {
+            logger.error("Description cant be null or empty.");
             throw new IllegalArgumentException("Description cant be null or empty.");
         }
         if (mechanic == null) {
+            logger.error("No mechanic assigned for repair number {}", this.id);
             throw new NoEmployeeAssignedException("No mechanic assigned for repair number "
                     + this.id);
         }
         this.maintenanceStartTime = LocalDateTime.now();
         this.description = description;
-        System.out.println("Maintenance number + " + this.id +
-                " started at  " + maintenanceStartTime +
-                " with description + " + description);
+        logger.info("Maintenance number + {} started at  {} with description + {}"
+                , this.id, maintenanceStartTime, description);
 
         carriages.stream()
                 .forEach(carriage -> {
@@ -79,9 +85,8 @@ public class CarriageMaintenanceRecord {
 
     public void closeTicket() {
         this.maintenanceEndTime = LocalDateTime.now();
-        System.out.printf(
-                "Maintenance number %s finished at %s application.service provided by %s %s with" +
-                        " license number %s.%n",
+        logger.info(
+                "Maintenance number {} finished at {} application.service provided by {} {} with license number {}",
                 this.id, maintenanceEndTime,
                 mechanic.getFirstname(), mechanic.getSurname(), mechanic.getLicenseNumber());
         carriages.stream()
@@ -98,6 +103,8 @@ public class CarriageMaintenanceRecord {
 
     public void setMechanic(Mechanic mechanic) {
         if (mechanic == null) {
+            logger.error("Mechanic assigned to " +
+                    "the maintenance record can't be null.");
             throw new IllegalArgumentException("Mechanic assigned to " +
                     "the maintenance record can't be null.");
         }
