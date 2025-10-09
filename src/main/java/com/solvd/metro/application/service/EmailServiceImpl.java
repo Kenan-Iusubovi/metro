@@ -19,8 +19,8 @@ public class EmailServiceImpl implements EmailService {
         logger.info("====================================");
         logger.info(" 📧 EMAIL SENT ");
         logger.info("------------------------------------");
-        logger.info("To      : " + to);
-        logger.info("Subject : " + subject);
+        logger.info("To      : {}", to);
+        logger.info("Subject : {}", subject);
         logger.info("------------------------------------");
         logger.info(text);
         logger.info(senderName);

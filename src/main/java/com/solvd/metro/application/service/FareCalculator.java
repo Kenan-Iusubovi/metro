@@ -2,6 +2,8 @@ package com.solvd.metro.application.service;
 
 
 import com.solvd.metro.domain.people.passenger.PassengerCategory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,11 +15,12 @@ public final class FareCalculator {
     private static int studentDiscountPercentage;
     private static int seniorDiscountPercentage;
     private static int disabledDiscountPercentage;
-
+    
+    private static final Logger logger = LogManager.getLogger(FareCalculator.class);
     private static final int MAX_DISCOUNT = 100;
 
     static {
-        System.out.println("FareCalculator loaded. Setting default discounts...");
+        logger.info("FareCalculator loaded. Setting default discounts...");
         setBaseCost(2.50);
         setChildDiscountPercentage(50);
         setStudentDiscountPercentage(25);
