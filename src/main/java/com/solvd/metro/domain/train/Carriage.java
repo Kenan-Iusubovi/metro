@@ -1,11 +1,15 @@
 package com.solvd.metro.domain.train;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Carriage {
 
     private static long idCounter = 0;
+    private static final Logger logger = LogManager.getLogger(Carriage.class);
 
     private long id;
     private byte doorCount;
@@ -43,8 +47,10 @@ public class Carriage {
     }
 
     public void setDoorCount(byte doorCount) {
-        if (doorCount <= 0)
+        if (doorCount <= 0) {
+            logger.error("Door count can't be negative.");
             throw new IllegalArgumentException("Door count can't be negative.");
+        }
         this.doorCount = doorCount;
     }
 
@@ -54,9 +60,12 @@ public class Carriage {
 
     public void setProductionYear(short productionYear) {
         int currentYear = LocalDate.now().getYear();
-        if (productionYear <= 2005 || productionYear > currentYear)
+        if (productionYear <= 2005 || productionYear > currentYear) {
+            logger.error("Carriage production year can't be less then 2005 and " +
+                    "more then current year{}", currentYear);
             throw new IllegalArgumentException("Carriage production year can't be " +
                     "less then 2005 and more then current year" + currentYear);
+        }
 
         this.productionYear = productionYear;
     }
@@ -67,6 +76,7 @@ public class Carriage {
 
     public void setSeatCapacity(int seats) {
         if (seats < 0) {
+            logger.error("Seat's capacity can't be negative.");
             throw new IllegalArgumentException("Seat's capacity can't be negative.");
         }
         this.seatCapacity = seats;
@@ -78,6 +88,7 @@ public class Carriage {
 
     public void setStandingCapacity(int standingCapacity) {
         if (seatCapacity < 0) {
+            logger.error("Standing capacity can't be negative.");
             throw new IllegalArgumentException("Standing capacity can't be negative.");
         }
         this.standingCapacity = standingCapacity;
@@ -89,6 +100,7 @@ public class Carriage {
 
     public void setCarriageStatus(CarriageStatus carriageStatus) {
         if (carriageStatus == null) {
+            logger.error("Carriage status can't be null.");
             throw new IllegalArgumentException("Carriage status can't be null.");
         }
         this.carriageStatus = carriageStatus;
