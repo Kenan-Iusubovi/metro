@@ -80,9 +80,10 @@ public class Station {
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty())
+        if (name == null || name.isEmpty()) {
             logger.error("Name can't be null or empty.");
             throw new IllegalArgumentException("Name can't be null or empty.");
+        }
         this.name = name;
     }
 
