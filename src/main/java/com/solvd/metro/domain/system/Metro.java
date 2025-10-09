@@ -8,6 +8,8 @@ import com.solvd.metro.domain.people.passenger.Passenger;
 import com.solvd.metro.domain.route.Schedule;
 import com.solvd.metro.domain.station.Station;
 import com.solvd.metro.domain.train.Train;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ public class Metro {
 
     private static long idCounter = 0;
     public static final String SYSTEM_VENDOR = "Metro network";
+    private static final Logger logger = LogManager.getLogger(Metro.class);
 
     private Long id;
     private String city;
@@ -47,7 +50,7 @@ public class Metro {
     }
 
     public static void setUp() {
-        System.out.println("Welcome to " + SYSTEM_VENDOR);
+        logger.info("Welcome to " + SYSTEM_VENDOR);
         FareCalculator.setBaseCost(2.50);
         FareCalculator.setChildDiscountPercentage(100);
         FareCalculator.setDisabledDiscountPercentage(100);
@@ -57,13 +60,16 @@ public class Metro {
 
     public Station findStationByName(String name) {
         if (name == null || name.isBlank()) {
+            logger.error("Name of Station can't be null or empty.");
             throw new IllegalArgumentException("Name of Station can't be null or empty.");
         }
         return getStations().stream()
                 .filter(station -> station.getName().equals(name))
                 .findFirst()
-                .orElseThrow(() ->
-                        new ScheduleException("No station with name " + name + " was find in schedule"));
+                .orElseThrow(() -> {
+                    logger.error("No station with name {} was find in schedule", name);
+                   return new ScheduleException("No station with name " + name + " was find in schedule");
+                });
 
     }
 
@@ -71,8 +77,11 @@ public class Metro {
         return getStations().stream()
                 .filter(station -> station.getCode() == code)
                 .findFirst()
-                .orElseThrow(() -> new ScheduleException("No station with code " + code
-                        + " was find in schedule"));
+                .orElseThrow(() -> {
+                    logger.error("No station with code {} was find in schedule", code);
+                    return new ScheduleException("No station with code " + code
+                            + " was find in schedule");
+                });
     }
 
     public void openAllStations() {
@@ -85,6 +94,7 @@ public class Metro {
 
     public List<Station> getStations() {
         if (schedules == null || schedules.isEmpty()) {
+            logger.error("Schedule has no stations");
             throw new ScheduleException("Schedule has no stations");
         }
 
@@ -108,6 +118,7 @@ public class Metro {
 
     public void setCity(String city) {
         if (city == null || city.isBlank()) {
+            logger.error("City is required");
             throw new IllegalArgumentException("City is required");
         }
         this.city = city;
@@ -123,6 +134,7 @@ public class Metro {
 
     public void setCreatedAt(LocalDate createdAt) {
         if (createdAt == null) {
+            logger.error("Creation time is required");
             throw new IllegalArgumentException("Creation time is required");
         }
         this.createdAt = createdAt;
@@ -134,6 +146,7 @@ public class Metro {
 
     public void addSchedule(Schedule schedule) {
         if (schedule == null) {
+            logger.error("Schedule can't be null.");
             throw new IllegalArgumentException("Schedule can't be null.");
         }
         this.schedules.add(schedule);
@@ -141,9 +154,11 @@ public class Metro {
 
     private void setSchedules(List<Schedule> schedules) {
         if (schedules == null) {
+            logger.error("Schedules can't be null.");
             throw new IllegalArgumentException("Schedules can't be null.");
         }
         if (schedules.isEmpty()) {
+            logger.error("Add at least 1 schedule.");
             throw new IllegalArgumentException("Add at least 1 schedule.");
         }
         this.schedules = schedules;
@@ -155,6 +170,7 @@ public class Metro {
 
     public void setServiceEndAt(LocalTime serviceEndAt) {
         if (serviceEndAt == null) {
+            logger.error("Metro application.service start time can't be null.");
             throw new IllegalArgumentException("Metro application.service start time can't be null.");
         }
         this.serviceEndAt = serviceEndAt;
@@ -166,6 +182,7 @@ public class Metro {
 
     public void setServiceStartAt(LocalTime serviceStartAt) {
         if (serviceStartAt == null) {
+            logger.error("Metro application.service start time can't be null.");
             throw new IllegalArgumentException("Metro application.service start time can't be null.");
         }
         this.serviceStartAt = serviceStartAt;
@@ -189,6 +206,8 @@ public class Metro {
                                     LocalTime.now());
 
                             if (departureTime == null) {
+                                logger.error("Couldn't find the " +
+                                        "departure time near to enter time!");
                                 throw new RuntimeException("Couldn't find the " +
                                         "departure time near to enter time!");
                             }
@@ -198,7 +217,7 @@ public class Metro {
                             PassengerAction boardPassenger = (passenger1,
                                                               station1) -> {
                                 train.board(passenger1);
-                                System.out.printf("%s %s arrived at destination station %s%n",
+                                logger.info("{} {} arrived at destination station {}",
                                         passenger1.getFirstname(), passenger1.getSurname(),
                                         station1.getName());
                             };
@@ -208,6 +227,8 @@ public class Metro {
                             train.enterTheTrain(departureTime, passenger, schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
                         },
                         () -> {
+                            logger.error("Schedule doesn't contains " +
+                                    "the onboarding station!");
                             throw new RuntimeException("Schedule doesn't contains " +
                                     "the onboarding station!");
                         });

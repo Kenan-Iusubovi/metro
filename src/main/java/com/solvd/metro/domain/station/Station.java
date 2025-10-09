@@ -5,6 +5,8 @@ import com.solvd.metro.application.exception.TurnstileUnavailableException;
 import com.solvd.metro.application.port.TicketValidator;
 import com.solvd.metro.domain.people.passenger.Passenger;
 import com.solvd.metro.domain.ticket.Ticket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import java.util.Set;
 public class Station {
 
     private static long idCounter = 0;
+    private static final Logger logger = LogManager.getLogger(Station.class);
 
     private Long id;
     private String name;
@@ -77,8 +80,10 @@ public class Station {
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty())
+        if (name == null || name.isEmpty()) {
+            logger.error("Name can't be null or empty.");
             throw new IllegalArgumentException("Name can't be null or empty.");
+        }
         this.name = name;
     }
 
@@ -88,6 +93,7 @@ public class Station {
 
     public void setCode(long code) {
         if (code <= 0) {
+            logger.error("Code can't be negative.");
             throw new IllegalArgumentException("Code can't be negative.");
         }
         this.code = code;
@@ -107,6 +113,7 @@ public class Station {
 
     public void setPlatformCount(byte platformCount) {
         if (platformCount <= 0) {
+            logger.error("Platform count can't be negative.");
             throw new IllegalArgumentException("Platform count can't be negative.");
         }
         this.platformCount = platformCount;
@@ -118,6 +125,7 @@ public class Station {
 
     public void setBuiltOn(LocalDate builtOn) {
         if (builtOn == null) {
+            logger.error("Built date can't be null.");
             throw new IllegalArgumentException("Built date can't be null.");
         }
         this.builtOn = builtOn;
@@ -129,6 +137,7 @@ public class Station {
 
     public void addTurnstile(Turnstile turnstile) {
         if (turnstile == null) {
+            logger.error("Turnstile can't be null.");
             throw new IllegalArgumentException("Turnstile can't be null.");
         }
         this.turnstiles.add(turnstile);
@@ -136,9 +145,11 @@ public class Station {
 
     private void setTurnstiles(Set<Turnstile> turnstiles) {
         if (turnstiles == null) {
+            logger.error("Turnstiles can't be null");
             throw new IllegalArgumentException("Turnstiles can't be null");
         }
         if (turnstiles.isEmpty()) {
+            logger.error("Add at least 1 turnstile.");
             throw new TurnstileUnavailableException("Add at least 1 turnstile.");
         }
         turnstiles.stream()
@@ -152,19 +163,23 @@ public class Station {
 
     public void removeTurnstile(Turnstile turnstile) {
         if (turnstile == null) {
+            logger.error("Turnstile can't be null.");
             throw new IllegalArgumentException("Turnstile can't be null.");
         }
         this.turnstiles.remove(turnstile);
     }
 
     public void enterStation(Passenger passenger, Ticket ticket) {
-        System.out.printf("Passenger %s %s entered station %s%n",
+        logger.info("Passenger {} {} entered station {}%n",
                 passenger.getFirstname(), passenger.getSurname(), this.getName());
 
         Turnstile activeTurnstile = turnstiles.stream()
                 .filter(Turnstile::isActive)
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("No active turnstile available"));
+                .orElseThrow(() -> {
+                    logger.error("No active turnstile available");
+                    return new RuntimeException("No active turnstile available");
+                });
 
         TicketValidator ticketValidator = (passenger1, ticket1) ->
                 passenger1 != null && ticket1 != null &&
@@ -172,7 +187,7 @@ public class Station {
 
         activeTurnstile.pass(passenger, ticket, ticketValidator);
 
-        System.out.printf("Passenger %s %s used turnstile %d%n",
+        logger.info("Passenger {} {} used turnstile {}%n",
                 passenger.getFirstname(), passenger.getSurname(), activeTurnstile.getId());
     }
 

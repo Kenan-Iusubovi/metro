@@ -2,12 +2,16 @@ package com.solvd.metro.domain.station;
 
 
 import com.solvd.metro.domain.people.passenger.Passenger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 public class InterchangeStation extends Station {
+
+    private static final Logger logger = LogManager.getLogger(InterchangeStation.class);
 
     private Set<Station> transferStations;
 
@@ -50,6 +54,7 @@ public class InterchangeStation extends Station {
 
     public void addTransferStation(Station station) {
         if (station == null) {
+            logger.error("Transfer station can't be null.");
             throw new IllegalArgumentException("Transfer station can't be null.");
         }
         this.transferStations.add(station);
@@ -57,6 +62,7 @@ public class InterchangeStation extends Station {
 
     public void removeTransferStation(Station station) {
         if (station == null) {
+            logger.error("Transfer station can't be null.");
             throw new IllegalArgumentException("Transfer station can't be null.");
         }
         this.transferStations.remove(station);
@@ -71,13 +77,15 @@ public class InterchangeStation extends Station {
 
     public Station changeLine(Passenger passenger, Station targetStation) {
         if (passenger == null || targetStation == null) {
+            logger.error("Passenger and target station can't be null.");
             throw new IllegalArgumentException("Passenger and target station can't be null.");
         }
         if (!canTransferTo(targetStation)) {
+            logger.error("This interchange does not connect to the target station.");
             throw new IllegalStateException("This interchange does not connect to the target station.");
         }
-        System.out.printf(
-                "Passenger %s %s changed the line from station %s to station %s.%n",
+        logger.info(
+                "Passenger {} {} changed the line from station {} to station {}.%n",
                 passenger.getFirstname(), passenger.getSurname(),
                 this.getName(), targetStation.getName()
         );
@@ -86,6 +94,7 @@ public class InterchangeStation extends Station {
 
     private void setTransferStations(Set<Station> stations) {
         if (stations.isEmpty()) {
+            logger.error("No station to add as interchange station");
             throw new IllegalArgumentException("No station to add as interchange station");
         }
         stations.forEach(this::addTransferStation);

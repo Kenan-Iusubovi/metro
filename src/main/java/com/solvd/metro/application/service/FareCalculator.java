@@ -2,6 +2,8 @@ package com.solvd.metro.application.service;
 
 
 import com.solvd.metro.domain.people.passenger.PassengerCategory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,11 +15,12 @@ public final class FareCalculator {
     private static int studentDiscountPercentage;
     private static int seniorDiscountPercentage;
     private static int disabledDiscountPercentage;
-
+    
+    private static final Logger logger = LogManager.getLogger(FareCalculator.class);
     private static final int MAX_DISCOUNT = 100;
 
     static {
-        System.out.println("FareCalculator loaded. Setting default discounts...");
+        logger.info("FareCalculator loaded. Setting default discounts...");
         setBaseCost(2.50);
         setChildDiscountPercentage(50);
         setStudentDiscountPercentage(25);
@@ -27,6 +30,7 @@ public final class FareCalculator {
 
     public static BigDecimal calculateTicketPrice(PassengerCategory category) {
         if (category == null) {
+            logger.error("Passenger category cannot be null");
             throw new IllegalArgumentException("Passenger category cannot be null");
         }
 
@@ -49,6 +53,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(BigDecimal baseCost) {
         if (baseCost == null || baseCost.compareTo(BigDecimal.ZERO) < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = baseCost;
@@ -56,6 +61,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(int baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -63,6 +69,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(long baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -70,6 +77,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(double baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -113,6 +121,7 @@ public final class FareCalculator {
 
     private static void checkDiscountPercentage(int percentage) {
         if (percentage < 0 || percentage > MAX_DISCOUNT) {
+            logger.error("Discount percentage must be between 0 and {}", MAX_DISCOUNT);
             throw new IllegalArgumentException("Discount percentage must be between 0 and " + MAX_DISCOUNT);
         }
     }

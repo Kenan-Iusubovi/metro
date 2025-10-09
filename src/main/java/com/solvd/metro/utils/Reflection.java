@@ -4,6 +4,9 @@ package com.solvd.metro.utils;
 import com.solvd.metro.application.annotation.SetLocation;
 import com.solvd.metro.domain.parking.TrainParking;
 import com.solvd.metro.domain.train.Train;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -13,6 +16,7 @@ import java.lang.reflect.Method;
 public class Reflection {
 
     private static final String PARKING_TRAIN_PARKING_NAME = "com.solvd.metro.domain.parking.TrainParking";
+    private static final Logger logger = LogManager.getLogger(Reflection.class);
 
     public static TrainParking<Train> createTrainParking() {
         try {
@@ -44,7 +48,7 @@ public class Reflection {
             Method getParkedTrainCount = parking.getClass().getDeclaredMethod("getParkedTrainCount");
             int parkedTrainCount = (int) getParkedTrainCount.invoke(parking);
 
-            System.out.println("parked train count = " + parkedTrainCount);
+            logger.info("parked train count = {}", parkedTrainCount);
             return parkedTrainCount;
         } catch (Exception e) {
             throw new RuntimeException("Failed to get parked train count via reflection", e);

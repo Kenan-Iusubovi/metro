@@ -3,6 +3,8 @@ package com.solvd.metro.application.service.payment;
 import com.solvd.metro.application.exception.PaymentFailedException;
 import com.solvd.metro.application.port.PaymentService;
 import com.solvd.metro.domain.paymentrecord.PaymentReceipt;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -11,6 +13,7 @@ public final class PaymentSession implements AutoCloseable {
 
     private static final double FAILURE_RATE = 0.2;
     private static final Random RANDOM = new Random();
+    private static final Logger logger = LogManager.getLogger(PaymentSession.class);
 
     private final PaymentService paymentService;
     private boolean connected = false;
@@ -20,8 +23,9 @@ public final class PaymentSession implements AutoCloseable {
     public PaymentSession() throws PaymentFailedException {
         this.paymentService = new PaymentServiceImpl();
         if (!tryConnect()) {
-            System.err.println("Initial connection failed, retrying...");
+            logger.error("Initial connection failed, retrying...");
             if (!tryConnect()) {
+                logger.error("Unable to establish connection to payment service");
                 throw new PaymentFailedException("Unable to establish" +
                         " connection to payment service");
             }
@@ -33,9 +37,11 @@ public final class PaymentSession implements AutoCloseable {
         validateSessionState();
         ensureConnected();
         if (amount == null) {
+            logger.error("Amount must not be null");
             throw new PaymentFailedException("Amount must not be null");
         }
         if (method == null) {
+            logger.error("Payment method must not be null");
             throw new PaymentFailedException("Payment method must not be null");
         }
         PaymentReceipt receipt = paymentService.processPayment(amount, method);
@@ -48,9 +54,11 @@ public final class PaymentSession implements AutoCloseable {
         validateSessionState();
         ensureConnected();
         if (amount == null) {
+            logger.error("Amount must not be null");
             throw new PaymentFailedException("Amount must not be null");
         }
         if (method == null) {
+            logger.error("Payment method must not be null");
             throw new PaymentFailedException("Payment method must not be null");
         }
         PaymentReceipt receipt = paymentService.refund(amount, method);
@@ -71,12 +79,14 @@ public final class PaymentSession implements AutoCloseable {
 
     private void ensureConnected() throws PaymentFailedException {
         if (!connected) {
+            logger.error("Not connected to payment service");
             throw new PaymentFailedException("Not connected to payment service");
         }
     }
 
     private void validateSessionState() throws PaymentFailedException {
         if (used) {
+            logger.error("Payment session has already been used and closed");
             throw new PaymentFailedException("Payment session has already been used and closed");
         }
     }

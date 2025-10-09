@@ -3,6 +3,9 @@ package com.solvd.metro.application.service.payment;
 import com.solvd.metro.application.exception.PaymentFailedException;
 import com.solvd.metro.application.port.PaymentService;
 import com.solvd.metro.domain.paymentrecord.PaymentReceipt;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ public final class PaymentServiceImpl implements PaymentService {
     private static final BigDecimal MIN_AMOUNT = new BigDecimal("0.01");
     private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000.00");
     private static final double FAILURE_RATE = 0.2;
+    private static final Logger logger = LogManager.getLogger(PaymentServiceImpl.class);
 
     private boolean connected = false;
 
@@ -60,6 +64,7 @@ public final class PaymentServiceImpl implements PaymentService {
         this.connected = tryToConnect(this::attemptConnection);
 
         if (!this.connected) {
+            logger.error("Unable to establish connection with payment server");
             throw new PaymentFailedException("Unable to establish connection with payment server");
         }
     }
@@ -73,7 +78,7 @@ public final class PaymentServiceImpl implements PaymentService {
                 return true;
             }
             attempts++;
-            System.err.printf("Connection failed, retry number %d/%d%n", attempts, maxAttempts);
+            logger.error("Connection failed, retry number {}/{}}", attempts, maxAttempts);
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -101,6 +106,7 @@ public final class PaymentServiceImpl implements PaymentService {
                         value.compareTo(MAX_AMOUNT) <= 0;
 
         if (!isAmountValid(amount, amountValidator)) {
+            logger.error("Invalid amount: {}" , amount);
             throw new PaymentFailedException("Invalid amount: " + amount);
         }
 
@@ -108,13 +114,14 @@ public final class PaymentServiceImpl implements PaymentService {
     }
 
     private void logMessage(String message, TransactionType transactionType,
-                            BiConsumer<String, TransactionType> logger) {
-        logger.accept(message, transactionType);
+                            BiConsumer<String, TransactionType> loggerImpl) {
+        loggerImpl.accept(message, transactionType);
     }
 
     public void validatePaymentMethodOrThrow(PaymentMethod paymentMethod,
                                              TransactionType transactionType) throws PaymentFailedException {
         if (paymentMethod == null) {
+            logger.error("Payment method is null!");
             throw new PaymentFailedException("Payment method is null!");
         }
 

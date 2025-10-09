@@ -2,10 +2,14 @@ package com.solvd.metro.domain.people.employee;
 
 import com.solvd.metro.domain.train.CarriageMaintenanceRecord;
 import com.solvd.metro.domain.train.Train;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
 public class Mechanic extends Employee {
+
+    private static final Logger logger = LogManager.getLogger(Mechanic.class);
 
     private String repairDescription;
     private Train assignedTrain;
@@ -43,17 +47,18 @@ public class Mechanic extends Employee {
     @Override
     public void startWorking() {
         if (getAssignedTrain() == null) {
+            logger.error("Please first assign the train which should be repaired.");
             throw new RuntimeException("Please first assign the train which should be repaired.");
         }
         if (isWorking()) {
-            System.out.printf(
-                    "Mechanic %s %s can't start a new repair, still working on the old one.%n",
+            logger.info(
+                    "Mechanic {} {} can't start a new repair, still working on the old one.%n",
                     getFirstname(), getSurname()
             );
             return;
         }
         setWorking(true);
-        System.out.printf("Mechanic %s %s started repair.%n", getFirstname(), getSurname());
+        logger.info("Mechanic {} {} started repair.%n", getFirstname(), getSurname());
 
         this.activeRecord = new CarriageMaintenanceRecord(assignedTrain.getCarriages(),
                 this);
@@ -68,6 +73,7 @@ public class Mechanic extends Employee {
 
     public void startWorking(String description) {
         if (description == null || description.isBlank()) {
+            logger.error("Description of repair can't be null or empty.");
             throw new IllegalArgumentException("Description of repair can't be null or empty.");
         }
         this.repairDescription = description;
@@ -77,12 +83,12 @@ public class Mechanic extends Employee {
     @Override
     public void stopWorking() {
         if (!isWorking()) {
-            System.out.printf("Mechanic %s %s is not currently working.%n",
+            logger.info("Mechanic {} {} is not currently working.%n",
                     getFirstname(), getSurname());
             return;
         }
 
-        System.out.printf("Mechanic %s %s finished repair.%n", getFirstname(), getSurname());
+        logger.info("Mechanic {} {} finished repair.%n", getFirstname(), getSurname());
 
         this.activeRecord.closeTicket();
         this.activeRecord = null;
@@ -97,18 +103,19 @@ public class Mechanic extends Employee {
 
     public void assignTrain(Train train) {
         if (train == null) {
+            logger.error("Train you want to assign to the Mechanic can't be null.");
             throw new IllegalArgumentException("Train you want to assign to the Mechanic can't be null.");
         }
         if (this.assignedTrain != null) {
-            System.out.printf(
-                    "Mechanic %s %s with license number %s already has an assigned train (code: %s).%n" +
+            logger.info(
+                    "Mechanic {} {} with license number {} already has an assigned train (code: {}).%n" +
                             "Please stop working to assign a new train.%n",
                     getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
             );
             return;
         }
         this.assignedTrain = train;
-        System.out.printf("Mechanic %s %s was assigned to train with code %s.%n",
+        logger.info("Mechanic {} {} was assigned to train with code {}.%n",
                 getFirstname(), getSurname(), train.getCode());
     }
 

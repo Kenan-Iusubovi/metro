@@ -3,11 +3,15 @@ package com.solvd.metro.domain.people.employee;
 
 
 import com.solvd.metro.domain.train.Train;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Driver extends Employee {
+
+    private static final Logger logger = LogManager.getLogger(Driver.class);
 
     private Train assignedTrain;
 
@@ -38,35 +42,37 @@ public class Driver extends Employee {
 
     public void assignTrain(Train train) {
         if (train == null) {
+            logger.error("Train you want to assign to the driver can't be null.");
             throw new IllegalArgumentException("Train you want to assign to the driver can't be null.");
         }
         if (this.assignedTrain != null && isWorking()) {
-            System.out.printf(
-                    "Driver %s %s (License: %s) is already driving train with code %s.%n" +
+            logger.info(
+                    "Driver {} {} (License: {}) is already driving train with code {}" +
                             "Please stop working to assign a new train.%n",
                     getFirstname(), getSurname(), getLicenseNumber(), this.assignedTrain.getCode()
             );
             return;
         }
         this.assignedTrain = train;
-        System.out.printf("Driver %s %s (License: %s) was assigned to train with code %s.%n",
+        logger.info("Driver {} {} (License: {}) was assigned to train with code {}.%n",
                 getFirstname(), getSurname(), getLicenseNumber(), train.getCode());
     }
 
     @Override
     public void startWorking() {
         if (isWorking()) {
-            System.out.printf("Driver %s %s is already on duty driving train %s.%n",
+            logger.info("Driver {} {} is already on duty driving train {}.%n",
                     getFirstname(), getSurname(),
                     (assignedTrain != null ? assignedTrain.getCode() : "<none>"));
             return;
         }
         if (assignedTrain == null) {
+            logger.error("No train assigned to driver.");
             throw new IllegalStateException("No train assigned to driver.");
         }
         setWorking(true);
-        System.out.printf(
-                "Driver %s %s (License: %s) started the shift and is now driving train %s.%n",
+        logger.info(
+                "Driver {} {}} (License: {}) started the shift and is now driving train {}.%n",
                 getFirstname(), getSurname(), getLicenseNumber(), assignedTrain.getCode()
         );
     }
@@ -74,12 +80,12 @@ public class Driver extends Employee {
     @Override
     public void stopWorking() {
         if (!isWorking()) {
-            System.out.printf("Driver %s %s is not currently working.%n",
+            logger.info("Driver {} {} is not currently working.%n",
                     getFirstname(), getSurname());
             return;
         }
-        System.out.printf(
-                "Driver %s %s (License: %s) finished the shift and stopped driving train %s.%n",
+        logger.info(
+                "Driver {} {} (License: {}) finished the shift and stopped driving train {}.%n",
                 getFirstname(), getSurname(), getLicenseNumber(),
                 (assignedTrain != null ? assignedTrain.getCode() : "<none>")
         );
