@@ -30,6 +30,7 @@ public final class FareCalculator {
 
     public static BigDecimal calculateTicketPrice(PassengerCategory category) {
         if (category == null) {
+            logger.error("Passenger category cannot be null");
             throw new IllegalArgumentException("Passenger category cannot be null");
         }
 
@@ -52,6 +53,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(BigDecimal baseCost) {
         if (baseCost == null || baseCost.compareTo(BigDecimal.ZERO) < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = baseCost;
@@ -59,6 +61,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(int baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -66,6 +69,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(long baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -73,6 +77,7 @@ public final class FareCalculator {
 
     public static void setBaseCost(double baseCost) {
         if (baseCost < 0) {
+            logger.error("Base cost must be positive");
             throw new IllegalArgumentException("Base cost must be positive");
         }
         FareCalculator.baseCost = BigDecimal.valueOf(baseCost);
@@ -116,6 +121,7 @@ public final class FareCalculator {
 
     private static void checkDiscountPercentage(int percentage) {
         if (percentage < 0 || percentage > MAX_DISCOUNT) {
+            logger.error("Discount percentage must be between 0 and {}", MAX_DISCOUNT);
             throw new IllegalArgumentException("Discount percentage must be between 0 and " + MAX_DISCOUNT);
         }
     }
