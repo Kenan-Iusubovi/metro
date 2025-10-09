@@ -23,6 +23,9 @@ import com.solvd.metro.utils.BookUtils;
 import com.solvd.metro.utils.LoggerUtils;
 import com.solvd.metro.utils.MyDoublyLinkedList;
 import com.solvd.metro.utils.Reflection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,7 +37,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        LoggerUtils.redirectAllSystemStreams();
+        Logger logger = LogManager.getLogger(Main.class);
+     //   LoggerUtils.redirectAllSystemStreams();
 
         String bookPath = "src/main/resources/books/The Silver Glen  A story of " +
                 "the rebellion of 1715 by Bessie Dill.txt";
@@ -295,7 +299,7 @@ public class Main {
         Passenger ninoPassenger = new Passenger("Nino", "Beridze",
                 "nino@example.com", "+995555555", PassengerCategory.ADULT);
 
-        System.out.println("Tbilisi Metro system created successfully!");
+        logger.info("Tbilisi Metro system created successfully!");
 
         Ticket ticket = bookingService.book(tbilisiMetro, ninoPassenger, PaymentMethod.METRO_CARD);
 
@@ -319,7 +323,7 @@ public class Main {
         mechanic.startWorking();
         mechanic.stopWorking();
 
-        System.out.println("Thank you for using our metro system hope its " +
+        logger.info("Thank you for using our metro system hope its " +
                 "working well Bogdan ;) :)");
     }
 }

@@ -2,27 +2,30 @@ package com.solvd.metro.application.service;
 
 
 import com.solvd.metro.application.port.EmailService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
 
 public class EmailServiceImpl implements EmailService {
 
     private static final String senderName = "noreply@metro.com";
+    private static final Logger logger = LogManager.getLogger(EmailServiceImpl.class);
 
     @Override
     public void send(String to, String subject, String text) {
         if (to == null || to.isBlank()) throw new IllegalArgumentException("to");
 
-        System.out.println("====================================");
-        System.out.println(" 📧 EMAIL SENT ");
-        System.out.println("------------------------------------");
-        System.out.println("To      : " + to);
-        System.out.println("Subject : " + subject);
-        System.out.println("------------------------------------");
-        System.out.println(text);
-        System.out.println(senderName);
-        System.out.println("====================================");
-        System.out.println();
+        logger.info("====================================");
+        logger.info(" 📧 EMAIL SENT ");
+        logger.info("------------------------------------");
+        logger.info("To      : " + to);
+        logger.info("Subject : " + subject);
+        logger.info("------------------------------------");
+        logger.info(text);
+        logger.info(senderName);
+        logger.info("====================================");
+        logger.info("");
     }
 
     @Override

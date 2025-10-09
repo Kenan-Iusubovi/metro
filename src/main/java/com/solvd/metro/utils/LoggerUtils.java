@@ -59,8 +59,8 @@ public class LoggerUtils {
                 }
 
                 @Override
-                public void print(char c) {
-                    logFullLine(String.valueOf(c), "info");
+                public void print(char character) {
+                    logFullLine(String.valueOf(character), "info");
                 }
 
                 @Override
