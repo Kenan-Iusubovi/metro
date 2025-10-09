@@ -40,6 +40,8 @@ public class Main {
         Logger logger = LogManager.getLogger(Main.class);
      //   LoggerUtils.redirectAllSystemStreams();
 
+        System.out.println("Place for conflict");
+
         String bookPath = "src/main/resources/books/The Silver Glen  A story of " +
                 "the rebellion of 1715 by Bessie Dill.txt";
 
