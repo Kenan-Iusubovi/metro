@@ -9,12 +9,16 @@ import com.solvd.metro.application.service.payment.PaymentSession;
 import com.solvd.metro.domain.people.passenger.Passenger;
 import com.solvd.metro.domain.system.Metro;
 import com.solvd.metro.domain.ticket.Ticket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BookingServiceImpl implements BookingService {
+
+    private static final Logger logger = LogManager.getLogger(BookingServiceImpl.class);
 
     private Set<Ticket> issuedTickets;
     private EmailService emailService;
@@ -28,12 +32,15 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkConditions(Metro metro, Passenger passenger) {
         if (metro == null) {
+            logger.error("Metro can't be null.");
             throw new IllegalArgumentException("Metro can't be null.");
         }
         if (metro.getPaymentService() == null) {
+            logger.error("Payment application.service can't be null.");
             throw new IllegalArgumentException("Payment application.service can't be null.");
         }
         if (passenger == null) {
+            logger.error("Passenger can't be null");
             throw new IllegalArgumentException("Passenger can't be null");
         }
     }
@@ -59,8 +66,10 @@ public class BookingServiceImpl implements BookingService {
             return ticket;
 
         } catch (PaymentFailedException e) {
+            logger.error("Booking failed: {} : {}", e.getMessage(), e);
             throw new RuntimeException("Booking failed: " + e.getMessage(), e);
         } finally {
+            logger.info("Payment attempt finished, session cleaned up.");
             System.out.println("Payment attempt finished, session cleaned up.");
         }
     }
@@ -68,6 +77,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void cancelTicket(Passenger passenger, Ticket ticket) {
         if (ticket == null || passenger == null) {
+            logger.error("Ticket or passenger can't be null or empty.");
             throw new IllegalArgumentException("Ticket or passenger can't be null or empty.");
         }
         this.issuedTickets.remove(ticket);
@@ -81,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void setIssuedTickets(Set<Ticket> issuedTickets) {
         if (issuedTickets == null) {
+            logger.error("Ticket can't be null.");
             throw new IllegalArgumentException("Ticket can't be null.");
         }
         this.issuedTickets = issuedTickets;
