@@ -6,12 +6,15 @@ import com.solvd.metro.application.port.OpenClose;
 import com.solvd.metro.application.port.TicketValidator;
 import com.solvd.metro.domain.people.passenger.Passenger;
 import com.solvd.metro.domain.ticket.Ticket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public class Turnstile implements OpenClose {
 
     private static long idCounter = 0;
+    private static final Logger logger = LogManager.getLogger(Turnstile.class);
 
     private Long id;
     private String code;
@@ -35,6 +38,7 @@ public class Turnstile implements OpenClose {
 
     public void setCode(String code) {
         if (code == null || code.isBlank()) {
+            logger.error("Code can't be null or negative.");
             throw new IllegalArgumentException("Code can't be null or negative.");
         }
         this.code = code;
@@ -60,6 +64,7 @@ public class Turnstile implements OpenClose {
     @Override
     public void open() {
         if (!active) {
+            logger.error("Cannot open deactivated turnstile {}.", code);
             throw new TurnstileUnavailableException("Cannot open" +
                     " deactivated turnstile " + code + ".");
         }
@@ -74,24 +79,26 @@ public class Turnstile implements OpenClose {
 
     public void pass(Passenger passenger, Ticket ticket, TicketValidator ticketValidator) {
         if (!active) {
+            logger.error("Turnstile {} is deactivated.", code);
             throw new TurnstileUnavailableException("Turnstile " + code + " is deactivated.");
         }
 
         if (!ticketValidator.validate(passenger, ticket)) {
+            logger.error("Not valid ticket presented.");
             throw new InvalidTicketException("Not valid ticket presented.");
         }
         if (ticket.useForEntry()) {
-            System.out.printf("Ticket %s accepted at turnstile %s%n", ticket.getCode(), code);
+           logger.info("Ticket {} accepted at turnstile {}%n", ticket.getCode(), code);
             open();
-            System.out.printf("Passenger goes throw.%n");
+            logger.info("Passenger goes throw.%n");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.printf("Passenger goes inside the station.%n");
+            logger.info("Passenger goes inside the station.%n");
             close();
-            System.out.printf("Turnstile %s is closed!%n", code);
+           logger.info("Turnstile {} is closed!%n", code);
         }
     }
 
