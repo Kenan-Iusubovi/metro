@@ -1,11 +1,14 @@
 package com.solvd.metro.domain.people.employee;
 
 import com.solvd.metro.domain.people.Human;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
 public abstract class Employee extends Human {
 
+    private static final Logger logger = LogManager.getLogger(Employee.class);
     private static long idCounter = 0;
 
     private Long id;
@@ -45,6 +48,7 @@ public abstract class Employee extends Human {
 
     private void setLicenseNumber(String licenseNumber) {
         if (licenseNumber == null || licenseNumber.isBlank()) {
+            logger.error("License number can't be null or empty.");
             throw new IllegalArgumentException("License number can't be null or empty.");
         }
         this.licenseNumber = licenseNumber;
@@ -56,6 +60,7 @@ public abstract class Employee extends Human {
 
     public void setYearsOfExperience(int yearsOfExperience) {
         if (yearsOfExperience < 0) {
+            logger.error("Years of experience can't be negative.");
             throw new IllegalArgumentException("Years of experience can't be negative.");
         }
         this.yearsOfExperience = yearsOfExperience;
