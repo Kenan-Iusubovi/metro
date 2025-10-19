@@ -1,5 +1,8 @@
 package com.solvd.metro.domain.people.passenger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -13,8 +16,10 @@ public enum PassengerCategory {
     private final int discountPercentage;
     private final String description;
 
+    private static final Logger logger = LogManager.getLogger(PassengerCategory.class);
+
     static {
-        System.out.println("PassengerCategory enum loaded with " + values().length + " categories");
+        logger.info("PassengerCategory enum loaded with {} categories", values().length);
     }
 
     PassengerCategory(int discountPercentage, String description) {
