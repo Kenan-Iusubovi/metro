@@ -70,7 +70,6 @@ public class BookingServiceImpl implements BookingService {
             throw new RuntimeException("Booking failed: " + e.getMessage(), e);
         } finally {
             logger.info("Payment attempt finished, session cleaned up.");
-            System.out.println("Payment attempt finished, session cleaned up.");
         }
     }
 

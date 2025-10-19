@@ -69,7 +69,7 @@ public class Turnstile implements OpenClose {
                     " deactivated turnstile " + code + ".");
         }
         this.closed = false;
-        System.out.printf("Turnstile with code%s opened.%n", code);
+        logger.info("Turnstile with code {} opened.", code);
     }
 
     @Override

@@ -35,12 +35,12 @@ import java.util.Set;
 
 public class Main {
 
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
     public static void main(String[] args) {
 
-        Logger logger = LogManager.getLogger(Main.class);
-     //   LoggerUtils.redirectAllSystemStreams();
 
-        System.out.println("conflict append");
+     //   LoggerUtils.redirectAllSystemStreams();
 
         String bookPath = "src/main/resources/books/The Silver Glen  A story of " +
                 "the rebellion of 1715 by Bessie Dill.txt";

@@ -106,7 +106,7 @@ public final class PaymentServiceImpl implements PaymentService {
                         value.compareTo(MAX_AMOUNT) <= 0;
 
         if (!isAmountValid(amount, amountValidator)) {
-            logger.error("Invalid amount: {}" , amount);
+            logger.error("Invalid amount: {}", amount);
             throw new PaymentFailedException("Invalid amount: " + amount);
         }
 
@@ -127,9 +127,9 @@ public final class PaymentServiceImpl implements PaymentService {
 
         logMessage("Validated payment method: " + paymentMethod.getPaymentDetails(),
                 transactionType,
-                (message, type) -> System.out.printf("[%s LOG] %s : %s%n",
+                (message, type) -> logger.info("[{} LOG] {} : {}",
                         type.name(), LocalDateTime.now(), message));
+
+
     }
-
-
 }
