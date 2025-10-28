@@ -224,7 +224,8 @@ public class Metro {
 
                             enterStation.run();
                             startDriverWork.run();
-                            train.enterTheTrain(departureTime, passenger, schedule.getLine(), destinationStation, onboardingStation, boardPassenger);
+                            train.enterTheTrain(departureTime, passenger, schedule.getLine(),
+                                    destinationStation, onboardingStation, boardPassenger);
                         },
                         () -> {
                             logger.error("Schedule doesn't contains " +
