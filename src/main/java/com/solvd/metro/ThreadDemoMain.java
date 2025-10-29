@@ -5,9 +5,9 @@ import com.solvd.metro.mockconnectionpool.ConnectionPool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class ThreadDemoMain {
 
@@ -20,12 +20,31 @@ public class ThreadDemoMain {
     public static void main(String[] args) {
 
         ConnectionPool connectionPool = ConnectionPool.getInstance(POOL_SIZE);
+        Thread[] connectionThreads = new Thread[THREAD_COUNT];
 
-        Thread[] connectionThreadS = new Thread[THREAD_COUNT];
+        runTask(connectionPool, connectionThreads);
 
-        logger.error("NO EXECUTOR SERVICE ");
+        try (ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);) {
+            runTaskWithExecutor(connectionPool, executorService);
+        }
 
-        for (int i = 0; i < THREAD_COUNT; i++){
+        try (ExecutorService executorForCompletableFuture = Executors.newFixedThreadPool(THREAD_COUNT);) {
+            logger.error("----------------------- COMPLETABLE FUTURE---------------------------------------------");
+
+            CompletableFuture<?> future1 = CompletableFuture.runAsync(() -> runTask(
+                    connectionPool, connectionThreads));
+
+            CompletableFuture<?> future2 = CompletableFuture.runAsync(() -> runTaskWithExecutor(
+                    connectionPool, executorForCompletableFuture));
+            CompletableFuture.allOf(future1, future2).join();
+        }
+    }
+
+    private static void runTask(ConnectionPool connectionPool, Thread[] connectionThreadS) {
+
+        logger.error("----------------------------NO EXECUTOR SERVICE----------------------------------- ");
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
             connectionThreadS[i] = new Thread(() -> {
                 Connection connection = null;
                 try {
@@ -36,8 +55,8 @@ public class ThreadDemoMain {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error(e.getMessage());
-                }finally {
-                    if (connection != null){
+                } finally {
+                    if (connection != null) {
                         try {
                             connectionPool.releaseConnection(connection);
                         } catch (InterruptedException e) {
@@ -46,12 +65,11 @@ public class ThreadDemoMain {
                         }
                     }
                 }
-            },"Connection thread number - " + (i + 1));
+            }, "Connection thread number - " + (i + 1));
             connectionThreadS[i].start();
         }
 
-
-        for (Thread thread : connectionThreadS){
+        for (Thread thread : connectionThreadS) {
             try {
                 thread.join();
             } catch (InterruptedException e) {
@@ -59,12 +77,13 @@ public class ThreadDemoMain {
                 logger.error(e.getMessage());
             }
         }
+    }
 
-        logger.error("WITH EXECUTOR SERVICE ");
+    private static void runTaskWithExecutor(ConnectionPool connectionPool, ExecutorService executorService) {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+        logger.error("--------------------------------WITH EXECUTOR SERVICE----------------------------- ");
 
-        for (int i = 0; i < THREAD_COUNT; i++){
+        for (int i = 0; i < THREAD_COUNT; i++) {
             int threadNumber = i + 1;
             executorService.submit(() -> {
                 Connection connection = null;
@@ -78,8 +97,8 @@ public class ThreadDemoMain {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.error(e.getMessage());
-                }finally {
-                    if (connection != null){
+                } finally {
+                    if (connection != null) {
                         try {
                             connectionPool.releaseConnection(connection);
                             logger.warn("Thread number - {} disconnected", threadNumber);
@@ -91,17 +110,6 @@ public class ThreadDemoMain {
                 }
             });
         }
-
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(ALL_EXECUTOR_THREADS_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)){
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-            Thread.currentThread().interrupt();
-            logger.error(e.getMessage());
-        }
     }
-
 }
+
