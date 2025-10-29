@@ -19,6 +19,8 @@ import com.solvd.metro.domain.ticket.Ticket;
 import com.solvd.metro.domain.train.Carriage;
 import com.solvd.metro.domain.train.CarriageStatus;
 import com.solvd.metro.domain.train.Train;
+import com.solvd.metro.mockconnectionpool.Connection;
+import com.solvd.metro.mockconnectionpool.ConnectionPool;
 import com.solvd.metro.threading.TrainAcThread;
 import com.solvd.metro.utils.BookUtils;
 import com.solvd.metro.utils.LoggerUtils;
@@ -39,7 +41,6 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-
 
      //   LoggerUtils.redirectAllSystemStreams();
 

@@ -24,7 +24,7 @@ public class ConnectionPool {
 
     public static ConnectionPool getInstance(int poolSize){
         if (instance == null){
-            synchronized (Connection.class){
+            synchronized (ConnectionPool.class){
                 if (instance == null){
                     instance = new ConnectionPool(poolSize);
                 }
@@ -39,10 +39,17 @@ public class ConnectionPool {
         return connection;
     }
 
-    public void releaseConnection(Connection connection){
+    public void releaseConnection(Connection connection) throws InterruptedException {
         if (connection != null){
-            pool.offer(connection);
-            logger.info("{} released {}", Thread.currentThread().getName(), connection);
+            pool.put(connection);
+            logger.warn("{} released {}", Thread.currentThread().getName(), connection);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ConnectionPool{" +
+                "pool=" + pool +
+                '}';
     }
 }
