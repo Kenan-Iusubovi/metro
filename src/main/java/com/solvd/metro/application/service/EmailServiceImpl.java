@@ -14,7 +14,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void send(String to, String subject, String text) {
-        if (to == null || to.isBlank()) throw new IllegalArgumentException("to");
+        if (to == null || to.isBlank()){
+            throw new IllegalArgumentException("to");
+        }
 
         logger.info("====================================");
         logger.info(" 📧 EMAIL SENT ");

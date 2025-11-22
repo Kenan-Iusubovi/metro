@@ -19,6 +19,9 @@ import com.solvd.metro.domain.ticket.Ticket;
 import com.solvd.metro.domain.train.Carriage;
 import com.solvd.metro.domain.train.CarriageStatus;
 import com.solvd.metro.domain.train.Train;
+import com.solvd.metro.mockconnectionpool.Connection;
+import com.solvd.metro.mockconnectionpool.ConnectionPool;
+import com.solvd.metro.threading.TrainAcThread;
 import com.solvd.metro.utils.BookUtils;
 import com.solvd.metro.utils.LoggerUtils;
 import com.solvd.metro.utils.MyDoublyLinkedList;
@@ -39,7 +42,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-
      //   LoggerUtils.redirectAllSystemStreams();
 
         String bookPath = "src/main/resources/books/The Silver Glen  A story of " +
@@ -47,11 +49,17 @@ public class Main {
 
         BookUtils bookUtils = new BookUtils();
 
-        List<String> bookText = bookUtils.readTheBook(bookPath);
+        Thread readAndWriteBookThread = new Thread(() -> {
+            logger.info("reading the book in thread...");
+            List<String> bookText = bookUtils.readTheBook(bookPath);
+            logger.info("Sorting unique words in thread...");
+            Set<String> uniqueWords = bookUtils.getUniqueWords(bookText);
+            logger.info("Writing the unique words in to the book ...");
+            bookUtils.writeInFile(uniqueWords,"src/main/resources/books/unique words text.txt");
+            logger.info("Thread finished the work!");
+        });
 
-        Set<String> uniqueWords = bookUtils.getUniqueWords(bookText);
-
-        bookUtils.writeInFile(uniqueWords,"src/main/resources/books/unique words text.txt");
+        readAndWriteBookThread.start();
 
         Metro tbilisiMetro = new Metro("Tbilisi", LocalDate.now());
         tbilisiMetro.setPaymentService(new PaymentServiceImpl());
@@ -277,21 +285,25 @@ public class Main {
         Driver driver = new Driver("Levan", "Kiknavelidze",
                 "DRV-1234", 7);
 
-        Train tbilisiTrain1 = new Train("TB1", carriages);
+        Train tbilisiTrain = new Train("TB1", carriages);
 
         TrainParking<Train> parking = Reflection.createTrainParking();
 
-        parking.parkTrain(tbilisiTrain1);
+        parking.parkTrain(tbilisiTrain);
 
         Reflection.getParkedTrainCountReflectively();
 
-        parking.getTrainOutOfParking(tbilisiTrain1);
+        parking.getTrainOutOfParking(tbilisiTrain);
 
-        tbilisiTrain1.assignDriver(driver);
+        tbilisiTrain.assignDriver(driver);
 
-        driver.assignTrain(tbilisiTrain1);
+        driver.assignTrain(tbilisiTrain);
 
-        akhmeteliVarketiliLine.addTrain(tbilisiTrain1);
+        TrainAcThread trainAcThread = new TrainAcThread(tbilisiTrain, (byte) 23);
+
+        akhmeteliVarketiliLine.addTrain(tbilisiTrain);
+
+        trainAcThread.start();
 
         Schedule schedule = Schedule.ScheduleGenerator.generateDailySchedule(
                 akhmeteliVarketiliLine, tbilisiMetro, 10, 15
@@ -308,7 +320,7 @@ public class Main {
         Runnable enterStation = () -> akhmeteliVarketiliLine.getStations().getFirst()
                 .enterStation(ninoPassenger, ticket);
 
-        Runnable startDriverWork = () -> tbilisiTrain1.getDriver().startWorking();
+        Runnable startDriverWork = () -> tbilisiTrain.getDriver().startWorking();
 
         tbilisiMetro.enterMetro(
                 enterStation, startDriverWork,
@@ -317,10 +329,10 @@ public class Main {
                 ninoPassenger
         );
 
-        parking.parkTrain(tbilisiTrain1);
+        parking.parkTrain(tbilisiTrain);
 
         Mechanic mechanic = new Mechanic("Jason", "Stethem",
-                "SCJ-0569", 25, tbilisiTrain1);
+                "SCJ-0569", 25, tbilisiTrain);
 
         mechanic.startWorking();
         mechanic.stopWorking();

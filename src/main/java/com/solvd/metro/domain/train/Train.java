@@ -174,6 +174,7 @@ public class Train implements OpenClose, PublicTransport {
         }
 
         this.acTemperature = temperature;
+        logger.info("Train AC temperature was set to {}C°", temperature);
     }
 
     @Override
